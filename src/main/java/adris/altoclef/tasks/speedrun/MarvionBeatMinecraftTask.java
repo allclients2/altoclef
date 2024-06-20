@@ -1973,6 +1973,12 @@ public class MarvionBeatMinecraftTask extends Task {
                 } else {
                     _starterGearTask = null;
                 }
+                if (shouldForce(mod, _shieldTask) && !StorageHelper.isArmorEquipped(mod, COLLECT_SHIELD)) {
+                    setDebugState("Getting shield for defense purposes only.");
+                    return _shieldTask;
+                } else {
+                    _shieldTask = null;
+                }
                 if (shouldForce(mod, _foodTask)) {
                     setDebugState("Getting food for ender eye journey.");
                     return _foodTask;
@@ -2013,12 +2019,6 @@ public class MarvionBeatMinecraftTask extends Task {
                 if (shouldForce(mod, _lootTask)) {
                     setDebugState("Looting chest for goodies");
                     return _lootTask;
-                }
-                if (shouldForce(mod, _shieldTask) && !StorageHelper.isArmorEquipped(mod, COLLECT_SHIELD)) {
-                    setDebugState("Getting shield for defense purposes only.");
-                    return _shieldTask;
-                } else {
-                    _shieldTask = null;
                 }
                 if (shouldForce(mod, _ironGearTask) && !StorageHelper.isArmorEquipped(mod, COLLECT_IRON_ARMOR)) {
                     setDebugState("Getting iron gear before diamond gear for defense purposes only.");
@@ -2096,6 +2096,18 @@ public class MarvionBeatMinecraftTask extends Task {
                 } else {
                     _starterGearTask = null;
                 }
+                // Then get shield
+                if (_config.getShield && !shieldSatisfied && !mod.getFoodChain().needsToEat()) {
+                    ItemTarget shield = new ItemTarget(COLLECT_SHIELD);
+                    if (mod.getItemStorage().hasItem(shield) && !StorageHelper.isArmorEquipped(mod, COLLECT_SHIELD)) {
+                        setDebugState("Equipping shield.");
+                        return new EquipArmorTask(COLLECT_SHIELD);
+                    }
+                    _shieldTask = TaskCatalogue.getItemTask(shield);
+                    return _shieldTask;
+                } else {
+                    _shieldTask = null;
+                }
                 // Then get food
                 if (StorageHelper.calculateInventoryFoodScore(mod) < _config.minFoodUnits) {
                     _foodTask = new CollectFoodTask(_config.foodUnits);
@@ -2119,18 +2131,6 @@ public class MarvionBeatMinecraftTask extends Task {
                         _lootTask = new LootDesertTempleTask(temple, lootableItems(mod));
                         return _lootTask;
                     }
-                }
-                // Then get shield
-                if (_config.getShield && !shieldSatisfied && !mod.getFoodChain().needsToEat()) {
-                    ItemTarget shield = new ItemTarget(COLLECT_SHIELD);
-                    if (mod.getItemStorage().hasItem(shield) && !StorageHelper.isArmorEquipped(mod, COLLECT_SHIELD)) {
-                        setDebugState("Equipping shield.");
-                        return new EquipArmorTask(COLLECT_SHIELD);
-                    }
-                    _shieldTask = TaskCatalogue.getItemTask(shield);
-                    return _shieldTask;
-                } else {
-                    _shieldTask = null;
                 }
                 // Then get iron
                 if (_config.ironGearBeforeDiamondGear && !ironGearSatisfied && !eyeGearSatisfied &&
