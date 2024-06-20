@@ -70,7 +70,7 @@ public class EntityHelper {
 
         // Armor Base
         if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
-            damageAmount = DamageUtil.getDamageLeft((float) damageAmount, (float) player.getArmor(), (float) player.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
+            damageAmount = DamageUtil.getDamageLeft((float) damageAmount, source, (float) player.getArmor(), (float) player.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
         }
 
         // Enchantments & Potions

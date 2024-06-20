@@ -22,6 +22,7 @@ import adris.altoclef.util.slots.SmokerSlot;
 import adris.altoclef.util.time.TimerGame;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -84,14 +85,14 @@ public class CollectFoodTask extends Task {
         if (count <= 0) return 0;
         for (CookableFoodTarget cookable : COOKABLE_FOODS) {
             if (food.getItem() == cookable.getRaw()) {
-                assert cookable.getCooked().getFoodComponent() != null;
-                return count * cookable.getCooked().getFoodComponent().getHunger();
+                assert cookable.getCooked().getComponents().get(DataComponentTypes.FOOD) != null;
+                return count * Objects.requireNonNull(cookable.getCooked().getComponents().get(DataComponentTypes.FOOD)).nutrition();
             }
         }
         // We're just an ordinary item.
-        if (food.getItem().isFood()) {
-            assert food.getItem().getFoodComponent() != null;
-            return count * food.getItem().getFoodComponent().getHunger();
+        if (food.getItem().getComponents().contains(DataComponentTypes.FOOD)) {
+            assert food.getItem().getComponents().get(DataComponentTypes.FOOD) != null;
+            return count * Objects.requireNonNull(food.getItem().getComponents().get(DataComponentTypes.FOOD)).nutrition();
         }
         return 0;
     }
@@ -104,7 +105,7 @@ public class CollectFoodTask extends Task {
             potentialFood += getFoodPotential(food);
         }
         int potentialBread = (int) (mod.getItemStorage().getItemCount(Items.WHEAT) / 3) + mod.getItemStorage().getItemCount(Items.HAY_BLOCK) * 3;
-        potentialFood += Objects.requireNonNull(Items.BREAD.getFoodComponent()).getHunger() * potentialBread;
+        potentialFood += Objects.requireNonNull(Items.BREAD.getComponents().get(DataComponentTypes.FOOD)).nutrition() * potentialBread;
         // Check smelting
         ScreenHandler screen = mod.getPlayer().currentScreenHandler;
         if (screen instanceof SmokerScreenHandler) {
@@ -428,8 +429,8 @@ public class CollectFoodTask extends Task {
         }
 
         public int getCookedUnits() {
-            assert getCooked().getFoodComponent() != null;
-            return getCooked().getFoodComponent().getHunger();
+            assert getCooked().getComponents().get(DataComponentTypes.FOOD) != null;
+            return Objects.requireNonNull(getCooked().getComponents().get(DataComponentTypes.FOOD)).nutrition();
         }
 
         public boolean isFish() {
