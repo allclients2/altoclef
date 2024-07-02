@@ -50,6 +50,8 @@ import java.util.stream.Stream;
 
 import static net.minecraft.client.MinecraftClient.getInstance;
 
+// Marvion beat minecraft task, will PROBABLY never be updated!
+// This is just an archival, that is still available to be used as a command!
 @SuppressWarnings("ALL")
 public class MarvionBeatMinecraftTask extends Task {
     private static final Block[] TRACK_BLOCKS = new Block[]{
@@ -501,7 +503,7 @@ public class MarvionBeatMinecraftTask extends Task {
 
         //FIXME: Check version.
         //#if MC>= 12000
-        mod.getExtraBaritoneSettings().canWalkOnEndPortal(false);
+        //$$ mod.getExtraBaritoneSettings().canWalkOnEndPortal(false);
         //#endif
 
         // Pop the top behaviour from the stack
@@ -916,22 +918,6 @@ public class MarvionBeatMinecraftTask extends Task {
                 }
             }
         }
-        Optional<BlockPos> deepslateCoalOre = mod.getBlockScanner().getNearestBlock(Blocks.DEEPSLATE_COAL_ORE);
-        if (deepslateCoalOre.isPresent()) {
-            Iterable<Entity> entities = mod.getWorld().getEntities();
-            for (Entity entity : entities) {
-                if (entity instanceof HostileEntity) {
-                    if (!mod.getBlockScanner().isUnreachable(deepslateCoalOre.get())) {
-                        if (mod.getPlayer().squaredDistanceTo(entity.getPos()) < 150 &&
-                                deepslateCoalOre.get().isWithinDistance(entity.getPos(), 30)) {
-                            if (!ironGearSatisfied && !eyeGearSatisfied) {
-                                mod.getBlockScanner().requestBlockUnreachable(deepslateCoalOre.get(), 0);
-                            }
-                        }
-                    }
-                }
-            }
-        }
         Optional<BlockPos> coalOrePos = mod.getBlockScanner().getNearestBlock(Blocks.COAL_ORE);
         if (coalOrePos.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
@@ -942,6 +928,24 @@ public class MarvionBeatMinecraftTask extends Task {
                                 coalOrePos.get().isWithinDistance(entity.getPos(), 30)) {
                             if (!ironGearSatisfied && !eyeGearSatisfied) {
                                 mod.getBlockScanner().requestBlockUnreachable(coalOrePos.get(), 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //#if MC>=11800
+        Optional<BlockPos> deepslateCoalOre = mod.getBlockScanner().getNearestBlock(Blocks.DEEPSLATE_COAL_ORE);
+        if (deepslateCoalOre.isPresent()) {
+            Iterable<Entity> entities = mod.getWorld().getEntities();
+            for (Entity entity : entities) {
+                if (entity instanceof HostileEntity) {
+                    if (!mod.getBlockScanner().isUnreachable(deepslateCoalOre.get())) {
+                        if (mod.getPlayer().squaredDistanceTo(entity.getPos()) < 150 &&
+                                deepslateCoalOre.get().isWithinDistance(entity.getPos(), 30)) {
+                            if (!ironGearSatisfied && !eyeGearSatisfied) {
+                                mod.getBlockScanner().requestBlockUnreachable(deepslateCoalOre.get(), 0);
                             }
                         }
                     }
@@ -964,6 +968,8 @@ public class MarvionBeatMinecraftTask extends Task {
                 }
             }
         }
+        //#endif
+
         Optional<BlockPos> ironOrePos = mod.getBlockScanner().getNearestBlock(Blocks.IRON_ORE);
         if (ironOrePos.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
@@ -1255,9 +1261,9 @@ public class MarvionBeatMinecraftTask extends Task {
 
                 //FIXME: Check version.
                 //#if MC>= 12000
-                if (!mod.getExtraBaritoneSettings().isCanWalkOnEndPortal()) {
-                    mod.getExtraBaritoneSettings().canWalkOnEndPortal(true);
-                }
+                //$$ if (!mod.getExtraBaritoneSettings().isCanWalkOnEndPortal()) {
+                //$$     mod.getExtraBaritoneSettings().canWalkOnEndPortal(true);
+                //$$ }
                 //#endif
 
                 return new DoToClosestBlockTask(
@@ -1483,9 +1489,9 @@ public class MarvionBeatMinecraftTask extends Task {
                         enteringEndPortal = true;
                         //FIXME: Check version.
                         //#if MC>= 12000
-                        if (!mod.getExtraBaritoneSettings().isCanWalkOnEndPortal()) {
-                            mod.getExtraBaritoneSettings().canWalkOnEndPortal(true);
-                        }
+                        //$$ if (!mod.getExtraBaritoneSettings().isCanWalkOnEndPortal()) {
+                        //$$     mod.getExtraBaritoneSettings().canWalkOnEndPortal(true);
+                        //$$ }
                         //#endif
                         return new DoToClosestBlockTask(
                                 blockPos -> new GetToBlockTask(blockPos.up()),

@@ -14,8 +14,10 @@ public class ConnectScreenVer {
         ConnectScreen.connect(screen, client, address, info, quickPlay,null);
         //#elseif MC>=12001
         //$$ ConnectScreen.connect(screen, client, address, info, quickPlay);
-        //#else
+        //#elseif MC>=11800
         //$$ ConnectScreen.connect(screen, client, address, info);
+        //#else
+        //$$ new ConnectScreen(screen, client, address.getAddress(), address.getPort());
         //#endif
     }
 

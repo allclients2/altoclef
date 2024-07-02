@@ -38,7 +38,7 @@ public class CraftWithMatchingStrippedLogsTask extends CraftWithMatchingMaterial
 
     @Override
     protected Item getSpecificItemCorrespondingToMajorityResource(Item majority) {
-        for (ItemHelper.WoodItems woodItems : ItemHelper.getWoodItems()) {
+        for (ItemHelper.WoodItems woodItems : ItemHelper.woodMap.values()) {
             if (woodItems.strippedLog == majority) {
                 return _getTargetItem.apply(woodItems);
             }

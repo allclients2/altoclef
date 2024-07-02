@@ -43,9 +43,11 @@ public class ConstructIronGolemTask extends Task {
             return new CataloguedResourceTask(golemMaterials(mod));
         }
         if (_position == null) {
+            final BlockPos playerPos = mod.getPlayer().getBlockPos();
             for (BlockPos pos : WorldHelper.scanRegion(mod,
-                    new BlockPos(mod.getPlayer().getBlockX(), 64, mod.getPlayer().getBlockZ()),
-                    new BlockPos(mod.getPlayer().getBlockX(), 128, mod.getPlayer().getBlockZ()))) {
+                    new BlockPos(playerPos.getX(), 64, playerPos.getZ()),
+                    new BlockPos(playerPos.getX(), 128, playerPos.getZ()))
+            ) {
                 if (mod.getWorld().getBlockState(pos).getBlock() == Blocks.AIR) {
                     _position = pos;
                     break;

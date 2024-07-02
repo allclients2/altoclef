@@ -348,22 +348,17 @@ public class Settings implements IFailableConfigFile {
     @JsonDeserialize(using = ItemDeserializer.class)
     private List<Item> throwawayItems = Arrays.asList(
             // Overworld junk
-            Items.DRIPSTONE_BLOCK,
-            Items.ROOTED_DIRT,
             Items.GRAVEL,
             Items.SAND,
             Items.DIORITE,
             Items.ANDESITE,
             Items.GRANITE,
-            Items.TUFF,
             Items.COBBLESTONE,
             Items.DIRT,
-            Items.COBBLED_DEEPSLATE,
             Items.ACACIA_LEAVES, Items.BIRCH_LEAVES, Items.DARK_OAK_LEAVES, Items.OAK_LEAVES, Items.JUNGLE_LEAVES, Items.SPRUCE_LEAVES,
-            // Nether junk, to be fair it's mostly tuned for the "beat game" task
+
             Items.NETHERRACK,
             Items.MAGMA_BLOCK,
-            Items.MOSS_BLOCK,
             Items.SOUL_SOIL,
             Items.SOUL_SAND,
             Items.NETHER_BRICKS,
@@ -374,9 +369,18 @@ public class Settings implements IFailableConfigFile {
             Items.SANDSTONE,
             Items.STONE_BRICKS,
 
+
             //Non-block
-            Items.WHEAT_SEEDS,
-            Items.RAW_COPPER
+            Items.WHEAT_SEEDS
+
+            //#if MC >= 11800
+            , Items.COBBLED_DEEPSLATE,
+            Items.MOSS_BLOCK,
+            Items.TUFF,
+            Items.DRIPSTONE_BLOCK,
+            Items.ROOTED_DIRT,
+            Items.RAW_COPPER  // <-- Also non block
+            //#endif
     );
 
     /**
@@ -387,17 +391,20 @@ public class Settings implements IFailableConfigFile {
     private List<Block> annoyingBlocks = Arrays.asList(
             Blocks.VINE,
             Blocks.NETHER_SPROUTS,
-            Blocks.CAVE_VINES,
-            Blocks.CAVE_VINES_PLANT,
             Blocks.TWISTING_VINES,
             Blocks.TWISTING_VINES_PLANT,
             Blocks.WEEPING_VINES_PLANT,
             Blocks.LADDER,
-            Blocks.BIG_DRIPLEAF,
-            Blocks.BIG_DRIPLEAF_STEM,
-            Blocks.SMALL_DRIPLEAF,
             Blocks.TALL_GRASS,
             Blocks.SWEET_BERRY_BUSH
+
+            //#if MC >= 11800
+            , Blocks.CAVE_VINES,
+            Blocks.CAVE_VINES_PLANT,
+            Blocks.BIG_DRIPLEAF,
+            Blocks.BIG_DRIPLEAF_STEM,
+            Blocks.SMALL_DRIPLEAF
+            //#endif
     );
 
     /**

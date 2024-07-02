@@ -1,5 +1,6 @@
 package adris.altoclef.trackers.storage;
 
+import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.trackers.Tracker;
 import adris.altoclef.trackers.TrackerManager;
 import adris.altoclef.util.helpers.ItemHelper;
@@ -102,9 +103,9 @@ public class InventorySubTracker extends Tracker {
 
     public List<ItemStack> getInventoryStacks(boolean includeCursor) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        if (player == null || player.getInventory() == null)
+        if (player == null || PlayerVer.getInventory(mod) == null)
             return Collections.emptyList();
-        PlayerInventory inv = player.getInventory();
+        PlayerInventory inv = PlayerVer.getInventory(mod);
         // 36 player + 1 offhand + 4 armor
         List<ItemStack> result = new ArrayList<>(41 + (includeCursor ? 1 : 0));
         if (includeCursor) {

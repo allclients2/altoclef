@@ -2,6 +2,7 @@ package adris.altoclef.control;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
+import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.helpers.InputHelper;
 import adris.altoclef.util.helpers.ItemHelper;
@@ -12,6 +13,7 @@ import adris.altoclef.util.slots.Slot;
 import adris.altoclef.util.time.TimerGame;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
 import net.minecraft.screen.slot.SlotActionType;
 
@@ -106,7 +108,7 @@ public class SlotHandler {
         if (StorageHelper.getItemStackInSlot(PlayerSlot.getEquipSlot()).getItem() == toEquip) return true;
 
         // Always equip to the second slot. First + last is occupied by baritone.
-        mod.getPlayer().getInventory().selectedSlot = 1;
+        PlayerVer.getInventory(mod).selectedSlot = 1;
 
         // If our item is in our cursor, simply move it to the hotbar.
         boolean inCursor = StorageHelper.getItemStackInSlot(CursorSlot.SLOT).getItem() == toEquip;
@@ -115,7 +117,7 @@ public class SlotHandler {
         if (!itemSlots.isEmpty()) {
             for (Slot ItemSlots : itemSlots) {
                 int hotbar = 1;
-                //_mod.getPlayer().getInventory().swapSlotWithHotbar();
+                //_PlayerVer.getInventory(mod).swapSlotWithHotbar();
                 clickSlotForce(Objects.requireNonNull(ItemSlots), inCursor ? 0 : hotbar, inCursor ? SlotActionType.PICKUP : SlotActionType.SWAP);
                 //registerSlotAction();
             }
@@ -241,7 +243,7 @@ public class SlotHandler {
 
         if (MinecraftClient.getInstance().player == null)
             return;
-        for (int i = 0; i < MinecraftClient.getInstance().player.getInventory().main.size(); ++i) {
+        for (int i = 0; i < PlayerVer.getInventory(mod).main.size(); ++i) {
             Slot slot = Slot.getFromCurrentScreenInventory(i);
             clickSlotForce(slot, 0, SlotActionType.PICKUP);
             clickSlotForce(slot, 0, SlotActionType.PICKUP);

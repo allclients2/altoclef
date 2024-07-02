@@ -10,6 +10,7 @@ import adris.altoclef.tasks.resources.wood.*;
 import adris.altoclef.tasks.squashed.CataloguedResourceTask;
 import adris.altoclef.util.*;
 import adris.altoclef.util.helpers.ItemHelper;
+import adris.altoclef.util.publictypes.WoodType;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
@@ -22,6 +23,8 @@ import net.minecraft.util.DyeColor;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static adris.altoclef.util.helpers.ItemHelper.MATERIAL_DATA;
 
 /**
  * Contains a hardcoded list of ALL obtainable resources.
@@ -51,12 +54,9 @@ public class TaskCatalogue {
             woodTasks("log", wood -> wood.log, (wood, count) -> new MineAndCollectTask(wood.log, count, new Block[]{Block.getBlockFromItem(wood.log)}, MiningRequirement.HAND), true);
             mine("dirt", MiningRequirement.HAND, new Block[]{Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.DIRT_PATH}, Items.DIRT);
             simple("cobblestone", Items.COBBLESTONE, CollectBlockByOneTask.CollectCobblestoneTask::new).dontMineIfPresent();
-            simple("cobbled_deepslate", Items.COBBLED_DEEPSLATE, CollectBlockByOneTask.CollectCobbledDeepslateTask::new).dontMineIfPresent();
             mine("andesite", MiningRequirement.WOOD, Blocks.ANDESITE, Items.ANDESITE);
             mine("granite", MiningRequirement.WOOD, Blocks.GRANITE, Items.GRANITE);
             mine("diorite", MiningRequirement.WOOD, Blocks.DIORITE, Items.DIORITE);
-            mine("calcite", MiningRequirement.WOOD, Blocks.CALCITE, Items.CALCITE);
-            mine("tuff", MiningRequirement.WOOD, Blocks.TUFF, Items.TUFF);
             mine("netherrack", MiningRequirement.WOOD, Blocks.NETHERRACK, Items.NETHERRACK).forceDimension(Dimension.NETHER);
             mine("magma_block", MiningRequirement.WOOD, Blocks.MAGMA_BLOCK, Items.MAGMA_BLOCK).forceDimension(Dimension.NETHER);
             mine("blackstone", MiningRequirement.WOOD, Blocks.BLACKSTONE, Items.BLACKSTONE).forceDimension(Dimension.NETHER);
@@ -64,30 +64,44 @@ public class TaskCatalogue {
             mine("soul_sand", Items.SOUL_SAND).forceDimension(Dimension.NETHER);
             mine("soul_soil", Items.SOUL_SOIL).forceDimension(Dimension.NETHER);
             mine("glowstone_dust", Blocks.GLOWSTONE, Items.GLOWSTONE_DUST).forceDimension(Dimension.NETHER);
-            mine("coal", MiningRequirement.WOOD, new Block[]{Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE}, Items.COAL);
-            mine("raw_iron", MiningRequirement.STONE, new Block[]{Blocks.IRON_ORE, Blocks.DEEPSLATE_IRON_ORE}, Items.RAW_IRON);
-            mine("raw_gold", MiningRequirement.IRON, new Block[]{Blocks.GOLD_ORE, Blocks.DEEPSLATE_GOLD_ORE}, Items.RAW_GOLD);
-            mine("raw_copper", MiningRequirement.STONE, new Block[]{Blocks.COPPER_ORE, Blocks.DEEPSLATE_COPPER_ORE}, Items.RAW_COPPER);
-            mine("diamond", MiningRequirement.IRON, new Block[]{Blocks.DIAMOND_ORE, Blocks.DEEPSLATE_DIAMOND_ORE}, Items.DIAMOND);
-            mine("emerald", MiningRequirement.IRON, new Block[]{Blocks.EMERALD_ORE, Blocks.DEEPSLATE_EMERALD_ORE}, Items.EMERALD);
-            mine("redstone", MiningRequirement.IRON, new Block[]{Blocks.REDSTONE_ORE, Blocks.DEEPSLATE_REDSTONE_ORE}, Items.REDSTONE);
-            mine("lapis_lazuli", MiningRequirement.STONE, new Block[]{Blocks.LAPIS_ORE, Blocks.DEEPSLATE_LAPIS_ORE}, Items.LAPIS_LAZULI);
+
+            //#if MC>=11800
+            mine("calcite", MiningRequirement.WOOD, Blocks.CALCITE, Items.CALCITE);
+            mine("tuff", MiningRequirement.WOOD, Blocks.TUFF, Items.TUFF);
+            simple("cobbled_deepslate", Items.COBBLED_DEEPSLATE, CollectBlockByOneTask.CollectCobbledDeepslateTask::new).dontMineIfPresent();
+            //#endif
+
+            // mine("emerald", MiningRequirement.IRON, new Block[]{Blocks.EMERALD_ORE, Blocks.DEEPSLATE_EMERALD_ORE}, Items.EMERALD);
+
+            // Specify Ores from ItemHelper info..
+            MATERIAL_DATA.forEach((oreType, materialData) -> {
+                if (materialData.rawItem != null) {
+                    mine(ItemHelper.trimItemName(materialData.rawItem.getTranslationKey()).toLowerCase(), materialData.miningRequirement, Arrays.stream(materialData.oreBlocks).map(data -> data.oreBlock).toArray(Block[]::new), materialData.rawItem);
+                }
+            });
+
             alias("lapis", "lapis_lazuli");
+
+            //#if MC >= 11700
             mine("amethyst_shard", MiningRequirement.WOOD, Blocks.AMETHYST_CLUSTER, Items.AMETHYST_SHARD);
             mine("pointed_dripstone", MiningRequirement.WOOD, Blocks.POINTED_DRIPSTONE, Items.POINTED_DRIPSTONE);
+            simple("amethyst_block", Items.AMETHYST_BLOCK, CollectAmethystBlockTask::new).dontMineIfPresent();
+            simple("dripstone_block", Items.DRIPSTONE_BLOCK, CollectDripstoneBlockTask::new).dontMineIfPresent();
+            //#endif
+
             mine("sand", Blocks.SAND, Items.SAND);
             mine("red_sand", Blocks.RED_SAND, Items.RED_SAND);
             mine("gravel", Blocks.GRAVEL, Items.GRAVEL);
             mine("clay_ball", Blocks.CLAY, Items.CLAY_BALL);
             mine("ancient_debris", MiningRequirement.DIAMOND, Blocks.ANCIENT_DEBRIS, Items.ANCIENT_DEBRIS).forceDimension(Dimension.NETHER);
             mine("gilded_blackstone", MiningRequirement.STONE, Blocks.GILDED_BLACKSTONE, Items.GILDED_BLACKSTONE).forceDimension(Dimension.NETHER);
+
             mine("oak_sapling", Blocks.OAK_LEAVES, Items.OAK_SAPLING);
             mine("spruce_sapling", Blocks.SPRUCE_LEAVES, Items.SPRUCE_SAPLING);
             mine("birch_sapling", Blocks.BIRCH_LEAVES, Items.BIRCH_SAPLING);
             mine("jungle_sapling", Blocks.JUNGLE_LEAVES, Items.JUNGLE_SAPLING);
             mine("acacia_sapling", Blocks.ACACIA_LEAVES, Items.ACACIA_SAPLING);
             mine("dark_oak_sapling", Blocks.DARK_OAK_LEAVES, Items.DARK_OAK_SAPLING);
-
             //#if MC>=11900
             mine("mangrove_propagule", Blocks.MANGROVE_PROPAGULE, Items.MANGROVE_PROPAGULE);
             mine("cherry_sapling", Blocks.CHERRY_LEAVES, Items.CHERRY_SAPLING);
@@ -97,8 +111,6 @@ public class TaskCatalogue {
             simple("sandstone", Items.SANDSTONE, CollectSandstoneTask::new).dontMineIfPresent();
             simple("red_sandstone", Items.RED_SANDSTONE, CollectRedSandstoneTask::new).dontMineIfPresent();
             simple("coarse_dirt", Items.COARSE_DIRT, CollectCoarseDirtTask::new).dontMineIfPresent();
-            simple("amethyst_block", Items.AMETHYST_BLOCK, CollectAmethystBlockTask::new).dontMineIfPresent();
-            simple("dripstone_block", Items.DRIPSTONE_BLOCK, CollectDripstoneBlockTask::new).dontMineIfPresent();
             simple("flint", Items.FLINT, CollectFlintTask::new);
             simple("obsidian", Items.OBSIDIAN, CollectObsidianTask::new).dontMineIfPresent();
             simple("wool", ItemHelper.WOOL, CollectWoolTask::new);
@@ -115,8 +127,11 @@ public class TaskCatalogue {
             mob("slime_ball", Items.SLIME_BALL, SlimeEntity.class);
             mob("wither_skeleton_skull", Items.WITHER_SKELETON_SKULL, WitherSkeletonEntity.class).forceDimension(Dimension.NETHER);
             mob("ink_sac", Items.INK_SAC, SquidEntity.class); // Warning, this probably won't work.
-            mob("glow_ink_sac", Items.GLOW_INK_SAC, GlowSquidEntity.class); // Warning, this probably won't work.
             mob("string", Items.STRING, SpiderEntity.class); // Warning, this probably won't work.
+            //#if MC >= 11800
+            mob("glow_ink_sac", Items.GLOW_INK_SAC, GlowSquidEntity.class); // Warning, this probably won't work.
+            //#endif
+
             mine("sugar_cane", Items.SUGAR_CANE);
             mine("brown_mushroom", MiningRequirement.HAND, new Block[]{Blocks.BROWN_MUSHROOM, Blocks.BROWN_MUSHROOM_BLOCK}, Items.BROWN_MUSHROOM);
             mine("red_mushroom", MiningRequirement.HAND, new Block[]{Blocks.RED_MUSHROOM, Blocks.RED_MUSHROOM_BLOCK}, Items.RED_MUSHROOM);
@@ -135,27 +150,24 @@ public class TaskCatalogue {
             mine("warped_wart_block", MiningRequirement.HAND, Blocks.WARPED_WART_BLOCK, Items.WARPED_WART_BLOCK).forceDimension(Dimension.NETHER);
             mine("shroomlight", MiningRequirement.HAND, Blocks.SHROOMLIGHT, Items.SHROOMLIGHT).forceDimension(Dimension.NETHER);
             simple("blaze_rod", Items.BLAZE_ROD, CollectBlazeRodsTask::new).forceDimension(Dimension.NETHER); // Not super simple tbh lmao
-            //simple("quartz", Items.QUARTZ, CollectQuartzTask::new);
             mine("quartz", MiningRequirement.WOOD, Blocks.NETHER_QUARTZ_ORE, Items.QUARTZ).forceDimension(Dimension.NETHER);
             simple("cocoa_beans", Items.COCOA_BEANS, CollectCocoaBeansTask::new);
             shear("cobweb", Blocks.COBWEB, Items.COBWEB).dontMineIfPresent();
             colorfulTasks("wool", color -> color.wool, (color, count) -> new CollectWoolTask(color.color, count));
+
             // Misc greenery
             shear("leaves", ItemHelper.itemsToBlocks(ItemHelper.LEAVES), ItemHelper.LEAVES).dontMineIfPresent();
-            for (CataloguedResource resource : woodTasks(
-                    "leaves",
-                    woodItems -> woodItems.leaves,
-                    (woodItems, count) -> {
-                        if (woodItems.isNetherWood()) {
-                            // Nether "leaves" aren't sheared, they can simply be mined.
-                            return new MineAndCollectTask(woodItems.leaves, count, new Block[]{Block.getBlockFromItem(woodItems.leaves)}, MiningRequirement.HAND).forceDimension(Dimension.NETHER);
-                        } else {
-                            return new ShearAndCollectBlockTask(woodItems.leaves, count, Block.getBlockFromItem(woodItems.leaves));
-                        }
-                    })
-            ) {
+            for (CataloguedResource resource : woodTasks("leaves", woodItems -> woodItems.leaves, (woodItems, count) -> {
+                if (woodItems.isNetherWood()) {
+                    // Nether "leaves" aren't sheared, they can simply be mined.
+                    return new MineAndCollectTask(woodItems.leaves, count, new Block[]{Block.getBlockFromItem(woodItems.leaves)}, MiningRequirement.HAND).forceDimension(Dimension.NETHER);
+                } else {
+                    return new ShearAndCollectBlockTask(woodItems.leaves, count, Block.getBlockFromItem(woodItems.leaves));
+                }
+            })) {
                 resource.dontMineIfPresent();
             }
+
             mine("bamboo", Blocks.BAMBOO, Items.BAMBOO);
             shear("vine", Blocks.VINE, Items.VINE).dontMineIfPresent();
             shear("grass", Blocks.SHORT_GRASS, Items.SHORT_GRASS).dontMineIfPresent();
@@ -164,7 +176,10 @@ public class TaskCatalogue {
             shear("fern", Blocks.FERN, Items.FERN).dontMineIfPresent();
             shear("large_fern", Blocks.LARGE_FERN, Items.LARGE_FERN).dontMineIfPresent();
             shear("dead_bush", Blocks.DEAD_BUSH, Items.DEAD_BUSH).dontMineIfPresent();
+            //#if MC >= 11800
             shear("glow_lichen", Blocks.GLOW_LICHEN, Items.GLOW_LICHEN).dontMineIfPresent();
+            //#endif
+
             // Flowers
             simple("flower", ItemHelper.FLOWER, CollectFlowerTask::new);
             mine("allium", Items.ALLIUM);
@@ -215,20 +230,22 @@ public class TaskCatalogue {
                 woodCatalogue.dontMineIfPresent();
             }
             simple("stripped_logs", ItemHelper.STRIPPED_LOG, CollectStrippedLogTask::new).dontMineIfPresent();
-            for (CataloguedResource woodCatalogue : woodTasks("stripped_logs", wood -> wood.strippedLog,
-                    (wood, count) -> new CollectStrippedLogTask(wood.strippedLog, count))) {
+            for (CataloguedResource woodCatalogue : woodTasks("stripped_logs", wood -> wood.strippedLog, (wood, count) -> new CollectStrippedLogTask(wood.strippedLog, count))) {
                 woodCatalogue.dontMineIfPresent();
             }
             // shapedRecipe2x2("stick", Items.STICK, 4, p, o, p, o);
             simple("stick", Items.STICK, CollectSticksTask::new);
             smelt("stone", Items.STONE, "cobblestone").dontMineIfPresent();
+
+            //#if MC>=11800
             smelt("deepslate", Items.DEEPSLATE, "cobbled_deepslate").dontMineIfPresent();
+            smelt("smooth_basalt", Items.SMOOTH_BASALT, "basalt");
+            //#endif
+
             smelt("smooth_stone", Items.SMOOTH_STONE, "stone");
             smelt("smooth_quartz", Items.SMOOTH_QUARTZ, "quartz_block");
-            smelt("smooth_basalt", Items.SMOOTH_BASALT, "basalt");
             smelt("glass", Items.GLASS, "sand").dontMineIfPresent();
             simple("iron_ingot", Items.IRON_INGOT, CollectIronIngotTask::new).forceDimension(Dimension.OVERWORLD);
-            smelt("copper_ingot", Items.COPPER_INGOT, "raw_copper", Items.COPPER_ORE);
             smelt("charcoal", Items.CHARCOAL, "log");
             smelt("brick", Items.BRICK, "clay_ball");
             smelt("nether_brick", Items.NETHER_BRICK, "netherrack");
@@ -236,10 +253,15 @@ public class TaskCatalogue {
             simple("gold_ingot", Items.GOLD_INGOT, CollectGoldIngotTask::new).anyDimension(); // accounts for nether too
             shapedRecipe3x3Block("iron_block", Items.IRON_BLOCK, "iron_ingot");
             shapedRecipe3x3Block("gold_block", Items.GOLD_BLOCK, "gold_ingot");
+
+            //#if MC>=11700
+            smelt("copper_ingot", Items.COPPER_INGOT, "raw_copper", Items.COPPER_ORE);
             shapedRecipe3x3Block("copper_block", Items.COPPER_BLOCK, "copper_ingot");
             shapedRecipe3x3Block("raw_iron_block", Items.RAW_IRON_BLOCK, "raw_iron");
             shapedRecipe3x3Block("raw_gold_block", Items.RAW_GOLD_BLOCK, "raw_gold");
             shapedRecipe3x3Block("raw_copper_block", Items.RAW_COPPER_BLOCK, "raw_copper");
+            //#endif
+
             shapedRecipe3x3Block("diamond_block", Items.DIAMOND_BLOCK, "diamond");
             shapedRecipe3x3Block("redstone_block", Items.REDSTONE_BLOCK, "redstone");
             shapedRecipe3x3Block("coal_block", Items.COAL_BLOCK, "coal");
@@ -273,10 +295,6 @@ public class TaskCatalogue {
             shapedRecipe2x2Block("polished_blackstone", Items.POLISHED_BLACKSTONE, 4, "blackstone");
             shapedRecipe2x2Block("polished_blackstone_bricks", Items.POLISHED_BLACKSTONE_BRICKS, 4, "polished_blackstone");
             shapedRecipe2x2Block("polished_basalt", Items.POLISHED_BASALT, 4, "basalt");
-            shapedRecipe2x2Block("polished_deepslate", Items.POLISHED_DEEPSLATE, 4, "cobbled_deepslate");
-            shapedRecipe2x2Block("deepslate_bricks", Items.DEEPSLATE_BRICKS, 4, "polished_deepslate");
-            shapedRecipe2x2Block("deepslate_tiles", Items.DEEPSLATE_TILES, 4, "deepslate_bricks");
-            shapedRecipe2x2Block("cut_copper", Items.CUT_COPPER, 4, "copper_block");
             shapedRecipe2x2Block("cut_sandstone", Items.CUT_SANDSTONE, 4, "sandstone");
             shapedRecipe2x2Block("cut_red_sandstone", Items.CUT_RED_SANDSTONE, 4, "red_sandstone");
             shapedRecipe2x2Block("quartz_bricks", Items.QUARTZ_BRICKS, 4, "quartz_block");
@@ -289,10 +307,18 @@ public class TaskCatalogue {
             smelt("cracked_stone_bricks", Items.CRACKED_STONE_BRICKS, "stone_bricks");
             smelt("cracked_nether_bricks", Items.CRACKED_NETHER_BRICKS, "nether_bricks");
             smelt("cracked_polished_blackstone_bricks", Items.CRACKED_POLISHED_BLACKSTONE_BRICKS, "polished_blackstone_bricks");
-            smelt("cracked_deepslate_bricks", Items.CRACKED_DEEPSLATE_BRICKS, "deepslate_bricks");
-            smelt("cracked_deepslate_tiles", Items.CRACKED_DEEPSLATE_TILES, "deepslate_tiles");
             smelt("smooth_sandstone", Items.SMOOTH_SANDSTONE, "sandstone");
             smelt("smooth_red_sandstone", Items.SMOOTH_RED_SANDSTONE, "red_sandstone");
+
+            //#if MC >= 11800
+            shapedRecipe2x2Block("polished_deepslate", Items.POLISHED_DEEPSLATE, 4, "cobbled_deepslate");
+            shapedRecipe2x2Block("deepslate_bricks", Items.DEEPSLATE_BRICKS, 4, "polished_deepslate");
+            shapedRecipe2x2Block("deepslate_tiles", Items.DEEPSLATE_TILES, 4, "deepslate_bricks");
+            shapedRecipe2x2Block("cut_copper", Items.CUT_COPPER, 4, "copper_block");
+            smelt("cracked_deepslate_bricks", Items.CRACKED_DEEPSLATE_BRICKS, "deepslate_bricks");
+            smelt("cracked_deepslate_tiles", Items.CRACKED_DEEPSLATE_TILES, "deepslate_tiles");
+            //#endif
+
             {
                 String B = "nether_bricks";
                 String b = "nether_brick";
@@ -316,6 +342,7 @@ public class TaskCatalogue {
             shapedRecipe2x2("firework_rocket", Items.FIREWORK_ROCKET, 2, "gunpowder", "paper", o, o);
             shapedRecipe2x2("flower_banner_pattern", Items.FLOWER_BANNER_PATTERN, 1, "paper", "oxeye_daisy", o, o);
             simple("magma_cream", Items.MAGMA_CREAM, CollectMagmaCreamTask::new);
+
             // Slabs + Stairs + Walls
             shapedRecipeSlab("cobblestone_slab", Items.COBBLESTONE_SLAB, "cobblestone");
             shapedRecipeStairs("cobblestone_stairs", Items.COBBLESTONE_STAIRS, "cobblestone");
@@ -378,6 +405,14 @@ public class TaskCatalogue {
             shapedRecipeSlab("polished_blackstone_brick_slab", Items.POLISHED_BLACKSTONE_BRICK_SLAB, "polished_blackstone_bricks");
             shapedRecipeStairs("polished_blackstone_brick_stairs", Items.POLISHED_BLACKSTONE_BRICK_STAIRS, "polished_blackstone_bricks");
             shapedRecipeWall("polished_blackstone_brick_wall", Items.POLISHED_BLACKSTONE_BRICK_WALL, "polished_blackstone_bricks");
+            shapedRecipe2x2("chiseled_sandstone", Items.CHISELED_SANDSTONE, 1, "sandstone_slab", o, "sandstone_slab", o);
+            shapedRecipe2x2("chiseled_red_sandstone", Items.CHISELED_RED_SANDSTONE, 1, "red_sandstone_slab", o, "red_sandstone_slab", o);
+            shapedRecipe2x2("chiseled_stone_bricks", Items.CHISELED_STONE_BRICKS, 1, "stone_brick_slab", o, "stone_brick_slab", o);
+            shapedRecipe2x2("chiseled_nether_bricks", Items.CHISELED_NETHER_BRICKS, 1, "nether_brick_slab", o, "nether_brick_slab", o);
+            shapedRecipe2x2("chiseled_quartz_block", Items.CHISELED_QUARTZ_BLOCK, 1, "quartz_slab", o, "quartz_slab", o);
+
+            //#if MC>=11800
+            shapedRecipe2x2("chiseled_deepslate", Items.CHISELED_DEEPSLATE, 1, "cobbled_deepslate_slab", o, "cobbled_deepslate_slab", o);
             shapedRecipeSlab("cut_copper_slab", Items.CUT_COPPER_SLAB, "cut_copper");
             shapedRecipeStairs("cut_copper_stairs", Items.CUT_COPPER_STAIRS, "cut_copper");
             shapedRecipeSlab("cobbled_deepslate_slab", Items.COBBLED_DEEPSLATE_SLAB, "cobbled_deepslate");
@@ -392,12 +427,8 @@ public class TaskCatalogue {
             shapedRecipeSlab("deepslate_tile_slab", Items.DEEPSLATE_TILE_SLAB, "deepslate_tiles");
             shapedRecipeStairs("deepslate_tile_stairs", Items.DEEPSLATE_TILE_STAIRS, "deepslate_tiles");
             shapedRecipeWall("deepslate_tile_wall", Items.DEEPSLATE_TILE_WALL, "deepslate_tiles");
-            shapedRecipe2x2("chiseled_sandstone", Items.CHISELED_SANDSTONE, 1, "sandstone_slab", o, "sandstone_slab", o);
-            shapedRecipe2x2("chiseled_red_sandstone", Items.CHISELED_RED_SANDSTONE, 1, "red_sandstone_slab", o, "red_sandstone_slab", o);
-            shapedRecipe2x2("chiseled_stone_bricks", Items.CHISELED_STONE_BRICKS, 1, "stone_brick_slab", o, "stone_brick_slab", o);
-            shapedRecipe2x2("chiseled_nether_bricks", Items.CHISELED_NETHER_BRICKS, 1, "nether_brick_slab", o, "nether_brick_slab", o);
-            shapedRecipe2x2("chiseled_quartz_block", Items.CHISELED_QUARTZ_BLOCK, 1, "quartz_slab", o, "quartz_slab", o);
-            shapedRecipe2x2("chiseled_deepslate", Items.CHISELED_DEEPSLATE, 1, "cobbled_deepslate_slab", o, "cobbled_deepslate_slab", o);
+            //#endif
+
             /// TOOLS
             tools("wooden", "planks", Items.WOODEN_PICKAXE, Items.WOODEN_SHOVEL, Items.WOODEN_SWORD, Items.WOODEN_AXE, Items.WOODEN_HOE);
             tools("stone", "cobblestone", Items.STONE_PICKAXE, Items.STONE_SHOVEL, Items.STONE_SWORD, Items.STONE_AXE, Items.STONE_HOE);
@@ -439,7 +470,11 @@ public class TaskCatalogue {
             shapedRecipe3x3("fishing_rod", Items.FISHING_ROD, 1, o, o, s, o, s, "string", s, o, "string");
             shapedRecipe2x2("carrot_on_a_stick", Items.CARROT_ON_A_STICK, 1, "fishing_rod", "carrot", o, o);
             shapedRecipe2x2("warped_fungus_on_a_stick", Items.WARPED_FUNGUS_ON_A_STICK, 1, "fishing_rod", "warped_fungus", o, o);
+
+            //#if MC>=11800
             shapedRecipe3x3("spyglass", Items.SPYGLASS, 1, o, "amethyst_shard", o, o, "copper_ingot", o, o, "copper_ingot", o);
+            //#endif
+
             shapedRecipe3x3("glass_bottle", Items.GLASS_BOTTLE, 3, "glass", o, "glass", o, "glass", o, o, o, o);
             {
                 String l = "leather";
@@ -459,8 +494,11 @@ public class TaskCatalogue {
             {
                 String h = "honeycomb";
                 shapedRecipe2x2Block("honeycomb_block", Items.HONEYCOMB_BLOCK, h);
-                shapedRecipe2x2("candle", Items.CANDLE, 1, "string", o, h, o);
                 shapedRecipe3x3("beehive", Items.BEEHIVE, 1, p, p, p, h, h, h, p, p, p);
+
+                //#if MC>=11700
+                shapedRecipe2x2("candle", Items.CANDLE, 1, "string", o, h, o);
+                //#endif
             }
 
             // FURNITURE
@@ -556,8 +594,11 @@ public class TaskCatalogue {
                 String c = "chiseled_stone_bricks";
                 shapedRecipe3x3("lodestone", Items.LODESTONE, 1, c, c, c, c, "netherite_ingot", c, c, c, c);
             }
+
+            //#if MC>=11800
             shapedRecipe3x3("lightning_rod", Items.LIGHTNING_ROD, 1, o, "copper_ingot", o, o, "copper_ingot", o, o, "copper_ingot", o);
             shapedRecipe3x3("tinted_glass", Items.TINTED_GLASS, 2, o, "amethyst_shard", o, "amethyst_shard", "glass", "amethyst_shard", o, "amethyst_shard", o);
+            //#endif
 
             // A BUNCH OF WOODEN STUFF
             simple("wooden_stairs", ItemHelper.WOOD_STAIRS, CollectWoodenStairsTask::new);
@@ -617,7 +658,6 @@ public class TaskCatalogue {
             }
             shapedRecipe3x3("painting", Items.PAINTING, 1, s, s, s, s, "wool", s, s, s, s);
             shapedRecipe3x3("item_frame", Items.ITEM_FRAME, 1, s, s, s, s, "leather", s, s, s, s);
-            shapedRecipe2x2("glow_item_frame", Items.GLOW_ITEM_FRAME, 1, "item_frame", "glow_ink_sac", o, o);
             shapedRecipe2x2("chest_minecart", Items.CHEST_MINECART, 1, "chest", o, "minecart", o);
             shapedRecipe2x2("furnace_minecart", Items.FURNACE_MINECART, 1, "furnace", o, "minecart", o);
             shapedRecipe2x2("hopper_minecart", Items.HOPPER_MINECART, 1, "hopper", o, "minecart", o);
@@ -626,6 +666,10 @@ public class TaskCatalogue {
             alias("minecart_with_furnace", "furnace_minecart");
             alias("minecart_with_hopper", "hopper_minecart");
             alias("minecart_with_tnt", "tnt_minecart");
+
+            //#if MC>=11800
+            shapedRecipe2x2("glow_item_frame", Items.GLOW_ITEM_FRAME, 1, "item_frame", "glow_ink_sac", o, o);
+            //#endif
 
 
             /// FOOD
@@ -867,10 +911,10 @@ public class TaskCatalogue {
         return crop(name, new Item[]{match}, new Block[]{cropBlock}, new Item[]{cropSeed});
     }
 
-    private static void colorfulTasks(String baseName, Function<ItemHelper.ColorfulItems, Item> getMatch, BiFunction<ItemHelper.ColorfulItems, Integer, ResourceTask> getTask) {
+    private static void colorfulTasks(String baseName, Function<ItemHelper.ColorItems, Item> getMatch, BiFunction<ItemHelper.ColorItems, Integer, ResourceTask> getTask) {
         for (DyeColor dCol : DyeColor.values()) {
             MapColor mCol = dCol.getMapColor();
-            ItemHelper.ColorfulItems color = ItemHelper.getColorfulItems(mCol);
+            ItemHelper.ColorItems color = ItemHelper.colorMap.get(mCol);
             String prefix = color.colorName;
             put(prefix + "_" + baseName, new Item[]{getMatch.apply(color)}, count -> getTask.apply(color, count));
         }
@@ -879,7 +923,7 @@ public class TaskCatalogue {
     private static CataloguedResource[] woodTasks(Function<ItemHelper.WoodItems, String> getCatalogueName, Function<ItemHelper.WoodItems, Item> getMatch, BiFunction<ItemHelper.WoodItems, Integer, ResourceTask> getTask, boolean requireNetherForNetherStuff) {
         List<CataloguedResource> result = new ArrayList<>();
         for (WoodType woodType : WoodType.values()) {
-            ItemHelper.WoodItems woodItems = ItemHelper.getWoodItems(woodType);
+            ItemHelper.WoodItems woodItems = ItemHelper.woodMap.get(woodType);
             Item match = getMatch.apply(woodItems);
             String cataloguedName = getCatalogueName.apply(woodItems);
             if (match == null) continue;

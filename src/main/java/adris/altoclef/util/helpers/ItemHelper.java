@@ -4,7 +4,9 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.multiversion.ItemVer;
 import adris.altoclef.util.Dimension;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.types.WoodType;
+import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publictypes.OreType;
+import adris.altoclef.util.publictypes.WoodType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -18,11 +20,6 @@ import net.minecraft.item.Items;
 import net.minecraft.util.DyeColor;
 import org.jetbrains.annotations.Nullable;
 
-//#if MC>=12001
-//#else
-//$$ import net.minecraft.tag.TagKey;
-//$$ import net.minecraft.tag.BlockTags;
-//#endif
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -34,71 +31,108 @@ import java.util.stream.Stream;
  */
 public class ItemHelper {
 
-    // TODO: add NETHER_GOLD_ORE, and netherite, which have to be crafted to get thier raw drop..
+    // TODO: add NETHER_GOLD_ORE, and netherite, which have to be crafted to get their raw drop..
     // Ore Distribution sources: https://www.reddit.com/r/Minecraft/comments/rej0ch/best_y_levels_for_each_ore_in_118_validated_by/, https://www.gamertweak.com/minecraft-1-18-ore-distribution/, https://www.planetminecraft.com/blog/a-good-enough-guide-to-ore-distribution-in-minecraft-1-18/
-    public static final Map<Item, MaterialData> dropToMaterialData = new HashMap<>() {
+    public static final Map<OreType, MaterialData> MATERIAL_DATA = new HashMap<>() {
         {
-            put(Items.STONE, new MaterialData(
+            put(OreType.STONE, new MaterialData(
                     new OreBlockData[]{
                             new OreBlockData(Blocks.STONE, new OreDistribution(256, 50, 0)),
+                            //#if MC>=11800
                             new OreBlockData(Blocks.DEEPSLATE, new OreDistribution(0, -20, -64))
-                    }, Items.COAL
+                            //#endif
+                    }, MiningRequirement.WOOD, Items.STONE
             ));
-            put(Items.COAL, new MaterialData(
+            put(OreType.COAL, new MaterialData(
                     new OreBlockData[]{
                             new OreBlockData(Blocks.COAL_ORE, new OreDistribution(256, 95, 0)),
+                            //#if MC>=11800
                             new OreBlockData(Blocks.DEEPSLATE_COAL_ORE, new OreDistribution(0, -8, -64))
-                    }, Items.COAL
+                            //#endif
+                    }, MiningRequirement.WOOD, Items.COAL
             ));
-            put(Items.RAW_IRON, new MaterialData(
+            put(OreType.IRON, new MaterialData(
                     new OreBlockData[]{
                             new OreBlockData(Blocks.IRON_ORE, new OreDistribution(256, 16, -64)),
+                            //#if MC>=11800
                             new OreBlockData(Blocks.DEEPSLATE_IRON_ORE, new OreDistribution(16, 16, -64))
-                    }, Items.RAW_IRON, Items.IRON_INGOT, IRON_ARMORS, IRON_TOOLS
+                            //#endif
+                    }, MiningRequirement.STONE,
+                    //#if MC>=11800
+                    Items.RAW_IRON,
+                    //#else
+                    //$$ Items.IRON_ORE,
+                    //#endif
+                    Items.IRON_INGOT, IRON_ARMORS, IRON_TOOLS
             ));
-            put(Items.RAW_COPPER, new MaterialData(
+            put(OreType.GOLD, new MaterialData(
+                    new OreBlockData[]{
+                            new OreBlockData(Blocks.GOLD_ORE, new OreDistribution(256, -16, -64)),
+                            //#if MC>=11800
+                            new OreBlockData(Blocks.DEEPSLATE_GOLD_ORE, new OreDistribution(-16, -16, -64)),
+                            //#endif
+                            // This drops gold nuggets! --> new OreBlockData(Blocks.NETHER_GOLD_ORE, new OreDistribution(256, 32, 0, Dimension.NETHER))
+                    }, MiningRequirement.IRON,
+                    //#if MC>=11800
+                    Items.RAW_GOLD,
+                    //#else
+                    //$$ Items.GOLD_ORE,
+                    //#endif
+                    Items.GOLD_INGOT, GOLDEN_ARMORS, GOLDEN_TOOLS
+            ));
+            put(OreType.DIAMOND, new MaterialData(
+                    new OreBlockData[]{
+                            new OreBlockData(Blocks.DIAMOND_ORE, new OreDistribution(16, -59, -64)),
+                            //#if MC>=11800
+                            new OreBlockData(Blocks.DEEPSLATE_DIAMOND_ORE, new OreDistribution(-59, -59, -64))
+                            //#endif
+                    }, MiningRequirement.IRON, Items.DIAMOND, DIAMOND_ARMORS, DIAMOND_TOOLS
+            ));
+            put(OreType.REDSTONE, new MaterialData(
+                    new OreBlockData[]{
+                            new OreBlockData(Blocks.REDSTONE_ORE, new OreDistribution(16, -59, -64)),
+                            //#if MC>=11800
+                            new OreBlockData(Blocks.DEEPSLATE_REDSTONE_ORE, new OreDistribution(-59, -59, -64))
+                            //#endif
+                    }, MiningRequirement.IRON, Items.REDSTONE
+            ));
+            put(OreType.LAPIS_LAZULI, new MaterialData(
+                    new OreBlockData[]{
+                            new OreBlockData(Blocks.LAPIS_ORE, new OreDistribution(64, 0, -64)),
+                            //#if MC>=11800
+                            new OreBlockData(Blocks.DEEPSLATE_LAPIS_ORE, new OreDistribution(0, 0, -64))
+                            //#endif
+                    }, MiningRequirement.STONE, Items.LAPIS_LAZULI
+            ));
+            put(OreType.QUARTZ, new MaterialData(
+                    new OreBlockData[]{
+                            new OreBlockData(Blocks.NETHER_QUARTZ_ORE, new OreDistribution(117, 20, 10, Dimension.NETHER))
+                    }, MiningRequirement.WOOD, Items.QUARTZ
+            ));
+            put(OreType.EMERALD, new MaterialData(
+                    new OreBlockData[]{
+                            new OreBlockData(Blocks.EMERALD_ORE, new OreDistribution(256, 224, -16))
+                    }, MiningRequirement.IRON, Items.EMERALD
+            ));
+            //#if MC>=11800
+            put(OreType.COPPER, new MaterialData(
                     new OreBlockData[]{
                             new OreBlockData(Blocks.COPPER_ORE, new OreDistribution(112, 48, -16)),
                             new OreBlockData(Blocks.DEEPSLATE_COPPER_ORE, new OreDistribution(48, 48, -16))
-                    }, Items.RAW_COPPER, Items.COPPER_INGOT
+                    }, MiningRequirement.STONE, Items.RAW_COPPER, Items.COPPER_INGOT
             ));
-            put(Items.RAW_GOLD, new MaterialData(
-                    new OreBlockData[]{
-                            new OreBlockData(Blocks.GOLD_ORE, new OreDistribution(256, -16, -64)),
-                            new OreBlockData(Blocks.DEEPSLATE_GOLD_ORE, new OreDistribution(-16, -16, -64)),
-                            // This drops gold nuggets! --> new OreBlockData(Blocks.NETHER_GOLD_ORE, new OreDistribution(256, 32, 0, Dimension.NETHER))
-                    }, Items.RAW_GOLD, Items.GOLD_INGOT, GOLDEN_ARMORS, GOLDEN_TOOLS
-            ));
-            put(Items.DIAMOND, new MaterialData(
-                    new OreBlockData[]{
-                            new OreBlockData(Blocks.DIAMOND_ORE, new OreDistribution(16, -59, -64)),
-                            new OreBlockData(Blocks.DEEPSLATE_DIAMOND_ORE, new OreDistribution(-59, -59, -64))
-                    }, Items.DIAMOND, DIAMOND_ARMORS, DIAMOND_TOOLS
-            ));
-            put(Items.REDSTONE, new MaterialData(
-                    new OreBlockData[]{
-                            new OreBlockData(Blocks.REDSTONE_ORE, new OreDistribution(16, -59, -64)),
-                            new OreBlockData(Blocks.DEEPSLATE_REDSTONE_ORE, new OreDistribution(-59, -59, -64))
-                    }, Items.REDSTONE
-            ));
-            put(Items.LAPIS_LAZULI, new MaterialData(
-                    new OreBlockData[]{
-                            new OreBlockData(Blocks.LAPIS_ORE, new OreDistribution(64, 0, -64)),
-                            new OreBlockData(Blocks.DEEPSLATE_LAPIS_ORE, new OreDistribution(0, 0, -64))
-                    }, Items.LAPIS_LAZULI
-            ));
-            put(Items.QUARTZ, new MaterialData(
-                    new OreBlockData[]{
-                            new OreBlockData(Blocks.NETHER_QUARTZ_ORE, new OreDistribution(117, 20, 10, Dimension.NETHER))
-                    }, Items.QUARTZ
-            ));
-            put(Items.EMERALD, new MaterialData(
-                    new OreBlockData[]{
-                            new OreBlockData(Blocks.EMERALD_ORE, new OreDistribution(256, 224, -16))
-                    }, Items.EMERALD
-            ));
+            //#endif
         }
     };
+
+    public static Map<Item, OreType> droptoOreType = Collections.unmodifiableMap(new HashMap<>() {
+        {
+            MATERIAL_DATA.forEach((oreType, materialData) -> {
+                put(materialData.rawItem, oreType);
+            });
+        }
+    });
+
 
     // This is kinda jank ngl
     public static final Map<MapColor, ColorItems> colorMap = new HashMap<MapColor, ColorItems>() {
@@ -171,12 +205,17 @@ public class ItemHelper {
         }
         //#else
         //$$ void makeWoodType(WoodType type, String prefix, Item planks, Item log, Item strippedLog, Item strippedWood, Item wood, Item sign, Item door, Item button, Item stairs, Item slab, Item fence, Item fenceGate, Item boat, Item sapling, Item leaves, Item pressurePlate, Item trapdoor) {
-        //$$     put(type, new WoodItems(prefix, planks, log, strippedLog, strippedWood, wood, sign, door, button, stairs, slab, fence, fenceGate, boat, sapling, leaves, pressurePlate, trapdoor));
+        //$$     put(type, new WoodItems(prefix, planks, log, strippedLog, strippedWood, wood, sign, door, button, stairs, slab, fence, fenceGate, boat, sapling, leaves, pressurePlate, trapdoor, null));
         //$$ }
         //#endif
     };
 
-    public static final Block[] ORES = dropToMaterialData.values().stream() // This took me a long time....
+    public static final Block[] ORES = MATERIAL_DATA.values().stream() // This took me a long time....
+            .flatMap(materialData -> Arrays.stream(materialData.oreBlocks))
+            .map(oreBlockData -> oreBlockData.oreBlock)
+            .toArray(Block[]::new);
+
+    public static final Block[] DROP_TO_ORE = MATERIAL_DATA.values().stream() // This took me a long time....
             .flatMap(materialData -> Arrays.stream(materialData.oreBlocks))
             .map(oreBlockData -> oreBlockData.oreBlock)
             .toArray(Block[]::new);
@@ -276,16 +315,33 @@ public class ItemHelper {
             Items.SKELETON_SKULL, Items.SLIME_BALL, Items.STRING, Items.SPIDER_EYE,
             Items.GLASS_BOTTLE, Items.GLOWSTONE_DUST, Items.REDSTONE, Items.STICK, Items.SUGAR, Items.POTION,
             Items.NETHER_STAR, Items.COAL, Items.WITHER_SKELETON_SKULL, Items.GHAST_TEAR, Items.IRON_INGOT,
-            Items.CARROT, Items.POTATO, Items.BAKED_POTATO, Items.COPPER_INGOT,
+            Items.CARROT, Items.POTATO, Items.BAKED_POTATO,
+            //#if MC >= 11800
+            Items.COPPER_INGOT,
+            //#endif
             //#if MC >= 11900
-            Items.SCULK_CATALYST
+            //$$ Items.SCULK_CATALYST
             //#endif
     };
 
     //TODO: Add to useless items class
     public static final Item[] DIRTS = new Item[]{
-            Items.DIRT, Items.DIRT_PATH, Items.COARSE_DIRT, Items.ROOTED_DIRT
+            Items.DIRT, Items.DIRT_PATH, Items.COARSE_DIRT
+            //#if MC >= 11800
+            , Items.ROOTED_DIRT
+            //#endif
     };
+
+    public static final Item[] BUCKETS = new Item[] {
+            Items.BUCKET, Items.WATER_BUCKET, Items.LAVA_BUCKET
+            //#if MC >= 11700
+            , Items.AXOLOTL_BUCKET
+            //#endif
+            //#if MC >= 11800
+            , Items.POWDER_SNOW_BUCKET
+            //#endif
+    };
+
 
     public static final Item[] FLOWER = new Item[]{Items.ALLIUM, Items.AZURE_BLUET, Items.BLUE_ORCHID, Items.CORNFLOWER, Items.DANDELION, Items.LILAC, Items.LILY_OF_THE_VALLEY, Items.ORANGE_TULIP, Items.OXEYE_DAISY, Items.PINK_TULIP, Items.POPPY, Items.PEONY, Items.RED_TULIP, Items.ROSE_BUSH, Items.SUNFLOWER, Items.WHITE_TULIP};
 
@@ -316,30 +372,27 @@ public class ItemHelper {
     private static final Map<Item, Item> oreToDrop = new HashMap<>() {
         {
             put(Items.COAL_ORE, Items.COAL);
+            put(Items.IRON_ORE, Items.IRON_INGOT);
+            put(Items.LAPIS_ORE, Items.LAPIS_LAZULI);
+            put(Items.GOLD_ORE, Items.GOLD_INGOT);
+            put(Items.DIAMOND_ORE, Items.DIAMOND);
+            put(Items.REDSTONE_ORE, Items.REDSTONE);
+            //#if MC >= 11800
+            put(Items.DEEPSLATE_IRON_ORE, Items.IRON_INGOT);
+            put(Items.DEEPSLATE_LAPIS_ORE, Items.LAPIS_LAZULI);
+            put(Items.DEEPSLATE_GOLD_ORE, Items.GOLD_INGOT);
+            put(Items.DEEPSLATE_DIAMOND_ORE, Items.DIAMOND);
             put(Items.DEEPSLATE_COAL_ORE, Items.COAL);
             put(Items.COPPER_ORE, Items.COPPER_INGOT);
             put(Items.DEEPSLATE_COPPER_ORE, Items.COPPER_INGOT);
-            put(Items.IRON_ORE, Items.IRON_INGOT);
-            put(Items.DEEPSLATE_IRON_ORE, Items.IRON_INGOT);
-            put(Items.LAPIS_ORE, Items.LAPIS_LAZULI);
-            put(Items.DEEPSLATE_LAPIS_ORE, Items.LAPIS_LAZULI);
-            put(Items.GOLD_ORE, Items.GOLD_INGOT);
-            put(Items.DEEPSLATE_GOLD_ORE, Items.GOLD_INGOT);
-            put(Items.DIAMOND_ORE, Items.DIAMOND);
-            put(Items.DEEPSLATE_DIAMOND_ORE, Items.DIAMOND);
-            put(Items.REDSTONE_ORE, Items.REDSTONE);
             put(Items.DEEPSLATE_REDSTONE_ORE, Items.REDSTONE);
+            //#endif
         }
     };
 
+
     private static final Map<Item, WoodType> planksToType = new HashMap<>() {
         {
-            //#if MC >= 11900
-            put(Items.CHERRY_PLANKS, WoodType.CHERRY);
-            //#endif
-            //#if MC >= 11900
-            put(Items.MANGROVE_PLANKS, WoodType.MANGROVE);
-            //#endif
             put(Items.ACACIA_PLANKS, WoodType.ACACIA);
             put(Items.BIRCH_PLANKS, WoodType.BIRCH);
             put(Items.CRIMSON_PLANKS, WoodType.CRIMSON);
@@ -348,14 +401,18 @@ public class ItemHelper {
             put(Items.JUNGLE_PLANKS, WoodType.JUNGLE);
             put(Items.SPRUCE_PLANKS, WoodType.SPRUCE);
             put(Items.WARPED_PLANKS, WoodType.WARPED);
+
+            //#if MC >= 12000
+            put(Items.CHERRY_PLANKS, WoodType.CHERRY);
+            //#endif
+            //#if MC >= 11900
+            put(Items.MANGROVE_PLANKS, WoodType.MANGROVE);
+            //#endif
         }
     };
 
     private static final Map<Item, WoodType> logsToTypeMap = new HashMap<Item, WoodType>() {
         {
-            put(Items.MANGROVE_LOG, WoodType.MANGROVE);
-            put(Items.CHERRY_LOG, WoodType.CHERRY);
-            put(Items.BAMBOO, WoodType.BAMBOO);
             put(Items.ACACIA_LOG, WoodType.ACACIA);
             put(Items.BIRCH_LOG, WoodType.BIRCH);
             put(Items.CRIMSON_STEM, WoodType.CRIMSON);
@@ -364,13 +421,19 @@ public class ItemHelper {
             put(Items.JUNGLE_LOG, WoodType.JUNGLE);
             put(Items.SPRUCE_LOG, WoodType.SPRUCE);
             put(Items.WARPED_STEM, WoodType.WARPED);
+
+            //#if MC>=12000
+            put(Items.CHERRY_LOG, WoodType.CHERRY);
+            put(Items.BAMBOO, WoodType.BAMBOO);
+            //#endif
+            //#if MC>=11900
+            put(Items.MANGROVE_LOG, WoodType.MANGROVE);
+            //#endif
         }
     };
 
     private static final Map<Item, WoodType> strippedToWoodItemsMap = new HashMap<Item, WoodType>() {
         {
-            put(Items.STRIPPED_MANGROVE_LOG, WoodType.MANGROVE);
-            put(Items.STRIPPED_CHERRY_LOG, WoodType.CHERRY);
             put(Items.STRIPPED_ACACIA_LOG, WoodType.ACACIA);
             put(Items.STRIPPED_BIRCH_LOG, WoodType.BIRCH);
             put(Items.STRIPPED_CRIMSON_STEM, WoodType.CRIMSON);
@@ -379,6 +442,13 @@ public class ItemHelper {
             put(Items.STRIPPED_JUNGLE_LOG, WoodType.JUNGLE);
             put(Items.STRIPPED_SPRUCE_LOG, WoodType.SPRUCE);
             put(Items.STRIPPED_WARPED_STEM, WoodType.WARPED);
+
+            //#if MC>=11900
+            put(Items.STRIPPED_MANGROVE_LOG, WoodType.MANGROVE);
+            //#endif
+            //#if MC>=12000
+            put(Items.STRIPPED_CHERRY_LOG, WoodType.CHERRY);
+            //#endif
         }
     };
 
@@ -476,11 +546,11 @@ public class ItemHelper {
     }
 
     public static Item logToPlanks(Item logItem) {
-        return woodMap.get(logsToTypeMap.get(logItem)).log;
+        return woodMap.get(logsToTypeMap.get(logItem)).planks;
     }
 
     public static Item planksToLog(Item plankItem) {
-        return woodMap.get(planksToType.get(plankItem)).planks;
+        return woodMap.get(planksToType.get(plankItem)).log;
     }
 
     public static Item strippedToLogs(Item logItem) {
@@ -492,6 +562,7 @@ public class ItemHelper {
     public static Optional<Item> getCookedFood(Item rawFood) {
         return Optional.ofNullable(cookableFoodMap.getOrDefault(rawFood, null));
     }
+
     public static double getFuelAmount(Item... items) {
         double total = 0;
         for (Item item : items) {
@@ -504,12 +575,15 @@ public class ItemHelper {
         }
         return total;
     }
+
     public static double getFuelAmount(ItemStack stack) {
         return getFuelAmount(stack.getItem()) * stack.getCount();
     }
+
     public static boolean isFuel(Item item) {
         return getFuelTimeMap().containsKey(item) || Arrays.stream(PLANKS).toList().contains(item) || Arrays.stream(LOGS_ALL).toList().contains(item);
     }
+
     private static Map<Item, Integer> getFuelTimeMap() {
         if (fuelTimeMap == null) {
             fuelTimeMap = AbstractFurnaceBlockEntity.createFuelTimeMap();
@@ -552,8 +626,10 @@ public class ItemHelper {
         return itemTargets;
     }
 
+
     @JsonIgnore
     private static final List<Block> woolList = Arrays.stream(itemsToBlocks(WOOL)).toList();
+
     public static boolean areShearsEffective(Block b) {
         return
                 //b.getRegistryEntry().streamTags().anyMatch(t -> t ==
@@ -570,9 +646,9 @@ public class ItemHelper {
                         || b == Blocks.NETHER_SPROUTS
                         //#if MC >= 12003
                         || b == Blocks.GRASS_BLOCK;
-                        //#else
-                        //$$ || b == Blocks.GRASS;
-                        //#endif
+        //#else
+        //$$ || b == Blocks.GRASS;
+        //#endif
     }
 
     public static boolean isStackProtected(AltoClef mod, ItemStack stack) {
@@ -701,30 +777,32 @@ public class ItemHelper {
         public final OreBlockData[] oreBlocks;
         public final Item[] armorSetItems;
         public final Item[] toolSetItems;
+        public final MiningRequirement miningRequirement;
 
 
         public final Item rawItem;
         public final Item defaultItem;
 
 
-        public MaterialData(OreBlockData[] oreBlocks, Item rawItem, Item defaultItem, Item[] armorSetItems, Item[] toolSetItems) {
+        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item rawItem, Item defaultItem, Item[] armorSetItems, Item[] toolSetItems) {
             this.rawItem = rawItem;
             this.defaultItem = defaultItem;
             this.oreBlocks = oreBlocks;
             this.armorSetItems = armorSetItems;
             this.toolSetItems = toolSetItems;
+            this.miningRequirement = miningRequirement;
         }
 
-        public MaterialData(OreBlockData[] oreBlocks, Item rawItem, Item defaultItem) {
-            this(oreBlocks, rawItem, defaultItem, null, null);
+        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item rawItem, Item defaultItem) {
+            this(oreBlocks, miningRequirement, rawItem, defaultItem, null, null);
         }
 
-        public MaterialData(OreBlockData[] oreBlocks, Item item, Item[] armorSetItems, Item[] toolSetItems) {
-            this(oreBlocks, null, item, armorSetItems, toolSetItems);
+        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item item, Item[] armorSetItems, Item[] toolSetItems) {
+            this(oreBlocks, miningRequirement, null, item, armorSetItems, toolSetItems);
         }
 
-        public MaterialData(OreBlockData[] oreBlocks, Item item) {
-            this(oreBlocks, null, item, null, null);
+        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item item) {
+            this(oreBlocks, miningRequirement, null, item, null, null);
         }
     }
 

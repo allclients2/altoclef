@@ -7,6 +7,7 @@ import adris.altoclef.commandsystem.Arg;
 import adris.altoclef.commandsystem.ArgParser;
 import adris.altoclef.commandsystem.Command;
 import adris.altoclef.commandsystem.CommandException;
+import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.tasks.entity.GiveItemToPlayerTask;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.helpers.ItemHelper;
@@ -37,8 +38,8 @@ public class GiveCommand extends Command {
             target = TaskCatalogue.getItemTarget(item, count);
         } else {
             // Unregistered item, might still be in inventory though.
-            for (int i = 0; i < mod.getPlayer().getInventory().size(); ++i) {
-                ItemStack stack = mod.getPlayer().getInventory().getStack(i);
+            for (int i = 0; i < PlayerVer.getInventory(mod).size(); ++i) {
+                ItemStack stack = PlayerVer.getInventory(mod).getStack(i);
                 if (!stack.isEmpty()) {
                     String name = ItemHelper.stripItemName(stack.getItem());
                     if (name.equals(item)) {

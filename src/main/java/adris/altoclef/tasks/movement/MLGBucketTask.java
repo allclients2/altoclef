@@ -2,6 +2,7 @@ package adris.altoclef.tasks.movement;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
+import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.Dimension;
 import adris.altoclef.util.helpers.*;
@@ -264,7 +265,7 @@ public class MLGBucketTask extends Task {
         _placedPos = null;
         // hold shift while falling.
         // Look down at first, might help
-        mod.getPlayer().setPitch(90);
+        PlayerVer.setHeadPitch(mod, 90);
     }
 
     /**
@@ -284,13 +285,17 @@ public class MLGBucketTask extends Task {
         try {
             blockBounds = s.getCollisionShape(mod.getWorld(), willLandIn).getBoundingBox();
         } catch (UnsupportedOperationException ex) {
-            blockBounds = Box.of(WorldHelper.toVec3d(willLandIn), 1, 1, 1);
+            blockBounds = boxSize(WorldHelper.toVec3d(willLandIn), 1, 1, 1);
         }
         boolean inside = mod.getPlayer().getBoundingBox().intersects(blockBounds);
         if (inside)
             mod.getInputControls().hold(Input.JUMP);
         else
             mod.getInputControls().release(Input.JUMP);
+    }
+
+    public static Box boxSize(Vec3d center, double sizeX, double sizeY, double sizeZ) {
+        return new Box(center.x - sizeX / 2.0, center.y - sizeY / 2.0, center.z - sizeZ / 2.0, center.x + sizeX / 2.0, center.y + sizeY / 2.0, center.z + sizeZ / 2.0);
     }
 
     private Optional<BlockPos> getBlockWeWillLandOn(AltoClef mod) {

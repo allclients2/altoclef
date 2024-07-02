@@ -83,7 +83,7 @@ public class EscapeFromLavaTask extends CustomBaritoneGoalTask {
 
             setDebugState("run away from lava");
 
-            BlockPos steppingPos = mod.getPlayer().getSteppingPos();
+            BlockPos steppingPos = mod.getPlayer().getBlockPos();
             if (!mod.getWorld().getBlockState(steppingPos.east()).getBlock().equals(Blocks.LAVA) ||
                     !mod.getWorld().getBlockState(steppingPos.west()).getBlock().equals(Blocks.LAVA) ||
                     !mod.getWorld().getBlockState(steppingPos.south()).getBlock().equals(Blocks.LAVA) ||
@@ -108,7 +108,7 @@ public class EscapeFromLavaTask extends CustomBaritoneGoalTask {
                         BlockHitResult blockHitResult = (BlockHitResult) result;
                         BlockPos pos = blockHitResult.getBlockPos();
 
-                        if (pos.getY() > mod.getPlayer().getSteppingPos().getY()) continue;
+                        if (pos.getY() > mod.getPlayer().getBlockPos().getY()) continue;
 
                         Direction facing = blockHitResult.getSide();
 
@@ -193,7 +193,7 @@ public class EscapeFromLavaTask extends CustomBaritoneGoalTask {
         Vec3d rotationVector = getRotationVector(pitch,yaw);
 
         Vec3d vec3d3 = cameraPos.add(rotationVector.x * maxDistance, rotationVector.y * maxDistance, rotationVector.z * maxDistance);
-        return mod.getPlayer().getWorld()
+        return mod.getWorld()
                 .raycast(
                         new RaycastContext(
                                 cameraPos, vec3d3, RaycastContext.ShapeType.OUTLINE,

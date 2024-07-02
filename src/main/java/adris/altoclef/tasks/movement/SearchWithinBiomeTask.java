@@ -3,9 +3,13 @@ package adris.altoclef.tasks.movement;
 import adris.altoclef.AltoClef;
 import adris.altoclef.tasksystem.Task;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
+import static adris.altoclef.util.helpers.WorldHelper.getBiomeAtBlockPos;
+
+//#if MC>=11800
+import net.minecraft.registry.entry.RegistryEntry;
+//#endif
 
 /**
  * Explores/Loads all chunks of a biome.
@@ -17,12 +21,19 @@ public class SearchWithinBiomeTask extends SearchChunksExploreTask {
     public SearchWithinBiomeTask(RegistryKey<Biome> toSearch) {
         _toSearch = toSearch;
     }
-
+    //#if MC>=11800
     @Override
     protected boolean isChunkWithinSearchSpace(AltoClef mod, ChunkPos pos) {
-        RegistryEntry<Biome> b = mod.getWorld().getBiome(pos.getStartPos().add(1, 1, 1));
-        return b.matchesKey(_toSearch);
+        RegistryEntry<Biome> biome = getBiomeAtBlockPos(mod.getWorld(), pos.getStartPos().add(1, 1, 1));
+        return biome.matchesKey(_toSearch);
     }
+    //#else
+    //$$  @Override
+    //$$  protected boolean isChunkWithinSearchSpace(AltoClef mod, ChunkPos pos) {
+    //$$      RegistryKey<Biome> biome = getBiomeAtBlockPos(mod.getWorld(), pos.getStartPos().add(1, 1, 1));
+    //$$      return biome.equals(_toSearch);
+    //$$  }
+    //#endif
 
     @Override
     protected boolean isEqual(Task other) {

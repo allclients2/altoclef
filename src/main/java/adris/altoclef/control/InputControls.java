@@ -1,5 +1,7 @@
 package adris.altoclef.control;
 
+import adris.altoclef.AltoClef;
+import adris.altoclef.multiversion.PlayerVer;
 import baritone.api.utils.input.Input;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
@@ -68,10 +70,10 @@ public class InputControls {
         return inputToKeyBinding(input).isPressed();
     }
 
-    public void forceLook(float yaw, float pitch) {
-        if (MinecraftClient.getInstance().player != null) {
-            MinecraftClient.getInstance().player.setYaw(yaw);
-            MinecraftClient.getInstance().player.setPitch(pitch);
+    public void forceLook(AltoClef mod, float yaw, float pitch) {
+        if (mod.getPlayer() != null) {
+            PlayerVer.setHeadYaw(mod, yaw);
+            PlayerVer.setHeadPitch(mod, pitch);
         }
     }
 

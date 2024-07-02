@@ -8,7 +8,7 @@ import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasks.resources.CollectFoodTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.trackers.storage.ItemStorageTracker;
-import adris.altoclef.util.CubeBounds;
+import adris.altoclef.util.math.CubeBounds;
 import adris.altoclef.util.progresscheck.MovementProgressChecker;
 import adris.altoclef.util.time.TimerGame;
 import baritone.api.schematic.ISchematic;

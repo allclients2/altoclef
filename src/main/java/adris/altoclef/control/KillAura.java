@@ -1,6 +1,7 @@
 package adris.altoclef.control;
 
 import adris.altoclef.AltoClef;
+import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.ItemVer;
 import adris.altoclef.util.helpers.LookHelper;
 import adris.altoclef.util.helpers.StlHelper;
@@ -12,6 +13,7 @@ import adris.altoclef.util.time.TimerGame;
 import baritone.api.Settings;
 import baritone.api.utils.input.Input;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -89,7 +91,7 @@ public class KillAura {
             if (!(entities.get() instanceof HostileEntity)
                     && (mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD))
                     && !mod.getPlayer().getItemCooldownManager().isCoolingDown(offhandItem)) {
-                LookHelper.lookAt(mod, entities.get().getEyePos());
+                LookHelper.lookAt(mod, EntityVer.getEyePos(entities.get()));
                 ItemStack shieldSlot = StorageHelper.getItemStackInSlot(PlayerSlot.OFFHAND_SLOT);
                 if (shieldSlot.getItem() != Items.SHIELD) {
                     mod.getSlotHandler().forceEquipItemToOffhand(Items.SHIELD);

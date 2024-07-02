@@ -6,7 +6,6 @@ import adris.altoclef.eventbus.events.ChunkUnloadEvent;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,6 +14,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+//#if MC>=11800
+import net.minecraft.network.packet.s2c.play.ChunkData;
+//#else
+//$$ import net.minecraft.world.biome.source.BiomeArray;
+//#endif
+
 import java.util.function.Consumer;
 
 @Mixin(ClientChunkManager.class)
@@ -22,6 +27,7 @@ public class LoadChunkMixin {
 
     /**
      * Loads a chunk from a packet and executes necessary actions.
+     *
      *
      * @param x        The x-coordinate of the chunk.
      * @param z        The z-coordinate of the chunk.
@@ -34,10 +40,16 @@ public class LoadChunkMixin {
             method = "loadChunkFromPacket",
             at = @At("RETURN")
     )
-    private void onLoadChunk(int x, int z, PacketByteBuf buf, NbtCompound nbt, Consumer<ChunkData.BlockEntityVisitor> consumer, CallbackInfoReturnable<WorldChunk> ci) {
+    //#if MC>=11800
+    private void onLoadChunk(int x, int z, PacketByteBuf buf, NbtCompound nbt, Consumer<ChunkData.BlockEntityVisitor> consumer, CallbackInfoReturnable<WorldChunk> cir) {
         // Publish a ChunkLoadEvent with the return value of the method as the argument
-        EventBus.publish(new ChunkLoadEvent(ci.getReturnValue()));
+        EventBus.publish(new ChunkLoadEvent(cir.getReturnValue()));
     }
+    //#else
+    //$$  private void onLoadChunk(int x, int z, BiomeArray biomes, PacketByteBuf buf, NbtCompound tag, int verticalStripBitmask, boolean complete, CallbackInfoReturnable<WorldChunk> cir) {
+    //$$      EventBus.publish(new ChunkLoadEvent(cir.getReturnValue()));
+    //$$  };
+    //#endif
 
     /**
      * Publishes a ChunkUnloadEvent when a chunk is unloaded.

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import adris.altoclef.control.LookAtPos;
+import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.ItemVer;
 import adris.altoclef.tasks.construction.ProjectileProtectionWallTask;
 import adris.altoclef.tasks.movement.*;
@@ -247,7 +248,7 @@ public class MobDefenseChain extends SingleTaskChain {
         CreeperEntity blowingUp = getClosestFusingCreeper(mod);
         if (blowingUp != null) {
             if ((!mod.getFoodChain().needsToEat() || Player.getHealth() < 9) && (mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD)) && !mod.getEntityTracker().entityFound(PotionEntity.class) && !Player.getItemCooldownManager().isCoolingDown(offhandItem) && mod.getClientBaritone().getPathingBehavior().isSafeToCancel() && blowingUp.getClientFuseTime(blowingUp.getFuseSpeed()) > 0.5) {
-                LookHelper.lookAt(mod, blowingUp.getEyePos());
+                LookHelper.lookAt(mod, EntityVer.getEyePos(blowingUp));
                 ItemStack shieldSlot = StorageHelper.getItemStackInSlot(PlayerSlot.OFFHAND_SLOT);
                 if (shieldSlot.getItem() != Items.SHIELD) {
                     mod.getSlotHandler().forceEquipItemToOffhand(Items.SHIELD);
@@ -286,7 +287,7 @@ public class MobDefenseChain extends SingleTaskChain {
             }, SpiderEntity.class, CaveSpiderEntity.class);
             if (entity.isPresent() && !WorldHelper.isSurroundedByHostiles(mod) && mod.getItemStorage().hasItem(Items.SHIELD) && mod.getItemStorage().hasItemInOffhand(Items.SHIELD)) {
                 if (mod.getClientBaritone().getPathingBehavior().isSafeToCancel()) {
-                    LookHelper.lookAt(mod, entity.get().getEyePos());
+                    LookHelper.lookAt(mod, EntityVer.getEyePos(entity.get()));
                     startShielding(mod);
                     doForceField(mod);
                 }
@@ -338,22 +339,7 @@ public class MobDefenseChain extends SingleTaskChain {
                         // Give each hostile a timer, if they're close for too long deal with them.
                         if (hostile.isInRange(Player, annoyingRange) && LookHelper.seesPlayer(hostile, Player, annoyingRange)) {
                             if (!closeAnnoyingEntities.containsKey(hostile)) {
-                                final boolean witherAttacking = hostile instanceof WitherEntity;
-                                final boolean endermanAttacking = hostile instanceof EndermanEntity;
-                                final boolean blazeAttacking = hostile instanceof BlazeEntity;
-                                final boolean witherSkeletonAttacking = hostile instanceof WitherSkeletonEntity;
-                                final boolean hoglinAttacking = hostile instanceof HoglinEntity;
-                                final boolean zoglinAttacking = hostile instanceof ZoglinEntity;
-                                final boolean piglinBruteAttacking = hostile instanceof PiglinBruteEntity;
-                                final boolean vindicatorAttacking = hostile instanceof VindicatorEntity;
-
-                                //#if MC>=11900
-                                final boolean wardenAttacking = hostile instanceof WardenEntity;
-                                if (blazeAttacking || witherSkeletonAttacking || hoglinAttacking || zoglinAttacking || piglinBruteAttacking || endermanAttacking || witherAttacking || vindicatorAttacking || wardenAttacking) {
-                                //#else
-                                //$$ if (blazeAttacking || witherSkeletonAttacking || hoglinAttacking || zoglinAttacking || piglinBruteAttacking || endermanAttacking || witherAttacking || vindicatorAttacking) {
-                                //#endif
-
+                                if (EntityHelper.isProbablyHostileToPlayer(mod, hostile)) {
                                     if (Player.getHealth() <= 10) {
                                         closeAnnoyingEntities.put(hostile, new TimerGame(0));
                                     } else {
@@ -629,7 +615,7 @@ public class MobDefenseChain extends SingleTaskChain {
                         if (ghastBall.isPresent() && ghast.isPresent() && runAwayTask == null
                                 && mod.getClientBaritone().getPathingBehavior().isSafeToCancel()) {
                             mod.getClientBaritone().getPathingBehavior().requestPause();
-                            LookHelper.lookAt(mod, ghast.get().getEyePos());
+                            LookHelper.lookAt(mod, EntityVer.getEyePos(ghast.get()));
                         }
                         return false;
                         // Ignore ghast balls

@@ -2,6 +2,7 @@ package adris.altoclef.tasks.resources;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
+import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.multiversion.ToolMaterialVer;
 import adris.altoclef.tasks.block.AbstractDoToClosestObjectTask;
 import adris.altoclef.tasks.construction.DestroyBlockTask;
@@ -74,7 +75,7 @@ public class MineAndCollectTask extends ResourceTask {
     @Override
     protected void onResourceStart(AltoClef mod) {
         mod.getBehaviour().push();
-        
+
 
         // We're mining, so don't throw away pickaxes.
         mod.getBehaviour().addProtectedItems(Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
@@ -109,7 +110,7 @@ public class MineAndCollectTask extends ResourceTask {
 
     @Override
     protected void onResourceStop(AltoClef mod, Task interruptTask) {
-        
+
         mod.getBehaviour().pop();
     }
 
@@ -222,7 +223,7 @@ public class MineAndCollectTask extends ResourceTask {
             }, blocks);
 
             return new Pair<>(
-                    closestBlock.map(blockPos -> blockPos.getSquaredDistance(pos)).orElse(Double.POSITIVE_INFINITY),
+                    closestBlock.map(blockPos -> MathUtilVer.getDistanceSquared(blockPos, pos)).orElse(Double.POSITIVE_INFINITY),
                     closestBlock
             );
         }

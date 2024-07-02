@@ -23,7 +23,6 @@ public class UselessItems {
                 Items.EGG,
                 Items.BONE,
                 Items.LEATHER,
-                Items.RAW_COPPER,
                 Items.WARPED_ROOTS,
                 Items.GUNPOWDER,
                 Items.MOSSY_COBBLESTONE,
@@ -36,6 +35,10 @@ public class UselessItems {
                 Items.POPPY,
                 Items.SPIDER_EYE,
                 Items.PINK_TULIP,
+
+                //#if MC>=11800
+                Items.RAW_COPPER,
+                //#endif
 
                 //#if MC>=11900
                 Items.PINK_PETALS,
@@ -51,14 +54,27 @@ public class UselessItems {
                 Items.REDSTONE,
                 Items.CRIMSON_ROOTS,
                 Items.OAK_DOOR,
-
                 Items.STRING,
                 Items.WHITE_TERRACOTTA,
                 Items.RED_TERRACOTTA,
 
+                //#if MC>=11800
                 Items.MOSS_BLOCK,
                 Items.MOSS_CARPET,
+                Items.CALCITE,
+                Items.AMETHYST_BLOCK,
+                Items.AMETHYST_CLUSTER,
+                Items.AMETHYST_SHARD,
+                Items.BUDDING_AMETHYST,
+                Items.SMOOTH_BASALT,
+                Items.FLOWERING_AZALEA,
+                Items.COPPER_INGOT,
+                Items.DRIPSTONE_BLOCK,
+                Items.TUFF,
+                Items.POINTED_DRIPSTONE,
+                //#endif
 
+                Items.YELLOW_TERRACOTTA,
                 Items.IRON_NUGGET,
                 Items.COBBLESTONE_WALL,
                 Items.COBBLESTONE_STAIRS,
@@ -66,14 +82,7 @@ public class UselessItems {
                 Items.CLAY_BALL,
                 Items.DANDELION,
                 Items.SUGAR_CANE,
-                Items.CALCITE,
-                Items.AMETHYST_BLOCK,
-                Items.AMETHYST_CLUSTER,
-                Items.AMETHYST_SHARD,
-                Items.BUDDING_AMETHYST,
-                Items.SMOOTH_BASALT,
                 Items.AZURE_BLUET,
-
                 Items.ACACIA_DOOR,
                 Items.OAK_FENCE,
                 Items.COMPOSTER,
@@ -84,10 +93,6 @@ public class UselessItems {
                 Items.SANDSTONE_WALL,
                 Items.PRISMARINE_CRYSTALS,
                 Items.SNOWBALL,
-                Items.DRIPSTONE_BLOCK,
-                Items.POINTED_DRIPSTONE,
-                Items.YELLOW_TERRACOTTA,
-                Items.TUFF,
                 Items.SPRUCE_STAIRS,
                 Items.SPRUCE_DOOR,
                 Items.SPRUCE_FENCE,
@@ -95,8 +100,6 @@ public class UselessItems {
                 Items.ORANGE_TERRACOTTA,
                 Items.HEART_OF_THE_SEA,
                 Items.GLASS_BOTTLE,
-                Items.FLOWERING_AZALEA,
-                Items.COPPER_INGOT,
                 Items.ACACIA_SLAB,
                 Items.RABBIT_HIDE,
                 Items.RABBIT_FOOT,
@@ -123,7 +126,7 @@ public class UselessItems {
         uselessItemList.addAll(Arrays.asList(ItemHelper.SAPLINGS));
 
         // Saplings
-        uselessItemList.addAll(Arrays.asList(ItemHelper.seeds));
+        uselessItemList.addAll(Arrays.asList(ItemHelper.SEEDS));
 
         if (!config.barterPearlsInsteadOfEndermanHunt) {
             uselessItemList.add(Items.GOLD_NUGGET);

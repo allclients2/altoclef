@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "adris.altoclef.mixins",
-  "compatibilityLevel": "JAVA_9",
+  "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MovementHelperMixin",
     "AbstractFurnaceScreenHandlerAccessor",
@@ -15,7 +15,6 @@
     "EntityAccessor",
     "GameOverlayMixin",
     "PersistentProjectileEntityAccessor",
-    "SlotClickMixin",
     "ToolSetMixin",
     "WorldBlockModifiedMixin"
   ],

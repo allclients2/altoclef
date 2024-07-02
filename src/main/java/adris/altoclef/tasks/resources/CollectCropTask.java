@@ -1,6 +1,8 @@
 package adris.altoclef.tasks.resources;
 
 import adris.altoclef.AltoClef;
+import adris.altoclef.multiversion.BlockVer;
+import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.tasks.block.DoToClosestBlockTask;
 import adris.altoclef.tasks.block.InteractWithBlockTask;
 import adris.altoclef.tasks.construction.DestroyBlockTask;
@@ -105,7 +107,7 @@ public class CollectCropTask extends ResourceTask {
             assert !_emptyCropland.isEmpty();
             return new DoToClosestBlockTask(
                     blockPos -> new InteractWithBlockTask(new ItemTarget(_cropSeed, 1), Direction.UP, blockPos.down(), true),
-                    pos -> _emptyCropland.stream().min(StlHelper.compareValues(block -> block.getSquaredDistance(pos))),
+                    pos -> _emptyCropland.stream().min(StlHelper.compareValues(block -> MathUtilVer.getDistanceSquared(block, pos))),
                     _emptyCropland::contains,
                     Blocks.FARMLAND); // Blocks.FARMLAND is useless to be put here
         }

@@ -28,7 +28,11 @@ public class CollectIronIngotTask extends ResourceTask {
 
     @Override
     protected Task onResourceTick(AltoClef mod) {
+        //#if MC>=11700
         return new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.IRON_INGOT, count), new ItemTarget(Items.RAW_IRON, count)));
+        //#else
+        //$$ return new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.IRON_INGOT, count), new ItemTarget(Items.IRON_ORE, count)));
+        //#endif
     }
 
     @Override

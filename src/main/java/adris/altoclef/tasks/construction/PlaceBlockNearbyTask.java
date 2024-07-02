@@ -5,6 +5,7 @@ import adris.altoclef.Debug;
 import adris.altoclef.eventbus.EventBus;
 import adris.altoclef.eventbus.Subscription;
 import adris.altoclef.eventbus.events.BlockPlaceEvent;
+import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.helpers.ItemHelper;
@@ -273,7 +274,7 @@ public class PlaceBlockNearbyTask extends Task {
                 continue;
             }
             boolean hasBelow = WorldHelper.isSolidBlock(mod, blockPos.down());
-            double distSq = blockPos.getSquaredDistance(mod.getPlayer().getPos());
+            double distSq = MathUtilVer.getDistance(blockPos, mod.getPlayer().getPos());
 
             double score = distSq + (solid ? 4 : 0) + (hasBelow ? 0 : 10) + (inside ? 3 : 0);
 

@@ -3,6 +3,7 @@ package adris.altoclef.tasks.resources;
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
+import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.tasks.entity.AbstractDoToEntityTask;
 import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasksystem.Task;
@@ -183,7 +184,7 @@ public class TradeWithPiglinsTask extends ResourceTask {
 
             if (mod.getSlotHandler().forceEquipItem(Items.GOLD_INGOT)) {
                 mod.getController().interactEntity(mod.getPlayer(), entity, Hand.MAIN_HAND);
-                LookHelper.lookAt(mod, entity.getEyePos());
+                LookHelper.lookAt(mod, EntityVer.getEyePos(entity));
                 intervalTimeout.reset();
             }
             return null;

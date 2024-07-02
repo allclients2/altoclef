@@ -3,6 +3,7 @@ package adris.altoclef.tasks.entity;
 import adris.altoclef.AltoClef;
 import adris.altoclef.chains.MobDefenseChain;
 import adris.altoclef.control.LookAtPos;
+import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.Weapons;
 import adris.altoclef.util.helpers.LookHelper;
@@ -48,10 +49,10 @@ public abstract class AbstractKillEntityTask extends AbstractDoToEntityTask {
         if (!equipWeapon(mod)) {
             float hitProg = mod.getPlayer().getAttackCooldownProgress(0);
             if (hitProg >= 1 && (mod.getPlayer().isOnGround() || mod.getPlayer().getVelocity().getY() < 0 || mod.getPlayer().isTouchingWater())) {
-                LookHelper.lookAt(mod, entity.getEyePos(), false);
+                LookHelper.lookAt(mod, EntityVer.getEyePos(entity), false);
                 mod.getControllerExtras().attack(entity);
             } else {
-                LookAtPos.lookAtPos(mod, entity.getEyePos()); // Look at them
+                LookAtPos.lookAtPos(mod, EntityVer.getEyePos(entity)); // Look at them
                 LookAtPos.updatePosLook(mod);
             }
         }

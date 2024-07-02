@@ -4,6 +4,7 @@ import adris.altoclef.Debug;
 import adris.altoclef.eventbus.EventBus;
 import adris.altoclef.eventbus.events.BlockInteractEvent;
 import adris.altoclef.eventbus.events.ScreenOpenEvent;
+import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.trackers.Tracker;
 import adris.altoclef.trackers.TrackerManager;
 import adris.altoclef.util.Dimension;
@@ -205,7 +206,7 @@ public class ContainerSubTracker extends Tracker {
                 toRemove.add(cache.getBlockPos());
                 continue;
             }
-            double dist = cache.getBlockPos().getSquaredDistance(pos);
+            double dist = MathUtilVer.getDistanceSquared(cache.getBlockPos(), pos);
             if (dist < bestDist) {
                 if (accept.test(cache)) {
                     bestDist = dist;

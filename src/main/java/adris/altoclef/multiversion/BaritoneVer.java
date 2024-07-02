@@ -25,7 +25,6 @@ public class BaritoneVer {
     }
 
     public static void canWalkOnEndPortal(AltoClef mod, boolean value) {
-        //FIXME: Any replacement for lower versions?
         //#if MC >= 12000
         mod.getExtraBaritoneSettings().canWalkOnEndPortal(value);
         //#endif

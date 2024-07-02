@@ -1,6 +1,7 @@
 package adris.altoclef.chains;
 
 import adris.altoclef.AltoClef;
+import adris.altoclef.multiversion.BlockVer;
 import adris.altoclef.tasks.entity.AbstractKillEntityTask;
 import adris.altoclef.tasksystem.TaskChain;
 import adris.altoclef.tasksystem.TaskRunner;
@@ -48,7 +49,7 @@ public class PreEquipItemChain extends SingleTaskChain {
         BlockStateInterface bsi = new BlockStateInterface(BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext());
         for (IMovement iMovement : path.movements()) {
             Movement movement = (Movement) iMovement;
-            if (movement.toBreak(bsi).stream().anyMatch(pos -> mod.getWorld().getBlockState(pos).getBlock().getHardness() > 0)
+            if (movement.toBreak(bsi).stream().anyMatch(pos -> BlockVer.getHardness(mod.getWorld().getBlockState(pos).getBlock()) > 0)
                     || !movement.toPlace(bsi).isEmpty()) return;
         }
 

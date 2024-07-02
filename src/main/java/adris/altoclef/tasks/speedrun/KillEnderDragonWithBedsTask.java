@@ -2,6 +2,7 @@ package adris.altoclef.tasks.speedrun;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
+import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.tasks.construction.DestroyBlockTask;
 import adris.altoclef.tasks.construction.PlaceBlockTask;
 import adris.altoclef.tasks.movement.GetToBlockTask;
@@ -123,8 +124,8 @@ public class KillEnderDragonWithBedsTask extends Task {
 
             if (dragonPhase.getType() == PhaseType.DYING) {
                 Debug.logMessage("Dragon is dead.");
-                if (mod.getPlayer().getPitch() != -90) {
-                    mod.getPlayer().setPitch(-90);
+                if (mod.getPlayer().getPitch(1) != -90) {
+                    PlayerVer.setHeadPitch(mod, -90);
                 }
                 dragonDead = true;
                 return null;

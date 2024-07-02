@@ -2,6 +2,8 @@ package adris.altoclef.util.helpers;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
+import adris.altoclef.multiversion.EntityVer;
+import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.util.slots.Slot;
 import baritone.api.BaritoneAPI;
 import baritone.api.utils.IPlayerContext;
@@ -272,7 +274,7 @@ public interface LookHelper {
         }
 
         // Get the world of the entity
-        World world = entity.getWorld();
+        World world = EntityVer.getWorld(entity);
 
         // Create a raycast context with the start and end points, shape type, fluid handling, and entity performing the raycast
         RaycastContext context = new RaycastContext(start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity);
@@ -302,8 +304,8 @@ public interface LookHelper {
      * @return the look rotation of the entity
      */
     static Rotation getLookRotation(Entity entity) {
-        float pitch = entity.getPitch();
-        float yaw = entity.getYaw();
+        float pitch = entity.getPitch(1);
+        float yaw = entity.getYaw(1);
         return new Rotation(yaw, pitch);
     }
 
@@ -534,8 +536,8 @@ public interface LookHelper {
             mod.getClientBaritone().getLookBehavior().updateTarget(rotation, true);
         } else {
             // Set the player's yaw and pitch manually
-            mod.getPlayer().setYaw(rotation.getYaw());
-            mod.getPlayer().setPitch(rotation.getPitch());
+            PlayerVer.setHeadYaw(mod, rotation.getYaw());
+            PlayerVer.setHeadPitch(mod, rotation.getPitch());
         }
     }
 
@@ -550,8 +552,8 @@ public interface LookHelper {
         mod.getClientBaritone().getLookBehavior().updateTarget(rotation, true);
 
         // Set the player's yaw and pitch
-        mod.getPlayer().setYaw(rotation.getYaw());
-        mod.getPlayer().setPitch(rotation.getPitch());
+        PlayerVer.setHeadYaw(mod, rotation.getYaw());
+        PlayerVer.setHeadPitch(mod, rotation.getPitch());
     }
 
     /**

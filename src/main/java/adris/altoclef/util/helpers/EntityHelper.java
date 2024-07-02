@@ -2,7 +2,7 @@ package adris.altoclef.util.helpers;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.multiversion.DamageSourcesVer;
-import adris.altoclef.multiversion.LivingEntityVer;
+import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.MethodWrapper;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.DamageUtil;
@@ -54,7 +54,7 @@ public class EntityHelper {
                 return pillager.isAngryAt(mod.getPlayer());
             }
             if (mob instanceof HoglinEntity hoglin) {
-                return LivingEntityVer.isInAttackRange(mob, mod.getPlayer()); // Assuming they always mad
+                return EntityVer.isInAttackRange(mob, mod.getPlayer()); // Assuming they always mad
             }
             if (mob instanceof RavagerEntity ravager) {
                 return ravager.isAngryAt(mod.getPlayer());
@@ -72,8 +72,8 @@ public class EntityHelper {
 
     public static boolean isTradingPiglin(Entity entity) {
         if (entity instanceof PiglinEntity pig) {
-            if (LivingEntityVer.getItemsEquipped(pig) != null) {
-                for (ItemStack stack : LivingEntityVer.getItemsEquipped(pig)) {
+            if (EntityVer.getItemsEquipped(pig) != null) {
+                for (ItemStack stack : EntityVer.getItemsEquipped(pig)) {
                     if (stack.getItem().equals(Items.GOLD_INGOT)) {
                         // We're trading with this one, ignore it.
                         return true;

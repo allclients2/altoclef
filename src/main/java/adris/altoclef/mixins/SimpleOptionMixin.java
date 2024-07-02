@@ -39,5 +39,5 @@ public class SimpleOptionMixin<T> {
 //$$ public class SimpleOptionMixin {}
 //#endif
 
-//FIXME: The mixing target does not exist in 1.18.2, nor is it needed. No idea how to get rid of it.
+//FIXME: The mixin target does not exist in 1.18.2, nor is it needed. No idea how to get rid of it.
 // So i just set the target to a dumb useless class (DumbClass)

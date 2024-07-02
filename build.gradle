@@ -26,9 +26,8 @@ sourceCompatibility = JavaVersion.VERSION_21
 targetCompatibility = sourceCompatibility
 
 
-
 tasks.withType(JavaCompile).configureEach {
-    options.release = mcVersion >= 12006 ?  21 : 17
+    options.release = mcVersion >= 12006 ? 21 : 17
 }
 
 archivesBaseName = project.archives_base_name
@@ -36,6 +35,7 @@ version = "${project.name}-${project.mod_version}"
 group = project.maven_group
 
 def mappingsVersions = [
+        11605: "1.16.5+build.10",
         11802: "1.18.2+build.4",
         12001: "1.20.1+build.10",
         12002: "1.20.2+build.4",
@@ -45,24 +45,27 @@ def mappingsVersions = [
 ]
 
 def fabricApiVersions = [
-        11802: "0.77.0+1.18.2",
-        12001: "0.92.2+1.20.1",
-        12002: "0.91.2+1.20.2",
-        12004: "0.96.3+1.20.4",
-        12005: "0.97.8+1.20.5",
-        12006: "0.100.0+1.20.6",
+    11605: "0.42.0+1.16",
+    11802: "0.77.0+1.18.2",
+    12001: "0.92.2+1.20.1",
+    12002: "0.91.2+1.20.2",
+    12004: "0.96.3+1.20.4",
+    12005: "0.97.8+1.20.5",
+    12006: "0.100.0+1.20.6",
 ]
 
 def baritoneVersions = [
-        11802: "1.18.2",
-        12001: "1.20.1",
-        12002: "1.20.2",
-        12004: "1.20.4",
-        12005: "1.20.5",
-        12006: "1.20.6",
+    "1.16.5": "1.6.3",
+    "1.18.2": "1.18.2",
+    "1.20.1": "1.20.1",
+    "1.20.2": "1.20.2",
+    "1.20.4": "1.20.4",
+    "1.20.5": "1.20.5",
+    "1.20.6": "1.20.6",
 ]
 
 def baritoneApiPaths = [
+        11605: "baritone-unoptimized",
         11802: "baritone-unoptimized",
         12001: "baritone-unoptimized",
         12002: "baritone-unoptimized-fabric",
@@ -72,6 +75,7 @@ def baritoneApiPaths = [
 ]
 
 def baritonePaths = [
+        11605: "baritone-unoptimized",
         11802: "baritone-unoptimized-fabric",
         12001: "baritone-unoptimized",
         12002: "baritone-unoptimized",
@@ -86,6 +90,11 @@ repositories {
         name = "MiranCZRepo"
         url = "https://mirancz.github.io/maven/"
         artifactUrls("https://mirancz.github.io/maven/cabaletta/baritone-unoptimized/${project.name}")
+    }
+    maven {
+        name = "allclients2Repo"
+        url = "https://allclients2.github.io/maven/"
+        artifactUrls("https://allclients2.github.io/maven/cabaletta/baritone-unoptimized/${project.name}")
     }
     maven {
         name = 'babbaj-repo'
@@ -124,14 +133,13 @@ dependencies {
     shadow('com.fasterxml.jackson.core:jackson-annotations:2.16.0')
     shadow('com.fasterxml.jackson.core:jackson-databind:2.16.0')
 
-    // Thank you georgeagostino for fixing my garbage
     if (getProject().hasProperty("altoclef.development")) {
         // Must run build from baritone-plus once
-        modImplementation "baritone-api-fabric:baritone-unoptimized-fabric-${project.name}"
-        include "baritone-api-fabric:baritone-unoptimized-fabric-${project.name}"
+        modImplementation "baritone-api-fabric:baritone-unoptimized-fabric-${baritoneVersions[project.name]}"
+        include "baritone-api-fabric:baritone-unoptimized-fabric-${baritoneVersions[project.name]}"
     } else {
-        modImplementation "cabaletta:baritone-unoptimized-fabric:${project.name}"
-        include "cabaletta:baritone-unoptimized-fabric:${project.name}"
+        modImplementation "cabaletta:baritone-unoptimized-fabric:${baritoneVersions[project.name]}"
+        include "cabaletta:baritone-unoptimized-fabric:${baritoneVersions[project.name]}"
     }
     //modImplementation 'baritone-api-fabric:baritone-api-fabric:1.6.3'
     //implementation files('baritone-plus/build/libs/baritone-unoptimized-fabric-1.6.3.jar')

@@ -3,7 +3,6 @@ package adris.altoclef;
 
 import adris.altoclef.butler.Butler;
 import adris.altoclef.chains.*;
-import adris.altoclef.commands.BlockScanner;
 import adris.altoclef.control.LookAtPos;
 import adris.altoclef.commandsystem.CommandExecutor;
 import adris.altoclef.control.InputControls;
@@ -22,6 +21,7 @@ import adris.altoclef.trackers.storage.ItemStorageTracker;
 import adris.altoclef.ui.CommandStatusOverlay;
 import adris.altoclef.ui.MessagePriority;
 import adris.altoclef.ui.MessageSender;
+import adris.altoclef.util.BlockScanner;
 import adris.altoclef.util.WindowUtil;
 import adris.altoclef.util.helpers.EntityHelper;
 import adris.altoclef.ui.AltoClefTickChart;
@@ -281,13 +281,16 @@ public class AltoClef implements ModInitializer {
         getClientBaritoneSettings().allowDiagonalAscend.value = false;
         getClientBaritoneSettings().walkOnWaterOnePenalty.value = 32.0;
 
-        getClientBaritoneSettings().blocksToAvoid.value = new LinkedList<>(List.of(Blocks.FLOWERING_AZALEA, Blocks.AZALEA,
-                Blocks.POWDER_SNOW, Blocks.BIG_DRIPLEAF, Blocks.BIG_DRIPLEAF_STEM, Blocks.CAVE_VINES,
-                Blocks.CAVE_VINES_PLANT, Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.SWEET_BERRY_BUSH,
+        getClientBaritoneSettings().blocksToAvoid.value = new LinkedList<>(List.of(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.SWEET_BERRY_BUSH,
                 Blocks.WARPED_ROOTS, Blocks.VINE, Blocks.TALL_GRASS, Blocks.LARGE_FERN,
-                Blocks.SMALL_AMETHYST_BUD, Blocks.MEDIUM_AMETHYST_BUD, Blocks.LARGE_AMETHYST_BUD,
-                Blocks.AMETHYST_CLUSTER,
                 Blocks.ROSE_BUSH, Blocks.PEONY
+
+                //#if MC>=11800
+                , Blocks.FLOWERING_AZALEA, Blocks.AZALEA,
+                Blocks.POWDER_SNOW, Blocks.BIG_DRIPLEAF, Blocks.BIG_DRIPLEAF_STEM, Blocks.CAVE_VINES,
+                Blocks.CAVE_VINES_PLANT, Blocks.SMALL_AMETHYST_BUD, Blocks.MEDIUM_AMETHYST_BUD, Blocks.LARGE_AMETHYST_BUD,
+                Blocks.AMETHYST_CLUSTER
+                //#endif
 
                 //#if MC>=11900
                 , Blocks.SCULK, Blocks.SCULK_VEIN

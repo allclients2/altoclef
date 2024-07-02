@@ -66,12 +66,13 @@ public class CollectBlockByOneTask extends ResourceTask {
         }
     }
 
+    //#if MC>=11800
     public static class CollectCobbledDeepslateTask extends CollectBlockByOneTask {
-
         public CollectCobbledDeepslateTask(int targetCount) {
             super(Items.COBBLED_DEEPSLATE, new Block[]{Blocks.DEEPSLATE, Blocks.COBBLED_DEEPSLATE}, MiningRequirement.WOOD, targetCount);
         }
     }
+    //#endif
 
     public static class CollectEndStoneTask extends CollectBlockByOneTask {
 

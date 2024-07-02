@@ -98,7 +98,7 @@ public class CraftGenericWithRecipeBooksTask extends Task implements ITaskUsesCr
             return new ReceiveCraftingOutputSlotTask(outputSlot, target.getTargetCount());
         }
 
-        // Check if the cursor stack is not empty
+        // Check if the cursor stack is occupied, we need toclear it!
         if (!cursorStack.isEmpty()) {
             // Find a slot in the player's inventory to move the item to
             moveTo = mod.getItemStorage().getSlotThatCanFitInPlayerInventory(cursorStack, false);
@@ -107,7 +107,7 @@ public class CraftGenericWithRecipeBooksTask extends Task implements ITaskUsesCr
                 mod.getSlotHandler().clickSlot(moveTo.get(), 0, SlotActionType.PICKUP);
                 return null;
             }
-            // Check if the item can be thrown away
+            // Check if the item can just be thrown away because, we dont need it...
             if (ItemHelper.canThrowAwayStack(mod, cursorStack)) {
                 // Click an undefined slot to throw away the item
                 mod.getSlotHandler().clickSlot(Slot.UNDEFINED, 0, SlotActionType.PICKUP);

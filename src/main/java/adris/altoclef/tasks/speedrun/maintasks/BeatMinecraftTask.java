@@ -3,7 +3,10 @@ package adris.altoclef.tasks.speedrun.maintasks;
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
-import adris.altoclef.commands.BlockScanner;
+import adris.altoclef.multiversion.EntityVer;
+import adris.altoclef.multiversion.MathUtilVer;
+import adris.altoclef.multiversion.PlayerVer;
+import adris.altoclef.util.BlockScanner;
 import adris.altoclef.multiversion.BaritoneVer;
 import adris.altoclef.tasks.block.DoToClosestBlockTask;
 import adris.altoclef.tasks.block.InteractWithBlockTask;
@@ -26,6 +29,8 @@ import adris.altoclef.trackers.EntityTracker;
 import adris.altoclef.trackers.storage.ItemStorageTracker;
 import adris.altoclef.util.*;
 import adris.altoclef.util.helpers.*;
+import adris.altoclef.util.math.Pair;
+import adris.altoclef.util.publictypes.OreType;
 import adris.altoclef.util.slots.Slot;
 import adris.altoclef.util.time.TimerGame;
 import baritone.api.utils.input.Input;
@@ -42,13 +47,13 @@ import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.World;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.*;
@@ -56,10 +61,15 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static adris.altoclef.tasks.resources.CollectMeatTask.COOKABLE_FOODS;
+import static adris.altoclef.util.helpers.ItemHelper.MATERIAL_DATA;
+import static adris.altoclef.util.helpers.ItemHelper.oreToDrop;
 import static net.minecraft.client.MinecraftClient.getInstance;
 
 
 public class BeatMinecraftTask extends Task {
+    private static final Item rawVariantIron = MATERIAL_DATA.get(OreType.IRON).rawItem;
+    private static final Item rawVariantGold = MATERIAL_DATA.get(OreType.GOLD).rawItem;
+
     private static final Block[] TRACK_BLOCKS = new Block[]{
             Blocks.FURNACE,
             Blocks.SMOKER,
@@ -67,7 +77,11 @@ public class BeatMinecraftTask extends Task {
             Blocks.END_PORTAL,
 
             Blocks.DIAMOND_ORE,
+
+            // Ohh, shiny!
+            //#if MC>=11800
             Blocks.DEEPSLATE_DIAMOND_ORE,
+            //#endif
 
             Blocks.CRAFTING_TABLE, // For pearl trading + gold crafting
             Blocks.CHEST, // For ruined portals
@@ -230,7 +244,7 @@ public class BeatMinecraftTask extends Task {
             Optional<BlockPos> optionalPos = mod.getBlockScanner().getNearestBlock(Blocks.WATER);
             if (optionalPos.isEmpty()) return pair;
 
-            double distance = Math.sqrt(optionalPos.get().getSquaredDistance(mod.getPlayer().getPos()));
+            double distance = MathUtilVer.getDistanceSquared(optionalPos.get(), mod.getPlayer().getPos());
             if (distance > 55) return pair;
 
             pair.setRight(10 / distance * 77.3);
@@ -374,8 +388,7 @@ public class BeatMinecraftTask extends Task {
     }
 
     public static boolean hasItem(AltoClef mod, Item item) {
-        ClientPlayerEntity player = mod.getPlayer();
-        PlayerInventory inv = player.getInventory();
+        PlayerInventory inv = PlayerVer.getInventory(mod);
         List<DefaultedList<ItemStack>> combinedInventory = List.of(inv.main, inv.armor, inv.offHand);
 
         for (List<ItemStack> list : combinedInventory) {
@@ -387,13 +400,14 @@ public class BeatMinecraftTask extends Task {
         return false;
     }
 
+    //How much much of an ore it took to get the current gear??
     //TODO move to ItemHelper
     public static int getCountWithCraftedFromOre(AltoClef mod, Item item) {
         if (item == Items.COAL) {
             return mod.getItemStorage().getItemCount(item);
-        } else if (item == Items.RAW_IRON) {
-            int count = mod.getItemStorage().getItemCount(Items.RAW_IRON, Items.IRON_INGOT);
-            count += mod.getItemStorage().getItemCount(Items.BUCKET, Items.WATER_BUCKET, Items.LAVA_BUCKET, Items.AXOLOTL_BUCKET, Items.POWDER_SNOW_BUCKET) * 3;
+        } else if (item == rawVariantIron) {
+            int count = mod.getItemStorage().getItemCount(rawVariantIron, Items.IRON_INGOT);
+            count += mod.getItemStorage().getItemCount(ItemHelper.BUCKETS) * 3;
             count += hasItem(mod, Items.SHIELD) ? 1 : 0;
             count += hasItem(mod, Items.FLINT_AND_STEEL) ? 1 : 0;
 
@@ -406,8 +420,8 @@ public class BeatMinecraftTask extends Task {
             count += hasItem(mod, Items.IRON_BOOTS) ? 4 : 0;
 
             return count;
-        } else if (item == Items.RAW_GOLD) {
-            int count = mod.getItemStorage().getItemCount(Items.RAW_GOLD, Items.GOLD_INGOT);
+        } else if (item == rawVariantGold) {
+            int count = mod.getItemStorage().getItemCount(rawVariantGold, Items.GOLD_INGOT);
             count += hasItem(mod, Items.GOLDEN_PICKAXE) ? 3 : 0;
 
             count += hasItem(mod, Items.GOLDEN_HELMET) ? 5 : 0;
@@ -433,18 +447,16 @@ public class BeatMinecraftTask extends Task {
     }
 
     private static Block[] mapOreItemToBlocks(Item item) {
-        if (item.equals(Items.RAW_IRON)) {
-            return new Block[]{Blocks.DEEPSLATE_IRON_ORE, Blocks.IRON_ORE};
-        } else if (item.equals(Items.RAW_GOLD)) {
-            return new Block[]{Blocks.DEEPSLATE_GOLD_ORE, Blocks.GOLD_ORE};
-        } else if (item.equals(Items.DIAMOND)) {
-            return new Block[]{Blocks.DEEPSLATE_DIAMOND_ORE, Blocks.DIAMOND_ORE};
-        } else if (item.equals(Items.COAL)) {
-            return new Block[]{Blocks.DEEPSLATE_COAL_ORE, Blocks.COAL_ORE};
+        OreType oreType = ItemHelper.droptoOreType.get(item);
+        if (oreType == null) {
+            return new Block[0];
         }
 
-        throw new IllegalStateException("Invalid ore: " + item);
+        return Arrays.stream(MATERIAL_DATA.get(oreType).oreBlocks)
+                .map(oreBlock -> oreBlock.oreBlock)
+                .toArray(Block[]::new);
     }
+
 
     private void addSleepTask(AltoClef mod) {
         boolean[] skipNight = new boolean[]{false};
@@ -551,29 +563,29 @@ public class BeatMinecraftTask extends Task {
         gatherResources.add(new ActionPriorityTask(a -> {
             Pair<Task, Double> pair = new Pair<>(null, Double.NEGATIVE_INFINITY);
 
-            int smeltedIronCount = getCountWithCraftedFromOre(mod, Items.RAW_IRON) - mod.getItemStorage().getItemCount(Items.RAW_IRON);
-            if (smeltedIronCount + mod.getItemStorage().getItemCount(Items.RAW_IRON) < 3)
+            int smeltedIronCount = getCountWithCraftedFromOre(mod, rawVariantIron) - mod.getItemStorage().getItemCount(rawVariantIron);
+            if (smeltedIronCount + mod.getItemStorage().getItemCount(rawVariantIron) < 3)
                 return pair;
 
             //FIXME hardcoded value (11) for iron count
-            if (getCountWithCraftedFromOre(mod, Items.RAW_IRON) - mod.getItemStorage().getItemCount(Items.RAW_IRON) >= 11) {
+            if (getCountWithCraftedFromOre(mod, rawVariantIron) - mod.getItemStorage().getItemCount(rawVariantIron) >= 11) {
                 return pair;
             }
 
-            int count = mod.getItemStorage().getItemCount(Items.RAW_IRON);
+            int count = mod.getItemStorage().getItemCount(rawVariantIron);
             int includedCount = count + mod.getItemStorage().getItemCount(Items.IRON_INGOT);
 
             //exactly for one coal
             if (count >= 8) {
                 includedCount = 8 + mod.getItemStorage().getItemCount(Items.IRON_INGOT);
 
-                pair.setLeft(new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.IRON_INGOT, includedCount), new ItemTarget(Items.RAW_IRON, includedCount))));
+                pair.setLeft(new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.IRON_INGOT, includedCount), new ItemTarget(rawVariantIron, includedCount))));
                 pair.setRight(450d);
 
                 return pair;
             }
 
-            pair.setLeft(new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.IRON_INGOT, includedCount), new ItemTarget(Items.RAW_IRON, includedCount))));
+            pair.setLeft(new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.IRON_INGOT, includedCount), new ItemTarget(rawVariantIron, includedCount))));
 
             //for getting iron pickaxe
             if (!mod.getItemStorage().hasItem(Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE) && count >= 3) {
@@ -594,11 +606,11 @@ public class BeatMinecraftTask extends Task {
             pair.setRight(count * 25d);
 
             return pair;
-        }, a -> mod.getItemStorage().hasItem(Items.RAW_IRON), true, false, false));
+        }, a -> mod.getItemStorage().hasItem(rawVariantIron), true, false, false));
 
         gatherResources.add(new ActionPriorityTask(
-                a -> new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.GOLD_INGOT, 5), new ItemTarget(Items.RAW_GOLD, 5))),
-                () -> 140, a -> mod.getItemStorage().getItemCount(Items.RAW_GOLD, Items.GOLD_INGOT) >= 5,
+                a -> new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.GOLD_INGOT, 5), new ItemTarget(rawVariantGold, 5))),
+                () -> 140, a -> mod.getItemStorage().getItemCount(rawVariantGold, Items.GOLD_INGOT) >= 5,
                 true, true, false
         ));
 
@@ -615,7 +627,7 @@ public class BeatMinecraftTask extends Task {
                 return pair;
             }
 
-            double dst = Math.sqrt(chest.get().getSquaredDistance(mod.getPlayer().getPos()));
+            double dst = MathUtilVer.getDistance(chest.get(),mod.getPlayer().getPos());
             pair.setRight(30d / dst * 175);
             pair.setLeft(new GetToBlockTask(chest.get()));
 
@@ -629,7 +641,7 @@ public class BeatMinecraftTask extends Task {
             Optional<BlockPos> chest = locateClosestUnopenedChest(mod);
             if (chest.isEmpty()) return pair;
 
-            if (LookHelper.cleanLineOfSight(mod.getPlayer(), chest.get(), 10) && chest.get().isWithinDistance(mod.getPlayer().getEyePos(), 5)) {
+            if (LookHelper.cleanLineOfSight(mod.getPlayer(), chest.get(), 10) && chest.get().isWithinDistance(EntityVer.getEyePos(mod.getPlayer()), 5)) {
                 pair.setLeft(new LootContainerTask(chest.get(), lootableItems(mod), noCurseOfBinding));
                 pair.setRight(Double.POSITIVE_INFINITY);
             }
@@ -682,8 +694,8 @@ public class BeatMinecraftTask extends Task {
 
     private void addOreMiningTasks() {
         gatherResources.add(getOrePriorityTask(Items.COAL, MiningRequirement.STONE, 1050, 250, 5, 4, 7));
-        gatherResources.add(getOrePriorityTask(Items.RAW_IRON, MiningRequirement.STONE, 1050, 250, 5, 11, 11));
-        gatherResources.add(getOrePriorityTask(Items.RAW_GOLD, MiningRequirement.IRON, 1050, 250, 5, 5, 5));
+        gatherResources.add(getOrePriorityTask(rawVariantIron, MiningRequirement.STONE, 1050, 250, 5, 11, 11));
+        gatherResources.add(getOrePriorityTask(rawVariantGold, MiningRequirement.IRON, 1050, 250, 5, 5, 5));
         gatherResources.add(getOrePriorityTask(Items.DIAMOND, MiningRequirement.IRON, 1050, 250, 5, 27, 30));
     }
 
@@ -737,7 +749,7 @@ public class BeatMinecraftTask extends Task {
                     boolean hasSafeIronPick = false;
                     for (Slot slot : list) {
                         if (slot.getInventorySlot() == -1) continue;
-                        ItemStack stack = mod.getPlayer().getInventory().getStack(slot.getInventorySlot());
+                        ItemStack stack = PlayerVer.getInventory(mod).getStack(slot.getInventorySlot());
                         if (!StorageHelper.shouldSaveStack(mod, Blocks.STONE, stack) && stack.getItem().equals(Items.IRON_PICKAXE)) {
                             hasSafeIronPick = true;
                             break;
@@ -1040,11 +1052,7 @@ public class BeatMinecraftTask extends Task {
             }
 
             // TODO use shipwreck finder instead
-
-            Stream<BlockState> states = mod.getWorld().getStatesInBox(new Box(blockPos.getX() - 5, blockPos.getY() - 5, blockPos.getZ() - 5,
-                    blockPos.getX() + 5, blockPos.getY() + 5, blockPos.getZ() + 5));
-
-            if (states.anyMatch((state) -> state.getBlock().equals(Blocks.WATER))) {
+            if (WorldHelper.blocksWithinBoxRadiusOfPos(mod, blockPos, 5 , List.of(Blocks.WATER)) && blockPos.getY() < 63) {
                 blacklistedChests.add(blockPos);
                 return false;
             }
@@ -1243,7 +1251,7 @@ public class BeatMinecraftTask extends Task {
         boolean shouldSwap = false;
         boolean hasInHotbar = false;
         for (int i = 0; i < 9; i++) {
-            ItemStack stack = mod.getPlayer().getInventory().getStack(i);
+            ItemStack stack = PlayerVer.getInventory(mod).getStack(i);
 
             //FIXME do some more general approach
             if (stack.getItem().equals(Items.IRON_PICKAXE) && StorageHelper.shouldSaveStack(mod, Blocks.STONE, stack)) {
@@ -1325,31 +1333,18 @@ public class BeatMinecraftTask extends Task {
 
 
         if (!ironGearSatisfied && !eyeGearSatisfied) {
-            blackListDangerousBlock(mod, Blocks.DEEPSLATE_COAL_ORE);
-            blackListDangerousBlock(mod, Blocks.COAL_ORE);
-            blackListDangerousBlock(mod, Blocks.DEEPSLATE_IRON_ORE);
-            blackListDangerousBlock(mod, Blocks.IRON_ORE);
+            Arrays.stream(MATERIAL_DATA.get(OreType.COAL).oreBlocks).forEach(oreBlockData -> blackListDangerousBlock(mod, oreBlockData.oreBlock));
+            Arrays.stream(MATERIAL_DATA.get(OreType.IRON).oreBlocks).forEach(oreBlockData -> blackListDangerousBlock(mod, oreBlockData.oreBlock));
         }
 
         //#if MC >= 12000
-        List<Block> ancientCityBlocks = List.of(Blocks.DEEPSLATE_BRICKS, Blocks.SCULK, Blocks.SCULK_VEIN, Blocks.SCULK_SENSOR, Blocks.SCULK_SHRIEKER, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.CRACKED_DEEPSLATE_BRICKS, Blocks.SOUL_LANTERN, Blocks.DEEPSLATE_TILES, Blocks.POLISHED_DEEPSLATE);
+        final List<Block> ancientCityBlocks = List.of(Blocks.DEEPSLATE_BRICKS, Blocks.SCULK, Blocks.SCULK_VEIN, Blocks.SCULK_SENSOR, Blocks.SCULK_SHRIEKER, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.CRACKED_DEEPSLATE_BRICKS, Blocks.SOUL_LANTERN, Blocks.DEEPSLATE_TILES, Blocks.POLISHED_DEEPSLATE);
         final int radius = 5;
         for (BlockPos pos : mod.getBlockScanner().getKnownLocations(ItemHelper.itemsToBlocks(ItemHelper.WOOL))) {
-
-            searchLoop:
-            for (int x = -radius; x < radius; x++) {
-                for (int y = -radius; y < radius; y++) {
-                    for (int z = -radius; z < radius; z++) {
-                        BlockPos p = pos.add(x, y, z);
-                        Block block = mod.getWorld().getBlockState(p).getBlock();
-
-                        if (ancientCityBlocks.contains(block)) {
-                            mod.getBlockScanner().requestBlockUnreachable(pos, 0);
-                            break searchLoop;
-                        }
-                    }
-                }
-            }
+            WorldHelper.forBlocksWithinBoxRadiusOfPos(mod, pos, radius, ancientCityBlocks, block -> {
+                mod.getBlockScanner().requestBlockUnreachable(pos, 0);
+                return true;
+            });
         }
         //#endif
 
@@ -1413,7 +1408,7 @@ public class BeatMinecraftTask extends Task {
             }
 
             if (mod.getItemStorage().hasItem(Items.GOLDEN_HELMET)) {
-                throwAwayItems(mod, Items.RAW_GOLD, Items.GOLD_INGOT);
+                throwAwayItems(mod, rawVariantGold, Items.GOLD_INGOT);
             }
 
             if (mod.getItemStorage().hasItem(Items.FLINT) || mod.getItemStorage().hasItem(Items.FLINT_AND_STEEL)) {
@@ -2253,7 +2248,7 @@ public class BeatMinecraftTask extends Task {
                 mod.getInputControls().release(Input.MOVE_LEFT);
                 mod.getInputControls().release(Input.SNEAK);
 
-                BlockPos pos = mod.getPlayer().getSteppingPos();
+                BlockPos pos = mod.getPlayer().getBlockPos();
                 if (!escaped && mod.getWorld().getBlockState(pos).getBlock().equals(Blocks.SOUL_SAND) &&
                         (mod.getWorld().getBlockState(pos.east()).getBlock().equals(Blocks.OBSIDIAN) ||
                                 mod.getWorld().getBlockState(pos.west()).getBlock().equals(Blocks.OBSIDIAN) ||

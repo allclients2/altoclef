@@ -147,11 +147,12 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
         if (_prepareForMiningTask.isActive() && !_prepareForMiningTask.isFinished(mod)
                 || isNewPickaxeRequired(mod)) {
             if (!_progressChecker.check(mod)) {
-                if (mod.getPlayer().getBlockY() > _groundHeight) {
+                final BlockPos playerPos = mod.getPlayer().getBlockPos();
+                if (playerPos.getY() > _groundHeight) {
                     _progressChecker.reset();
                 }
                 if (_groundHeight == Integer.MIN_VALUE) {
-                    _groundHeight = WorldHelper.getGroundHeight(mod, mod.getPlayer().getBlockX(), mod.getPlayer().getBlockZ());
+                    _groundHeight = WorldHelper.getGroundHeight(mod, playerPos.getX(), playerPos.getZ());
                     _getToYTask = new GetToYTask(_groundHeight + 4);
                 }
                 if (!(_getToYTask.isActive() || !_getToYTask.isFinished(mod))) {
@@ -375,10 +376,10 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
                         Block blockToCheck = mod.getWorld().getBlockState(blockPosToCheck).getBlock();
                         if (
                                 _blockTargets.contains(blockToCheck)
-                                && !vain.contains(blockPosToCheck)
-                                && !mod.getBlockScanner().isUnreachable(blockPosToCheck)
-								&& WorldHelper.canBreak(mod, blockPosToCheck)
-						)
+                                        && !vain.contains(blockPosToCheck)
+                                        && !mod.getBlockScanner().isUnreachable(blockPosToCheck)
+                                        && WorldHelper.canBreak(mod, blockPosToCheck)
+                        )
                         {
                             vain.add(blockPosToCheck);
                             vain.addAll(findAdjacentBlocksOfSameType(mod, blockPosToCheck, blockToCheck, vain));

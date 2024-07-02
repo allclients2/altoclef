@@ -24,10 +24,14 @@ public class SlotClickMixin {
     )
     private void slotClick(ScreenHandler self, int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         // TODO: "self" is misleading, reread Mixin docs to understand the implications here.
-
         // This calculation is already done, BUT we also want a "before&after" type beat.
 
+        //#if MC >= 11800
         DefaultedList<Slot> afterSlots = self.slots;
+        //#else
+        //$$ List<Slot> afterSlots = self.slots;
+        //#endif
+
         List<ItemStack> beforeStacks = new ArrayList<>(afterSlots.size());
         for (Slot slot : afterSlots) {
             beforeStacks.add(slot.getStack().copy());

@@ -47,8 +47,8 @@ public class SafeNetherPortalTask extends Task {
         //$$ if (mod.getPlayer().getDefaultNetherPortalCooldown() < 10) {
         //#endif
             if (positions != null && directions != null) {
-                BlockPos pos1 = mod.getPlayer().getSteppingPos().offset(axis, 1);
-                BlockPos pos2 = mod.getPlayer().getSteppingPos().offset(axis, -1);
+                BlockPos pos1 = mod.getPlayer().getBlockPos().offset(axis, 1);
+                BlockPos pos2 = mod.getPlayer().getBlockPos().offset(axis, -1);
 
                 if (mod.getWorld().getBlockState(pos1).isAir() || mod.getWorld().getBlockState(pos1).getBlock().equals(Blocks.SOUL_SAND)) {
                     boolean passed = false;

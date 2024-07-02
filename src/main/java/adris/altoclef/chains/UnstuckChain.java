@@ -2,6 +2,7 @@ package adris.altoclef.chains;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
+import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.tasks.construction.DestroyBlockTask;
 import adris.altoclef.tasks.movement.GetOutOfWaterTask;
 import adris.altoclef.tasks.movement.SafeRandomShimmyTask;
@@ -43,8 +44,8 @@ public class UnstuckChain extends SingleTaskChain {
         if (posHistory.size() < 100) return;
 
         // is not in water
-        if (!mod.getWorld().getBlockState(mod.getPlayer().getSteppingPos()).getBlock().equals(Blocks.WATER)
-                && !mod.getWorld().getBlockState(mod.getPlayer().getSteppingPos().down()).getBlock().equals(Blocks.WATER))
+        if (!mod.getWorld().getBlockState(mod.getPlayer().getBlockPos()).getBlock().equals(Blocks.WATER)
+                && !mod.getWorld().getBlockState(mod.getPlayer().getBlockPos().down()).getBlock().equals(Blocks.WATER))
             return;
 
         // everything should be fine
@@ -73,7 +74,8 @@ public class UnstuckChain extends SingleTaskChain {
     private void checkStuckInPowderedSnow(AltoClef mod) {
         PlayerEntity player = mod.getPlayer();
 
-        if (player.inPowderSnow) {
+        //#if MC >= 11800
+        if (EntityVer.inPowderedSnow(player)) {
             isProbablyStuck = true;
             BlockPos destroyPos = null;
 
@@ -82,7 +84,7 @@ public class UnstuckChain extends SingleTaskChain {
                 destroyPos = nearest.get();
             }
 
-            BlockPos headPos = WorldHelper.toBlockPos(player.getEyePos()).down();
+            BlockPos headPos = WorldHelper.toBlockPos(EntityVer.getEyePos(player)).down();
             if (mod.getWorld().getBlockState(headPos).getBlock() == Blocks.POWDER_SNOW) {
                 destroyPos = headPos;
             } else if (mod.getWorld().getBlockState(player.getBlockPos()).getBlock() == Blocks.POWDER_SNOW) {
@@ -93,10 +95,11 @@ public class UnstuckChain extends SingleTaskChain {
                 setTask(new DestroyBlockTask(destroyPos));
             }
         }
+        //#endif
     }
 
     private void checkStuckOnEndPortalFrame(AltoClef mod) {
-        BlockState state = mod.getWorld().getBlockState(mod.getPlayer().getSteppingPos());
+        BlockState state = mod.getWorld().getBlockState(mod.getPlayer().getBlockPos());
 
         // if we are standing on an end portal frame that is NOT filled, get off otherwise we will get stuck
         if (state.getBlock() == Blocks.END_PORTAL_FRAME && !state.get(EndPortalFrameBlock.EYE)) {

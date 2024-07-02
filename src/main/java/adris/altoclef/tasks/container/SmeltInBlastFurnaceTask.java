@@ -342,10 +342,18 @@ public class SmeltInBlastFurnaceTask extends ResourceTask {
                     _blastFurnaceCache.outputSlot != null) {
                 return 9999999.0;
             }
+
+
+            //#if MC>=11800
+            final Item rawIronIngredient = Items.RAW_IRON;
+            //#else
+            //$$ final Item rawIronIngredient = Items.IRON_ORE;
+            //#endif
+
             if (mod.getItemStorage().getItemCount(Items.COBBLESTONE) > 11 &&
-                    mod.getItemStorage().getItemCount(Items.RAW_IRON) > 5) {
+                    mod.getItemStorage().getItemCount(rawIronIngredient) > 5) {
                 double cost = 100.0 - 90.0 * (((double) mod.getItemStorage().getItemCount(new Item[]{Items.COBBLESTONE})
-                        / 8.0) + ((double) mod.getItemStorage().getItemCount(Items.RAW_IRON) / 5.0));
+                        / 8.0) + ((double) mod.getItemStorage().getItemCount(rawIronIngredient) / 5.0));
                 return Math.max(cost, 10.0);
             }
             return StorageHelper.miningRequirementMetInventory(mod, MiningRequirement.WOOD) ? 50.0 : 100.0;

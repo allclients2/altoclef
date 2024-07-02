@@ -64,8 +64,14 @@ public class PlaceBlockTask extends Task implements ITaskRequiresGrounded {
     }
 
     public static Task getMaterialTask(int count) {
-        return TaskCatalogue.getSquashedItemTask(new ItemTarget(Items.DIRT, count), new ItemTarget(Items.COBBLESTONE,
-                count), new ItemTarget(Items.NETHERRACK, count), new ItemTarget(Items.COBBLED_DEEPSLATE, count));
+        return TaskCatalogue.getSquashedItemTask(
+                new ItemTarget(Items.DIRT, count),
+                new ItemTarget(Items.COBBLESTONE, count),
+                new ItemTarget(Items.NETHERRACK, count)
+                //#if MC >= 11800
+                , new ItemTarget(Items.COBBLED_DEEPSLATE, count)
+                //#endif
+        );
     }
 
     @Override

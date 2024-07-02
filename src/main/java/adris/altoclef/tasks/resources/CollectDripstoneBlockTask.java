@@ -1,3 +1,4 @@
+//#if MC>=11700
 package adris.altoclef.tasks.resources;
 
 import adris.altoclef.AltoClef;
@@ -52,3 +53,4 @@ public class CollectDripstoneBlockTask extends ResourceTask {
         return "Collecting " + _count + " Dripstone Blocks.";
     }
 }
+//#endif

@@ -40,7 +40,7 @@ public class CollectWoolTask extends ResourceTask {
     private static Item[] getWoolColorItems(DyeColor[] colors) {
         Item[] result = new Item[colors.length];
         for (int i = 0; i < result.length; ++i) {
-            result[i] = ItemHelper.getColorfulItems(colors[i]).wool;
+            result[i] = ItemHelper.colorMap.get(colors[i].getMapColor()).wool;
         }
         return result;
     }

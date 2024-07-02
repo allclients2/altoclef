@@ -17,17 +17,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 
 public class SelfCareTask extends Task {
-    private static final ItemTarget[] woodToolTargets = ItemHelper.toItemTargets(ItemHelper.woodToolSet);
-    private static final ItemTarget[] stoneToolTargets = ItemHelper.toItemTargets(ItemHelper.stoneToolSet);
-    private static final ItemTarget[] ironToolTargets = ItemHelper.toItemTargets(ItemHelper.ironToolSet);
-    private static final ItemTarget[] diamondToolSet = ItemHelper.toItemTargets(ItemHelper.diamondToolSet);
-    private static final ItemTarget[] netheriteToolSet = ItemHelper.toItemTargets(ItemHelper.netheriteToolSet);
-    private static final Item[] ironArmorSet = ItemHelper.ironArmorSet;
-    private static final Item[] diamondArmorSet = ItemHelper.diamondArmorSet;
-    private static final Item[] netheriteArmorSet = ItemHelper.netheriteArmorSet;
+    private static final ItemTarget[] woodToolTargets = ItemHelper.toItemTargets(ItemHelper.WOODEN_TOOLS);
+    private static final ItemTarget[] stoneToolTargets = ItemHelper.toItemTargets(ItemHelper.STONE_TOOLS);
+    private static final ItemTarget[] ironToolTargets = ItemHelper.toItemTargets(ItemHelper.IRON_TOOLS);
+    private static final ItemTarget[] diamondToolSet = ItemHelper.toItemTargets(ItemHelper.DIAMOND_TOOLS);
+    private static final ItemTarget[] netheriteToolSet = ItemHelper.toItemTargets(ItemHelper.NETHERITE_TOOLS);
+    private static final Item[] ironArmorSet = ItemHelper.IRON_ARMORS;
+    private static final Item[] diamondArmorSet = ItemHelper.DIAMOND_ARMORS;
+    private static final Item[] netheriteArmorSet = ItemHelper.NETHERITE_ARMORS;
 
     private static final Task getBed = TaskCatalogue.getItemTask("bed", 1);
-    private static final Task getFood = new CollectFoodTask(65);
+    private static final Task getFood = new CollectFoodTask(50);
     private static final Task sleepThroughNight = new SleepThroughNightTask();
     private static final Task equipShield = new EquipArmorTask(Items.SHIELD);
     private static final Task getWaterBucket = new EquipArmorTask(Items.SHIELD);

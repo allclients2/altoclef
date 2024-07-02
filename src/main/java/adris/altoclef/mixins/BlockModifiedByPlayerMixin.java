@@ -28,13 +28,13 @@ public class BlockModifiedByPlayerMixin {
     //#else
     //$$ public void onBlockBroken(World world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfo ci) {
     //#endif
-        if (player.getWorld() == world) {
+        //if (player.getWorld() == world) { // Don't see why we need this, i dont think the server would send us blocks being broken in other worlds?
             BlockBrokenEvent evt = new BlockBrokenEvent();
             evt.blockPos = pos;
             evt.blockState = state;
             evt.player = player;
             EventBus.publish(evt);
-        }
+        //}
     }
 
 }

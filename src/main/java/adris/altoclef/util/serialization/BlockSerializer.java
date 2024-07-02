@@ -5,8 +5,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import org.apache.commons.compress.compressors.lz77support.LZ77Compressor;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,7 +1,9 @@
 package adris.altoclef.util;
 
+import adris.altoclef.Debug;
 import adris.altoclef.multiversion.recipemanager.RecipeManagerWrapper;
 import adris.altoclef.multiversion.recipemanager.WrappedRecipeEntry;
+import adris.altoclef.util.helpers.ItemHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.Item;
@@ -41,7 +43,7 @@ public class JankCraftingRecipeMapping {
                     //$$ Item output = value.getOutput().getItem();
                     //#endif
 
-                    recipeMapping.computeIfAbsent(output, k -> new ArrayList<>()).add(recipe);                    recipeMapping.computeIfAbsent(output, k -> new ArrayList<>()).add(recipe);
+                    recipeMapping.computeIfAbsent(output, k -> new ArrayList<>()).add(recipe);
                 }
             }
         }
@@ -90,6 +92,12 @@ public class JankCraftingRecipeMapping {
                 if (toSatisfy.isEmpty()) {
                     return Optional.of(checkRecipe);
                 }
+            }
+        } else {
+            if (output == null){
+                Debug.logWarning("Failed to find crafting recipe because code request to find recipe for NULL!");
+            } else {
+                Debug.logWarning("Failed to find crafting recipe that makes item: " + ItemHelper.trimItemName(output.getTranslationKey()));
             }
         }
         return Optional.empty();

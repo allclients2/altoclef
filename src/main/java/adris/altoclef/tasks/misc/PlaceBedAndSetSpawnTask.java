@@ -7,6 +7,7 @@ import adris.altoclef.eventbus.EventBus;
 import adris.altoclef.eventbus.Subscription;
 import adris.altoclef.eventbus.events.ChatMessageEvent;
 import adris.altoclef.eventbus.events.GameOverlayEvent;
+import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.tasks.block.DoToClosestBlockTask;
 import adris.altoclef.tasks.block.InteractWithBlockTask;
 import adris.altoclef.tasks.construction.DestroyBlockTask;
@@ -36,6 +37,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.apache.commons.lang3.ArrayUtils;
 
+import static adris.altoclef.multiversion.MathUtilVer.viAdd;
+
 public class PlaceBedAndSetSpawnTask extends Task {
 
     private final TimerGame regionScanTimer = new TimerGame(9);
@@ -52,31 +55,41 @@ public class PlaceBedAndSetSpawnTask extends Task {
             new Vec3i(2, -1, 1)
     };
     // Kinda silly but who knows if we ever want to change it.
-    private final Vec3i BED_PLACE_STAND_POS = new Vec3i(0, 0, 1);
-    private final Vec3i BED_PLACE_POS = new Vec3i(1, 0, 1);
-    private final Vec3i[] BED_PLACE_POS_OFFSET = new Vec3i[]{
-            BED_PLACE_POS,
-            BED_PLACE_POS.north(),
-            BED_PLACE_POS.south(),
-            BED_PLACE_POS.east(),
-            BED_PLACE_POS.west(),
-            BED_PLACE_POS.add(-1, 0, 1),
-            BED_PLACE_POS.add(1, 0, 1),
-            BED_PLACE_POS.add(-1, 0, -1),
-            BED_PLACE_POS.add(1, 0, -1),
-            BED_PLACE_POS.north(2),
-            BED_PLACE_POS.south(2),
-            BED_PLACE_POS.east(2),
-            BED_PLACE_POS.west(2),
-            BED_PLACE_POS.add(-2, 0, 1),
-            BED_PLACE_POS.add(-2, 0, 2),
-            BED_PLACE_POS.add(2, 0, 1),
-            BED_PLACE_POS.add(2, 0, 2),
-            BED_PLACE_POS.add(-2, 0, -1),
-            BED_PLACE_POS.add(-2, 0, -2),
-            BED_PLACE_POS.add(2, 0, -1),
-            BED_PLACE_POS.add(2, 0, -2)
+    private static final Vec3i BED_PLACE_STAND_POS = new Vec3i(0, 0, 1);
+    private static final Vec3i BED_PLACE_POS = new Vec3i(1, 0, 1);
+
+    private static final Vec3i[] BED_PLACE_POS_OFFSET;
+    private static final int[][] OFFSET_VECTORS = {
+            {0, 0, 0},
+            {0, 0, -1}, // north 1
+            {0, 0, 1},  // south 1
+            {1, 0, 0},  // east 1
+            {-1, 0, 0}, // west 1
+            {0, 0, -2}, // north 2
+            {0, 0, 2},  // south 2
+            {2, 0, 0},  // east 2
+            {-2, 0, 0}, // eest 2
+            {-1, 0, 1}, // other offsets ...
+            {1, 0, 1},
+            {-1, 0, -1},
+            {1, 0, -1},
+            {-2, 0, 1},
+            {-2, 0, 2},
+            {2, 0, 1},
+            {2, 0, 2},
+            {-2, 0, -1},
+            {-2, 0, -2},
+            {2, 0, -1},
+            {2, 0, -2}
     };
+
+    static {
+        BED_PLACE_POS_OFFSET = new Vec3i[OFFSET_VECTORS.length];
+        for (int i = 0; i < OFFSET_VECTORS.length; i++) {
+            BED_PLACE_POS_OFFSET[i] = viAdd(BED_PLACE_POS, new Vec3i(OFFSET_VECTORS[i][0], OFFSET_VECTORS[i][1], OFFSET_VECTORS[i][2]));
+        }
+    }
+
     private final Direction BED_PLACE_DIRECTION = Direction.UP;
     private final TimerGame bedInteractTimeout = new TimerGame(5);
     private final TimerGame inBedTimer = new TimerGame(1);
@@ -524,7 +537,7 @@ public class PlaceBedAndSetSpawnTask extends Task {
                 outer:
                 for (int y = origin.getY() - SCAN_RANGE; y < origin.getY() + SCAN_RANGE; ++y) {
                     BlockPos attemptPos = new BlockPos(x, y, z);
-                    double distance = attemptPos.getSquaredDistance(mod.getPlayer().getPos());
+                    double distance = MathUtilVer.getDistance(attemptPos, mod.getPlayer().getPos());
 
                     Debug.logInternal("Checking position: " + attemptPos);
 

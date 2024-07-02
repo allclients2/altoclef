@@ -1,193 +1,101 @@
 package adris.altoclef.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
-import adris.altoclef.TaskCatalogue;
 import adris.altoclef.commandsystem.Arg;
 import adris.altoclef.commandsystem.ArgParser;
 import adris.altoclef.commandsystem.Command;
 import adris.altoclef.commandsystem.CommandException;
 import adris.altoclef.commandsystem.ItemList;
 import adris.altoclef.tasks.construction.BranchMiningTask;
-import adris.altoclef.tasksystem.Task;
 import adris.altoclef.ui.MessagePriority;
-import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
-import adris.altoclef.util.helpers.ItemHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import adris.altoclef.util.publictypes.OreType;
 import net.minecraft.util.math.BlockPos;
 
-public class BranchMineCommand extends Command {
-	
-	private static final Map<String, Block[]> _dropToOre = new HashMap<>() {
-    	{
-    		put("coal", new Block[]{Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE});
-    		put("raw_iron", new Block[]{Blocks.IRON_ORE, Blocks.DEEPSLATE_IRON_ORE});
-    		put("raw_gold", new Block[]{Blocks.GOLD_ORE, Blocks.DEEPSLATE_GOLD_ORE});
-    		put("raw_copper", new Block[]{Blocks.COPPER_ORE, Blocks.DEEPSLATE_COPPER_ORE});
-    		put("diamond", new Block[]{Blocks.DIAMOND_ORE, Blocks.DEEPSLATE_DIAMOND_ORE});
-    		put("emerald", new Block[]{Blocks.EMERALD_ORE, Blocks.DEEPSLATE_EMERALD_ORE});
-    		put("redstone", new Block[]{Blocks.REDSTONE_ORE, Blocks.DEEPSLATE_REDSTONE_ORE});
-    		put("lapis_lazuli", new Block[]{Blocks.LAPIS_ORE, Blocks.DEEPSLATE_LAPIS_ORE});
-    	}
-    };
+import static adris.altoclef.util.helpers.ItemHelper.MATERIAL_DATA;
+import static adris.altoclef.util.helpers.ItemHelper.OreBlockData;
 
-	public BranchMineCommand() throws CommandException {
-        super("branchmine", "Branch mine from the current direction", new Arg(ItemList.class, _dropToOre.keySet().toString()));
-	}
-	
-	private static void OnResourceDoesNotExist(AltoClef mod, String resource) {
+public class BranchMineCommand extends Command {
+
+    //private static Optional<Item> nameStringToItem(String name) {
+    //		Identifier identifier = new Identifier(name);
+    //		if (RegistriesVer.itemsRegistry().containsId(identifier)) {
+    //			return Optional.of(RegistriesVer.itemsRegistry().get(identifier));
+    //		} else {
+    //			Debug.logWarning("Invalid item name:" + name);
+    //			return Optional.empty();
+    //		}
+    //	}
+
+    public BranchMineCommand() throws CommandException {
+        super("branchmine", "Branch mine from the current direction", new Arg(ItemList.class, MATERIAL_DATA.keySet().toString()));
+    }
+
+    private static void OnResourceDoesNotExist(AltoClef mod, String resource) {
         Debug.logInternal("\"" + resource + "\" is not a catalogued ores. Can't get it yet, sorry!", MessagePriority.OPTIONAL);
         Debug.logInternal("List of available items: ", MessagePriority.OPTIONAL);
-        for (String key : _dropToOre.keySet()) {
-
-            Debug.logInternal("	\"" + key + "\"", MessagePriority.OPTIONAL);
+        for (OreType key : MATERIAL_DATA.keySet()) {
+            Debug.logInternal("	\"" + key.name() + "\"", MessagePriority.OPTIONAL);
         }
     }
 
-    private void GetItems(AltoClef mod, ItemTarget... items) {
-    	BranchMiningTask targetTask;
-    	List<Block> blocksToMine = new ArrayList<>();
-        if (items == null || items.length == 0) {
-            Debug.logInternal("You must specify at least one item!");
+    private void GetItems(AltoClef mod, OreType oreType) {
+        if (oreType == null) {
+            Debug.logInternal("You must specify an ore type!");
             finish();
             return;
         }
-        for (ItemTarget itemTarget : items)
-		{
-			if(!_dropToOre.containsKey(itemTarget.getCatalogueName()))
-			{
-				Debug.logInternal("Unexpected value: " + itemTarget.getCatalogueName() + ", expacted any of: " + _dropToOre.keySet(), MessagePriority.OPTIONAL);
-		        finish();
-		        return;
-			}
-			blocksToMine.addAll(Arrays.asList(_dropToOre.get(itemTarget.getCatalogueName())));
-		}
-        OreDistribution currOreDis = new OreDistribution(blocksToMine);
-        BlockPos homePos = new BlockPos(mod.getPlayer().getBlockX(), currOreDis.optimalHeight, mod.getPlayer().getBlockZ());
-        targetTask = new BranchMiningTask(
-    		homePos, 
-			mod.getPlayer().getMovementDirection(),
-			blocksToMine
-		);
-        if (targetTask != null) {
-            mod.runUserTask(targetTask, this::finish);
-        } else {
+
+        final BlockPos currentPlayerPos = mod.getPlayer().getBlockPos();
+
+        final List<OreBlockData> blocksToMineData;
+        final int currentYPos = currentPlayerPos.getY();
+        if (!MATERIAL_DATA.containsKey(oreType)) {
+            Debug.logInternal("Unexpected value: " + oreType.toString() + ", expected any of: " + MATERIAL_DATA.keySet(), MessagePriority.OPTIONAL);
             finish();
+            return;
+        } else {
+            blocksToMineData = new ArrayList<>(Arrays.asList(MATERIAL_DATA.get(oreType).oreBlocks));
         }
+
+        OreBlockData finalTargetData = null;
+        int bestTargetDiff = (2 ^ 31 - 1);
+
+        for (OreBlockData oreBlockData : blocksToMineData) {
+            final int targetDiff = oreBlockData.distribution.optimalHeight;
+            if (bestTargetDiff > Math.abs(targetDiff - currentYPos)) {
+                bestTargetDiff = targetDiff;
+                finalTargetData = oreBlockData;
+            }
+        }
+
+        if (finalTargetData == null) {
+            throw new RuntimeException("Failed to get finalTargetData, resulting in `finalTargetData` being null!");
+        }
+
+        final BlockPos homePos = new BlockPos(currentPlayerPos.getX(), finalTargetData.distribution.optimalHeight, currentPlayerPos.getZ());
+        mod.runUserTask(new BranchMiningTask(
+                homePos,
+                mod.getPlayer().getMovementDirection(),
+                finalTargetData.oreBlock
+        ), this::finish);
     }
-	
-//	@Override
-//    protected void call(AltoClef mod, ArgParser parser) {
-//
-//		mod.runUserTask(new BranchMiningTask(
-//				mod.getPlayer().getBlockPos(), 
-//				mod.getPlayer().getMovementDirection(),
-//				Blocks.REDSTONE_ORE
-//				), this::finish);
-//    }
-	
-	@Override
+
+    //	@Override
+    //    protected void call(AltoClef mod, ArgParser parser) {
+    //
+    //		mod.runUserTask(new BranchMiningTask(
+    //				mod.getPlayer().getBlockPos(),
+    //				mod.getPlayer().getMovementDirection(),
+    //				Blocks.REDSTONE_ORE
+    //				), this::finish);
+    //    }
+
+    @Override
     protected void call(AltoClef mod, ArgParser parser) throws CommandException {
-        ItemList items = parser.get(ItemList.class);
-        GetItems(mod, items.items);
+        OreType items = parser.get(OreType.class);
+        GetItems(mod, items);
     }
-	
-	
-	class OreDistribution {
-		
-		public final int maxHeight;
-		public final int optimalHeight;
-		public final int minHeight;
-		
-		OreDistribution(List<Block> blocks)
-		{
-			int _maxHeight = Integer.MIN_VALUE;
-	        int _minHeight = Integer.MAX_VALUE;
-	        int _maxOptimalHeight = Integer.MIN_VALUE;
-	        int _minOptimalHeight = Integer.MAX_VALUE;
-			List<OreDistribution> oreDistributions = new ArrayList<BranchMineCommand.OreDistribution>();
-			for (Block block : blocks)
-			{
-				oreDistributions.add(new OreDistribution(block));
-			}
-			
-			for (OreDistribution oreDistribution : oreDistributions) {
-	            int optimalHeight = oreDistribution.optimalHeight;
-	            _maxOptimalHeight = Math.max(_maxOptimalHeight, optimalHeight);
-	            _minOptimalHeight = Math.min(_minOptimalHeight, optimalHeight);
-	            _maxHeight = Math.max(_maxHeight, oreDistribution.maxHeight);
-	            _minHeight = Math.min(_minHeight, oreDistribution.minHeight);
-	        }
-			
-			maxHeight = _maxHeight;
-			optimalHeight = (_maxOptimalHeight + _minOptimalHeight) / 2;
-			minHeight = _minHeight;
-			
-		}
-		
-		OreDistribution(Block block)
-		{
-
-	    	if(block == Blocks.COAL_ORE || block == Blocks.DEEPSLATE_COAL_ORE)
-	    	{
-	    		maxHeight = 192;
-	    		optimalHeight = 96;
-	    		minHeight = 0;
-	    	}else
-	    	if(block == Blocks.COPPER_ORE || block == Blocks.DEEPSLATE_COPPER_ORE)
-	    	{
-	    		maxHeight = 112;
-	    		optimalHeight = 48;
-	    		minHeight = -16;
-	    	}else
-	    	if(block == Blocks.IRON_ORE || block == Blocks.DEEPSLATE_IRON_ORE)
-	    	{
-	    		maxHeight = 72;
-	    		optimalHeight = 16;
-	    		minHeight = -32;
-	    	}else
-	    	if(block == Blocks.LAPIS_ORE || block == Blocks.DEEPSLATE_LAPIS_ORE)
-	    	{
-	    		maxHeight = 64;
-	    		optimalHeight = 0;
-	    		minHeight = -59;
-	    	}else
-	    	if(block == Blocks.GOLD_ORE || block == Blocks.DEEPSLATE_GOLD_ORE)
-	    	{
-	    		maxHeight = 32;
-	    		optimalHeight = -16;
-	    		minHeight = -59;
-	    	}else
-	    	if(block == Blocks.DIAMOND_ORE || block == Blocks.DEEPSLATE_DIAMOND_ORE)
-	    	{
-	    		maxHeight = 15;
-	    		optimalHeight = -59;
-	    		minHeight = -59;
-	    	}else
-	        if(block == Blocks.REDSTONE_ORE || block == Blocks.DEEPSLATE_REDSTONE_ORE)
-	        {
-	    		maxHeight = 15;
-	    		optimalHeight = -59;
-	    		minHeight = -59;
-			}else
-			{
-		    	maxHeight = 8;
-				optimalHeight = 8;
-				minHeight = 8;
-			}
-//	    	throw new IllegalArgumentException("Unexpected value: " + block);
-		}
-	}
-
 }

@@ -4,7 +4,9 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
 import adris.altoclef.mixins.AbstractFurnaceScreenHandlerAccessor;
+import adris.altoclef.multiversion.BlockVer;
 import adris.altoclef.multiversion.ItemVer;
+import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.multiversion.ToolMaterialVer;
 import adris.altoclef.tasks.inventory.CraftInInventoryTask;
 import adris.altoclef.util.CraftingRecipe;
@@ -65,7 +67,7 @@ public class StorageHelper {
             return StorageHelper.getItemStackInCursorSlot();
         }
         // Inventory slot when inventory is NOT open
-        PlayerInventory inv = player.getInventory();
+        PlayerInventory inv = PlayerVer.getInventory(player);
         if (inv != null) {
             if (slot.equals(PlayerSlot.OFFHAND_SLOT))
                 return inv.offHand.stream().findFirst().orElse(ItemStack.EMPTY);
@@ -141,7 +143,8 @@ public class StorageHelper {
         //      AVOID  (Don't use silk touch if we can)
         //  }
         Block block = state.getBlock();
-        if (block.getHardness() == 0) return Optional.ofNullable(PlayerSlot.getEquipSlot());
+
+        if (BlockVer.getHardness(block) == 0) return Optional.ofNullable(PlayerSlot.getEquipSlot());
 
         Slot bestToolSlot = null;
         double highestSpeed = Double.NEGATIVE_INFINITY;
@@ -175,7 +178,8 @@ public class StorageHelper {
     public static boolean shouldSaveStack(AltoClef mod,Block block, ItemStack stack) {
         if (!stack.getItem().equals(Items.IRON_PICKAXE) || mod.getItemStorage().hasItem(Items.DIAMOND_PICKAXE)) return false;
 
-        boolean diamondRelatedBlock = block.equals(Blocks.DIAMOND_BLOCK) || block.equals(Blocks.DIAMOND_ORE) || block.equals(Blocks.DEEPSLATE_DIAMOND_ORE);
+        //Long line..
+        boolean diamondRelatedBlock = block.equals(Blocks.DIAMOND_BLOCK) || Arrays.stream(ItemHelper.MATERIAL_DATA.get(Items.DIAMOND).oreBlocks).anyMatch(oreBlockData -> oreBlockData.oreBlock == block);
 
         // if the durability is really low, mine only diamond related stuff
         if (stack.getDamage()+8 > stack.getMaxDamage()) {
@@ -415,12 +419,12 @@ public class StorageHelper {
     public static boolean isArmorEquipped(AltoClef mod, Item... any) {
         for (Item item : any) {
             if (item instanceof ArmorItem armor) {
-                ItemStack equippedStack = mod.getPlayer().getInventory().getArmorStack(armor.getSlotType().getEntitySlotId());
+                ItemStack equippedStack = PlayerVer.getInventory(mod).getArmorStack(armor.getSlotType().getEntitySlotId());
                 if (equippedStack.getItem().equals(item))
                     return true;
             }
             if (item instanceof ShieldItem shield) {
-                ItemStack equippedStack = mod.getPlayer().getInventory().getStack(PlayerInventory.OFF_HAND_SLOT);
+                ItemStack equippedStack = PlayerVer.getInventory(mod).getStack(PlayerVer.getOffHandIndex(PlayerVer.getInventory(mod)));
                 if (equippedStack.getItem().equals(shield))
                     return true;
             }
@@ -610,7 +614,11 @@ public class StorageHelper {
     public static ItemStack getItemStackInCursorSlot() {
         if (MinecraftClient.getInstance().player != null) {
             if (MinecraftClient.getInstance().player.currentScreenHandler != null) {
+                //#if MC>=11800
                 return MinecraftClient.getInstance().player.currentScreenHandler.getCursorStack();
+                //#else
+                //$$ return PlayerVer.getInventory(MinecraftClient.getInstance().player).getCursorStack();
+                //#endif
             }
         }
         return ItemStack.EMPTY;

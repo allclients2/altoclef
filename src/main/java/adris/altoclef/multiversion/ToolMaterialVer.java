@@ -4,6 +4,7 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.item.ToolMaterials;
 
+// Why did you add this, This doesn't even contain and preprocessing statements?
 public class ToolMaterialVer {
 
     public static int getMiningLevel(ToolItem item) {

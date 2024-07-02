@@ -44,7 +44,7 @@ public class CraftWithMatchingPlanksTask extends CraftWithMatchingMaterialsTask 
 
     @Override
     protected Item getSpecificItemCorrespondingToMajorityResource(Item majority) {
-        for (ItemHelper.WoodItems woodItems : ItemHelper.getWoodItems()) {
+        for (ItemHelper.WoodItems woodItems : ItemHelper.woodMap.values()) {
             if (woodItems.planks == majority) {
                 return _getTargetItem.apply(woodItems);
             }

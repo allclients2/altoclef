@@ -14,6 +14,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import adris.altoclef.util.BlockScanner;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
@@ -42,7 +43,7 @@ public class ScanCommand extends Command {
             return;
         }
 
-        adris.altoclef.commands.BlockScanner blockScanner = mod.getBlockScanner();
+        BlockScanner blockScanner = mod.getBlockScanner();
 
         Optional<BlockPos> scannedBlockPos = blockScanner.getNearestBlock(block, mod.getPlayer().getPos());
 

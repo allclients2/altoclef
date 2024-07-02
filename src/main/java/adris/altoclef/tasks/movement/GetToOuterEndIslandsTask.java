@@ -57,9 +57,10 @@ public class GetToOuterEndIslandsTask extends Task {
             Optional<BlockPos> gatewayFound = mod.getBlockScanner().getNearestBlock(Blocks.END_GATEWAY);
             if (gatewayFound.isPresent()) {
                 final BlockPos gateway = gatewayFound.get();
-                int blocksNeeded = Math.abs(mod.getPlayer().getBlockY() - gateway.getY()) +
-                        Math.abs(mod.getPlayer().getBlockX() - gateway.getX()) +
-                        Math.abs(mod.getPlayer().getBlockZ() - gateway.getZ()) - 3;
+                final BlockPos playerPos = mod.getPlayer().getBlockPos();
+                int blocksNeeded = Math.abs(playerPos.getY() - gateway.getY()) +
+                        Math.abs(playerPos.getX() - gateway.getX()) +
+                        Math.abs(playerPos.getZ() - gateway.getZ()) - 3;
                 if (StorageHelper.getBuildingMaterialCount(mod) < blocksNeeded) {
                     setDebugState("Getting building materials");
                     return new GetBuildingMaterialsTask(blocksNeeded);

@@ -1,9 +1,11 @@
-package adris.altoclef.commands;
+package adris.altoclef.util;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.eventbus.EventBus;
 import adris.altoclef.eventbus.events.BlockPlaceEvent;
+import adris.altoclef.multiversion.MathUtilVer;
+import adris.altoclef.multiversion.WorldBoundsVer;
 import adris.altoclef.trackers.blacklisting.WorldLocateBlacklist;
 import adris.altoclef.util.Dimension;
 import adris.altoclef.util.helpers.BaritoneHelper;
@@ -209,7 +211,7 @@ public class BlockScanner {
 
     public double distanceToClosest(Vec3d pos, Block... blocks) {
         Optional<BlockPos> blockPos = getNearestBlock(blocks);
-        return blockPos.map(value -> Math.sqrt(value.getSquaredDistance(pos))).orElse(Double.POSITIVE_INFINITY);
+        return blockPos.map(value -> Math.sqrt(MathUtilVer.getDistance(value, pos))).orElse(Double.POSITIVE_INFINITY);
     }
 
     // Checks if 'pos' one of 'blocks' block
@@ -305,7 +307,7 @@ public class BlockScanner {
         HashMap<Block, HashSet<BlockPos>> map = new HashMap<>();
 
         BlockPos pos = mod.getPlayer().getBlockPos();
-        World world = mod.getPlayer().getWorld();
+        World world = mod.getWorld();
 
         for (int x = pos.getX() - 8; x <= pos.getX() + 8; x++) {
             for (int y = pos.getY() - 8; y < pos.getY() + 8; y++) {
@@ -341,7 +343,7 @@ public class BlockScanner {
     private void rescan(int maxCount, int cutOffRadius) {
         long ms = System.currentTimeMillis();
 
-        ChunkPos playerChunkPos = mod.getPlayer().getChunkPos();
+        ChunkPos playerChunkPos = new ChunkPos(mod.getPlayer().getBlockPos());
         Vec3d playerPos = mod.getPlayer().getPos();
 
         HashSet<ChunkPos> visited = new HashSet<>();
@@ -432,10 +434,15 @@ public class BlockScanner {
         boolean isPriorityChunk = getChunkDist(chunkPos, playerChunkPos) <= 2;
 
         for (int x = chunkPos.getStartX(); x <= chunkPos.getEndX(); x++) {
-            for (int y = world.getBottomY(); y < world.getTopY(); y++) {
+            for (int y = WorldBoundsVer.WORLD_FLOOR_Y; y < WorldBoundsVer.WORLD_CEILING_Y; y++) {
                 for (int z = chunkPos.getStartZ(); z <= chunkPos.getEndZ(); z++) {
                     BlockPos p = new BlockPos(x, y, z);
+
+                    //#if MC >= 11800
                     if (this.isUnreachable(p) || world.isOutOfHeightLimit(p)) continue;
+                    //#else
+                    //$$ if (this.isUnreachable(p)) continue;
+                    //#endif
 
                     BlockState state = chunk.getBlockState(p);
                     if (state.isAir()) continue;

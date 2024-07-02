@@ -3,6 +3,7 @@ package adris.altoclef.tasks.speedrun;
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
+import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.tasks.entity.DoToClosestEntityTask;
 import adris.altoclef.tasks.entity.KillEntitiesTask;
 import adris.altoclef.tasks.movement.GetToBlockTask;
@@ -127,7 +128,7 @@ public class WaitForDragonAndPearlTask extends Task {
                     mod.getPlayer().getPos().isInRange(entity.getPos(), 4), AreaEffectCloudEntity.class)) {
                 if (mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).isPresent() &&
                         !mod.getClientBaritone().getPathingBehavior().isPathing()) {
-                    LookHelper.lookAt(mod, mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get().getEyePos());
+                    LookHelper.lookAt(mod, EntityVer.getEyePos(mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get()));
                 }
                 return null;
             }
@@ -145,7 +146,7 @@ public class WaitForDragonAndPearlTask extends Task {
                                 } else {
                                     if (mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).isPresent() &&
                                             !mod.getClientBaritone().getPathingBehavior().isPathing()) {
-                                        LookHelper.lookAt(mod, mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get().getEyePos());
+                                        LookHelper.lookAt(mod, EntityVer.getEyePos(mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get()));
                                     }
                                     return null;
                                 }
@@ -160,7 +161,7 @@ public class WaitForDragonAndPearlTask extends Task {
             // If a fireball is too close, run UP
             Optional<Entity> dragonFireball = mod.getEntityTracker().getClosestEntity(DragonFireballEntity.class);
             if (dragonFireball.isPresent() && dragonFireball.get().isInRange(mod.getPlayer(), DRAGON_FIREBALL_TOO_CLOSE_RANGE) && LookHelper.cleanLineOfSight(mod.getPlayer(), dragonFireball.get().getPos(), DRAGON_FIREBALL_TOO_CLOSE_RANGE)) {
-                pillarUpFurther = new GetToYTask(mod.getPlayer().getBlockY() + 5);
+                pillarUpFurther = new GetToYTask(mod.getPlayer().getBlockPos().getY() + 5);
                 Debug.logMessage("HOLDUP");
                 return pillarUpFurther;
             }
@@ -175,7 +176,7 @@ public class WaitForDragonAndPearlTask extends Task {
                             } else {
                                 if (mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).isPresent() &&
                                         !mod.getClientBaritone().getPathingBehavior().isPathing()) {
-                                    LookHelper.lookAt(mod, mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get().getEyePos());
+                                    LookHelper.lookAt(mod, EntityVer.getEyePos(mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get()));
                                 }
                                 return null;
                             }
@@ -185,7 +186,7 @@ public class WaitForDragonAndPearlTask extends Task {
             }
             if (mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).isPresent() &&
                     !mod.getClientBaritone().getPathingBehavior().isPathing()) {
-                LookHelper.lookAt(mod, mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get().getEyePos());
+                LookHelper.lookAt(mod, EntityVer.getEyePos(mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get()));
             }
             return null;
         }
@@ -194,7 +195,7 @@ public class WaitForDragonAndPearlTask extends Task {
                     mod.getPlayer().getPos().isInRange(entity.getPos(), 4), AreaEffectCloudEntity.class)) {
                 if (mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).isPresent() &&
                         !mod.getClientBaritone().getPathingBehavior().isPathing()) {
-                    LookHelper.lookAt(mod, mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get().getEyePos());
+                    LookHelper.lookAt(mod, EntityVer.getEyePos(mod.getEntityTracker().getClosestEntity(EnderDragonEntity.class).get()));
                 }
                 return null;
             }

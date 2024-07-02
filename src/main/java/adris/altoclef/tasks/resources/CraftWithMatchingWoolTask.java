@@ -9,10 +9,10 @@ import java.util.function.Function;
 
 public abstract class CraftWithMatchingWoolTask extends CraftWithMatchingMaterialsTask {
 
-    private final Function<ItemHelper.ColorfulItems, Item> getMajorityMaterial;
-    private final Function<ItemHelper.ColorfulItems, Item> getTargetItem;
+    private final Function<ItemHelper.ColorItems, Item> getMajorityMaterial;
+    private final Function<ItemHelper.ColorItems, Item> getTargetItem;
 
-    public CraftWithMatchingWoolTask(ItemTarget target, Function<ItemHelper.ColorfulItems, Item> getMajorityMaterial, Function<ItemHelper.ColorfulItems, Item> getTargetItem, CraftingRecipe recipe, boolean[] sameMask) {
+    public CraftWithMatchingWoolTask(ItemTarget target, Function<ItemHelper.ColorItems, Item> getMajorityMaterial, Function<ItemHelper.ColorItems, Item> getTargetItem, CraftingRecipe recipe, boolean[] sameMask) {
         super(target, recipe, sameMask);
         this.getMajorityMaterial = getMajorityMaterial;
         this.getTargetItem = getTargetItem;
@@ -21,7 +21,7 @@ public abstract class CraftWithMatchingWoolTask extends CraftWithMatchingMateria
 
     @Override
     protected Item getSpecificItemCorrespondingToMajorityResource(Item majority) {
-        for (ItemHelper.ColorfulItems colorfulItem : ItemHelper.getColorfulItems()) {
+        for (ItemHelper.ColorItems colorfulItem : ItemHelper.colorMap.values()) {
             if (getMajorityMaterial.apply(colorfulItem) == majority) {
                 return getTargetItem.apply(colorfulItem);
             }

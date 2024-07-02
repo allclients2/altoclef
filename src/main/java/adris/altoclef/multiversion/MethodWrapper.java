@@ -4,9 +4,14 @@ import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.block.spawner.MobSpawnerLogic;
 import net.minecraft.world.World;
+
+//#if MC>=12001
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
+//#endif
 
 public class MethodWrapper {
 
@@ -17,8 +22,10 @@ public class MethodWrapper {
         return logic.getRenderedEntity(world, pos);
         //#elseif MC>=12001
         //$$ return logic.getRenderedEntity(world, Random.create(), pos);
-        //#else
+        //#elseif MC>=11800
         //$$ return logic.getRenderedEntity(world);
+        //#else
+        //$$ return logic.getRenderedEntity();
         //#endif
     }
 
