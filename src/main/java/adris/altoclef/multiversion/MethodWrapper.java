@@ -22,7 +22,7 @@ public class MethodWrapper {
         return logic.getRenderedEntity(world, pos);
         //#elseif MC>=12001
         //$$ return logic.getRenderedEntity(world, Random.create(), pos);
-        //#elseif MC>=11800
+        //#elseif MC>=11700
         //$$ return logic.getRenderedEntity(world);
         //#else
         //$$ return logic.getRenderedEntity();

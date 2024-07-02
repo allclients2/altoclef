@@ -130,6 +130,7 @@ run11700/
 run11603/
 run11604/
 run11605/
+run/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar

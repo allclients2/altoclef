@@ -35,14 +35,6 @@ public class ItemHelper {
     // Ore Distribution sources: https://www.reddit.com/r/Minecraft/comments/rej0ch/best_y_levels_for_each_ore_in_118_validated_by/, https://www.gamertweak.com/minecraft-1-18-ore-distribution/, https://www.planetminecraft.com/blog/a-good-enough-guide-to-ore-distribution-in-minecraft-1-18/
     public static final Map<OreType, MaterialData> MATERIAL_DATA = new HashMap<>() {
         {
-            put(OreType.STONE, new MaterialData(
-                    new OreBlockData[]{
-                            new OreBlockData(Blocks.STONE, new OreDistribution(256, 50, 0)),
-                            //#if MC>=11800
-                            new OreBlockData(Blocks.DEEPSLATE, new OreDistribution(0, -20, -64))
-                            //#endif
-                    }, MiningRequirement.WOOD, Items.STONE
-            ));
             put(OreType.COAL, new MaterialData(
                     new OreBlockData[]{
                             new OreBlockData(Blocks.COAL_ORE, new OreDistribution(256, 95, 0)),

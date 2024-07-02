@@ -43,7 +43,7 @@ public class MLGBucketTask extends Task {
     private static MLGClutchConfig _config;
 
     static {
-        ConfigHelper.loadConfig("configs/mlg_clutch_settings.json", MLGClutchConfig::new, MLGClutchConfig.class, newConfig -> _config = newConfig);
+        ConfigHelper.loadConfig("altoclef/mlg_clutch_settings.json", MLGClutchConfig::new, MLGClutchConfig.class, newConfig -> _config = newConfig);
     }
 
     private BlockPos _placedPos;

@@ -13,7 +13,7 @@ public class CustomCommand extends Command {
     private static CustomTaskConfig _ctc;
 
     static {
-        ConfigHelper.loadConfig("configs/CustomTasks.json", CustomTaskConfig::new, CustomTaskConfig.class, newConfig -> _ctc = newConfig);
+        ConfigHelper.loadConfig("altoclef/CustomTasks.json", CustomTaskConfig::new, CustomTaskConfig.class, newConfig -> _ctc = newConfig);
     }
 
 

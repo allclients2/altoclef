@@ -75,9 +75,14 @@ public class TaskCatalogue {
 
             // Specify Ores from ItemHelper info..
             MATERIAL_DATA.forEach((oreType, materialData) -> {
+                final Item itemToIndex;
                 if (materialData.rawItem != null) {
-                    mine(ItemHelper.trimItemName(materialData.rawItem.getTranslationKey()).toLowerCase(), materialData.miningRequirement, Arrays.stream(materialData.oreBlocks).map(data -> data.oreBlock).toArray(Block[]::new), materialData.rawItem);
+                    itemToIndex = materialData.rawItem;
+                } else {
+                    itemToIndex = materialData.defaultItem;
                 }
+
+                mine(ItemHelper.trimItemName(itemToIndex.getTranslationKey()).toLowerCase(), materialData.miningRequirement, Arrays.stream(materialData.oreBlocks).map(data -> data.oreBlock).toArray(Block[]::new), itemToIndex);
             });
 
             alias("lapis", "lapis_lazuli");
@@ -150,7 +155,6 @@ public class TaskCatalogue {
             mine("warped_wart_block", MiningRequirement.HAND, Blocks.WARPED_WART_BLOCK, Items.WARPED_WART_BLOCK).forceDimension(Dimension.NETHER);
             mine("shroomlight", MiningRequirement.HAND, Blocks.SHROOMLIGHT, Items.SHROOMLIGHT).forceDimension(Dimension.NETHER);
             simple("blaze_rod", Items.BLAZE_ROD, CollectBlazeRodsTask::new).forceDimension(Dimension.NETHER); // Not super simple tbh lmao
-            mine("quartz", MiningRequirement.WOOD, Blocks.NETHER_QUARTZ_ORE, Items.QUARTZ).forceDimension(Dimension.NETHER);
             simple("cocoa_beans", Items.COCOA_BEANS, CollectCocoaBeansTask::new);
             shear("cobweb", Blocks.COBWEB, Items.COBWEB).dontMineIfPresent();
             colorfulTasks("wool", color -> color.wool, (color, count) -> new CollectWoolTask(color.color, count));

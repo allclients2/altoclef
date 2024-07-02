@@ -1,28 +1,47 @@
 package adris.altoclef.multiversion;
 
-import adris.altoclef.AltoClef;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.mob.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.Arrays;
+import java.util.List;
+
 
 //#if MC<11800
+//$$ import net.minecraft.block.Block;
 //$$ import net.minecraft.tag.BlockTags;
+//$$ import net.minecraft.util.math.BlockPos;
 //$$ import net.minecraft.util.math.MathHelper;
 //#endif
 
-public class EntityVer {
+public abstract class EntityVer {
 
-    public EntityVer() {
-    }
+    // For MobDefenseChain, Threats that are of high priority...
+    public static final List<Class<? extends Monster>> immediateThreat = Arrays.asList(
+        WitherEntity.class,
+        EndermanEntity.class,
+        BlazeEntity.class,
+        WitherSkeletonEntity.class,
+        HoglinEntity.class,
+        ZoglinEntity.class,
+        PiglinBruteEntity.class,
+        VindicatorEntity.class
+
+        //#if MC >= 11900
+        , WardenEntity.class
+        //#endif
+
+        // #if MC < BETA_17003
+        // $$ HerobrineSubject.class,
+        // #endif
+    );
 
     // FIXME this should be possible with mappings, right?
     @Pattern
@@ -61,7 +80,7 @@ public class EntityVer {
     }
 
     public static World getWorld(Entity entity) {
-        //#if MC>11700
+        //#if MC>11800
         return entity.getWorld();
         //#else
         //$$ return entity.world;
@@ -90,7 +109,7 @@ public class EntityVer {
     // CTRL + V
     // My problems saved!
     //
-    //#if MC < 11800
+    //#if MC <= 11600
     //$$ private static BlockPos getLandingPosCopied(Entity entity) {
     //$$      int i = MathHelper.floor(entity.getPos().x);
     //$$      int j = MathHelper.floor(entity.getPos().y - 0.20000000298023224);
@@ -100,9 +119,9 @@ public class EntityVer {
     //$$          BlockPos blockPos2 = blockPos.down();
     //$$          BlockState blockState = entity.world.getBlockState(blockPos2);
     //$$          Block block = blockState.getBlock();
-    //$$          if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block instanceof FenceGateBlock) {
-    //$$              return blockPos2;
-    //$$          }
+    //$$           if (!block.isIn(BlockTags.FENCES)) {
+    //$$                block.isIn(BlockTags.WALLS);
+    //$$           }
     //$$      }
     //$$      return blockPos;
     //$$  }

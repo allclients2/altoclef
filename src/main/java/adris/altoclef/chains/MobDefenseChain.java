@@ -6,16 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import adris.altoclef.control.LookAtPos;
 import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.ItemVer;
 import adris.altoclef.tasks.construction.ProjectileProtectionWallTask;
 import adris.altoclef.tasks.movement.*;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.baritone.GoalRunAwayFromEntities;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
-import net.minecraft.util.Hand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -339,11 +336,11 @@ public class MobDefenseChain extends SingleTaskChain {
                         // Give each hostile a timer, if they're close for too long deal with them.
                         if (hostile.isInRange(Player, annoyingRange) && LookHelper.seesPlayer(hostile, Player, annoyingRange)) {
                             if (!closeAnnoyingEntities.containsKey(hostile)) {
-                                if (EntityHelper.isProbablyHostileToPlayer(mod, hostile)) {
+                                if (EntityVer.immediateThreat.stream().anyMatch(monster -> monster.isInstance(hostile))) {
                                     if (Player.getHealth() <= 10) {
                                         closeAnnoyingEntities.put(hostile, new TimerGame(0));
                                     } else {
-                                        closeAnnoyingEntities.put(hostile, new TimerGame(Float.POSITIVE_INFINITY));
+                                        closeAnnoyingEntities.put(hostile, new TimerGame(360));
                                     }
                                 } else {
                                     closeAnnoyingEntities.put(hostile, new TimerGame(0));

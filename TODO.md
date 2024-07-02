@@ -18,7 +18,6 @@
 - Fix Obsidian task lagging so badly..
 - Mob defense chain takes over to ("run away" as seen by 75 priority) but then just stands there.
 
-
 ### Chores
-- Check the minecraft version for the preprocessor's if-statements. (Frequently not checked whilst adding 1.18.2 support)
 - Get rid of the baritone settings from BotBehavior class (Possibly move it into its own class)
+- Implement Other Versions (See `baritoneVersions` from `build.gradle`)

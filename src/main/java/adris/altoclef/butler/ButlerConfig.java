@@ -7,7 +7,7 @@ public class ButlerConfig {
     private static ButlerConfig _instance = new ButlerConfig();
 
     static {
-        ConfigHelper.loadConfig("configs/butler.json", ButlerConfig::new, ButlerConfig.class, newConfig -> _instance = newConfig);
+        ConfigHelper.loadConfig("altoclef/butler.json", ButlerConfig::new, ButlerConfig.class, newConfig -> _instance = newConfig);
     }
 
     /**

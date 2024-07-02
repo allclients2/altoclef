@@ -56,6 +56,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.ArrayUtils;
 
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -114,7 +115,7 @@ public class BeatMinecraftTask extends Task {
     private static boolean openingEndPortal = false;
 
     static {
-        ConfigHelper.loadConfig("configs/beat_minecraft.json", BeatMinecraftConfig::new, BeatMinecraftConfig.class, newConfig -> config = newConfig);
+        ConfigHelper.loadConfig("altoclef/beat_minecraft.json", BeatMinecraftConfig::new, BeatMinecraftConfig.class, newConfig -> config = newConfig);
     }
 
     private final UselessItems uselessItems;

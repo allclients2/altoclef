@@ -13,6 +13,7 @@ import adris.altoclef.util.CraftingRecipe;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.MiningRequirement;
 import adris.altoclef.util.RecipeTarget;
+import adris.altoclef.util.publictypes.OreType;
 import adris.altoclef.util.slots.CraftingTableSlot;
 import adris.altoclef.util.slots.CursorSlot;
 import adris.altoclef.util.slots.PlayerSlot;
@@ -179,7 +180,7 @@ public class StorageHelper {
         if (!stack.getItem().equals(Items.IRON_PICKAXE) || mod.getItemStorage().hasItem(Items.DIAMOND_PICKAXE)) return false;
 
         //Long line..
-        boolean diamondRelatedBlock = block.equals(Blocks.DIAMOND_BLOCK) || Arrays.stream(ItemHelper.MATERIAL_DATA.get(Items.DIAMOND).oreBlocks).anyMatch(oreBlockData -> oreBlockData.oreBlock == block);
+        boolean diamondRelatedBlock = block.equals(Blocks.DIAMOND_BLOCK) || Arrays.stream(ItemHelper.MATERIAL_DATA.get(OreType.DIAMOND).oreBlocks).anyMatch(oreBlockData -> oreBlockData.oreBlock == block);
 
         // if the durability is really low, mine only diamond related stuff
         if (stack.getDamage()+8 > stack.getMaxDamage()) {
@@ -614,7 +615,7 @@ public class StorageHelper {
     public static ItemStack getItemStackInCursorSlot() {
         if (MinecraftClient.getInstance().player != null) {
             if (MinecraftClient.getInstance().player.currentScreenHandler != null) {
-                //#if MC>=11800
+                //#if MC>=11700
                 return MinecraftClient.getInstance().player.currentScreenHandler.getCursorStack();
                 //#else
                 //$$ return PlayerVer.getInventory(MinecraftClient.getInstance().player).getCursorStack();

@@ -36,6 +36,7 @@ group = project.maven_group
 
 def mappingsVersions = [
         11605: "1.16.5+build.10",
+        11701: "1.17.1+build.65", // 65 BUILDS?!!
         11802: "1.18.2+build.4",
         12001: "1.20.1+build.10",
         12002: "1.20.2+build.4",
@@ -46,6 +47,7 @@ def mappingsVersions = [
 
 def fabricApiVersions = [
     11605: "0.42.0+1.16",
+    11701: "0.46.1+1.17",
     11802: "0.77.0+1.18.2",
     12001: "0.92.2+1.20.1",
     12002: "0.91.2+1.20.2",
@@ -55,9 +57,13 @@ def fabricApiVersions = [
 ]
 
 def baritoneVersions = [
-    "1.16.5": "1.6.3",
-    "1.18.2": "1.18.2",
-    "1.20.1": "1.20.1",
+    "1.16.5": "1.6.3",  // from allclients2 repo
+    "1.17": "1.7", // from Marvion repo
+    "1.17.1": "1.7.1",  // from Marvion repo
+    "1.18": "1.18",  // from Marvion repo
+    "1.18.2": "1.18.2",  // from allclients2 repo
+    "1.19.4": "1.19.4",  // from Marvion repo
+    "1.20.1": "1.20.1", // this and below, from Miran repo
     "1.20.2": "1.20.2",
     "1.20.4": "1.20.4",
     "1.20.5": "1.20.5",
@@ -66,6 +72,7 @@ def baritoneVersions = [
 
 def baritoneApiPaths = [
         11605: "baritone-unoptimized",
+        11701: "baritone-unoptimized",
         11802: "baritone-unoptimized",
         12001: "baritone-unoptimized",
         12002: "baritone-unoptimized-fabric",
@@ -76,6 +83,7 @@ def baritoneApiPaths = [
 
 def baritonePaths = [
         11605: "baritone-unoptimized",
+        11701: "baritone-unoptimized",
         11802: "baritone-unoptimized-fabric",
         12001: "baritone-unoptimized",
         12002: "baritone-unoptimized",
@@ -94,7 +102,10 @@ repositories {
     maven {
         name = "allclients2Repo"
         url = "https://allclients2.github.io/maven/"
-        artifactUrls("https://allclients2.github.io/maven/cabaletta/baritone-unoptimized/${project.name}")
+    }
+    maven {
+        name = "MarvionKiritoRepo"
+        url = "https://marvionkirito.github.io/maven/"
     }
     maven {
         name = 'babbaj-repo'

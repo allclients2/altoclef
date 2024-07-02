@@ -32,7 +32,7 @@ public class FoodChain extends SingleTaskChain {
     private static boolean hasFood;
 
     static {
-        ConfigHelper.loadConfig("configs/food_chain_settings.json", FoodChainConfig::new, FoodChainConfig.class, newConfig -> config = newConfig);
+        ConfigHelper.loadConfig("altoclef/food_chain_settings.json", FoodChainConfig::new, FoodChainConfig.class, newConfig -> config = newConfig);
     }
 
     private final DragonBreathTracker dragonBreathTracker = new DragonBreathTracker();

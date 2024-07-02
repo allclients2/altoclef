@@ -122,7 +122,7 @@ public class MarvionBeatMinecraftTask extends Task {
     private static boolean openingEndPortal = false;
 
     static {
-        ConfigHelper.loadConfig("configs/beat_minecraft.json", BeatMinecraftConfig::new, BeatMinecraftConfig.class, newConfig -> config = newConfig);
+        ConfigHelper.loadConfig("altoclef/beat_minecraft.json", BeatMinecraftConfig::new, BeatMinecraftConfig.class, newConfig -> config = newConfig);
     }
 
     private final HashMap<Item, Integer> _cachedEndItemDrops = new HashMap<>();

@@ -19,7 +19,7 @@ public class PlayerVer {
     }
 
     public static PlayerInventory getInventory(ClientPlayerEntity player) {
-        //#if MC >= 11800
+        //#if MC >= 11700
         return player.getInventory();
         //#else
         //$$ return player.inventory;
@@ -27,7 +27,7 @@ public class PlayerVer {
     }
 
     public static void setHeadPitch(AltoClef mod, float pitch) {
-        //#if MC>=11800
+        //#if MC>=11700
         mod.getPlayer().setPitch(pitch);
         //#else
         //$$ mod.getPlayer().pitch = pitch;
