@@ -3,11 +3,10 @@ package adris.altoclef.tasks.speedrun.maintasks;
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
+import adris.altoclef.multiversion.BaritoneVer;
 import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.multiversion.PlayerVer;
-import adris.altoclef.util.BlockScanner;
-import adris.altoclef.multiversion.BaritoneVer;
 import adris.altoclef.tasks.block.DoToClosestBlockTask;
 import adris.altoclef.tasks.block.InteractWithBlockTask;
 import adris.altoclef.tasks.construction.*;
@@ -18,7 +17,10 @@ import adris.altoclef.tasks.misc.PlaceBedAndSetSpawnTask;
 import adris.altoclef.tasks.misc.SleepThroughNightTask;
 import adris.altoclef.tasks.movement.*;
 import adris.altoclef.tasks.resources.*;
-import adris.altoclef.tasks.speedrun.*;
+import adris.altoclef.tasks.speedrun.BeatMinecraftConfig;
+import adris.altoclef.tasks.speedrun.DragonBreathTracker;
+import adris.altoclef.tasks.speedrun.KillEnderDragonTask;
+import adris.altoclef.tasks.speedrun.KillEnderDragonWithBedsTask;
 import adris.altoclef.tasks.speedrun.beatgame.UselessItems;
 import adris.altoclef.tasks.speedrun.beatgame.prioritytask.prioritycalculators.CollectFoodPriorityCalculator;
 import adris.altoclef.tasks.speedrun.beatgame.prioritytask.prioritycalculators.DistanceItemPriorityCalculator;
@@ -39,7 +41,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.EndPortalFrameBlock;
 import net.minecraft.client.gui.screen.CreditsScreen;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -49,21 +50,16 @@ import net.minecraft.item.*;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.ArrayUtils;
-
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static adris.altoclef.tasks.resources.CollectMeatTask.COOKABLE_FOODS;
 import static adris.altoclef.util.helpers.ItemHelper.MATERIAL_DATA;
-import static adris.altoclef.util.helpers.ItemHelper.oreToDrop;
 import static net.minecraft.client.MinecraftClient.getInstance;
 
 
@@ -628,7 +624,7 @@ public class BeatMinecraftTask extends Task {
                 return pair;
             }
 
-            double dst = MathUtilVer.getDistance(chest.get(),mod.getPlayer().getPos());
+            double dst = MathUtilVer.getDistance(chest.get(), mod.getPlayer().getPos());
             pair.setRight(30d / dst * 175);
             pair.setLeft(new GetToBlockTask(chest.get()));
 
@@ -1053,7 +1049,7 @@ public class BeatMinecraftTask extends Task {
             }
 
             // TODO use shipwreck finder instead
-            if (WorldHelper.blocksWithinBoxRadiusOfPos(mod, blockPos, 5 , List.of(Blocks.WATER)) && blockPos.getY() < 63) {
+            if (WorldHelper.blocksWithinBoxRadiusOfPos(mod, blockPos, 5, List.of(Blocks.WATER)) && blockPos.getY() < 63) {
                 blacklistedChests.add(blockPos);
                 return false;
             }
@@ -1492,7 +1488,6 @@ public class BeatMinecraftTask extends Task {
 
             // Grab armor
             for (Item armorCheck : COLLECT_EYE_ARMOR_END) {
-                Debug.logInternal("ARMOR LOOP:" + armorCheck);
                 if (!StorageHelper.isArmorEquipped(mod, armorCheck)) {
                     if (mod.getItemStorage().hasItem(armorCheck)) {
                         setDebugState("Equipping armor.");
@@ -1501,11 +1496,8 @@ public class BeatMinecraftTask extends Task {
                     if (mod.getEntityTracker().itemDropped(armorCheck)) {
                         return new PickupDroppedItemTask(armorCheck, 1);
                     }
-                } else {
-                    Debug.logInternal("We have armor lets goo!!!");
                 }
             }
-            Debug.logInternal("BASS BY ARMOR LOOP!");
 
             // Dragons breath avoidance
             dragonBreathTracker.updateBreath(mod);

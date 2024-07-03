@@ -1,9 +1,7 @@
-package adris.altoclef.tasks.entity;
+package adris.altoclef.tasks.misc;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.TaskCatalogue;
-import adris.altoclef.tasks.misc.EquipArmorTask;
-import adris.altoclef.tasks.misc.SleepThroughNightTask;
 import adris.altoclef.tasks.movement.DefaultGoToDimensionTask;
 import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasks.resources.CollectFoodTask;
@@ -22,6 +20,7 @@ public class SelfCareTask extends Task {
     private static final ItemTarget[] ironToolTargets = ItemHelper.toItemTargets(ItemHelper.IRON_TOOLS);
     private static final ItemTarget[] diamondToolSet = ItemHelper.toItemTargets(ItemHelper.DIAMOND_TOOLS);
     private static final ItemTarget[] netheriteToolSet = ItemHelper.toItemTargets(ItemHelper.NETHERITE_TOOLS);
+
     private static final Item[] ironArmorSet = ItemHelper.IRON_ARMORS;
     private static final Item[] diamondArmorSet = ItemHelper.DIAMOND_ARMORS;
     private static final Item[] netheriteArmorSet = ItemHelper.NETHERITE_ARMORS;

@@ -1,6 +1,7 @@
 package adris.altoclef.util.helpers;
 
 import adris.altoclef.AltoClef;
+import adris.altoclef.Debug;
 import adris.altoclef.mixins.ClientConnectionAccessor;
 import adris.altoclef.mixins.EntityAccessor;
 import adris.altoclef.multiversion.MethodWrapper;
@@ -415,6 +416,38 @@ public abstract class WorldHelper {
                 || block instanceof RedstoneOreBlock
                 || block instanceof BarrelBlock
         );
+    }
+
+
+    /**
+     * Searches for the position of an end portal frame by averaging the known locations of the frames.
+     * Returns the center position of the frames if enough frames are found, otherwise returns null.
+     *
+     * @param mod The AltoClef instance.
+     * @return The position of the end portal frame, or null if not enough frames are found.
+     */
+    public static BlockPos doSimpleSearchForEndPortal(AltoClef mod) {
+        List<BlockPos> frames = mod.getBlockScanner().getKnownLocations(Blocks.END_PORTAL_FRAME);
+        if (frames.size() >= 12) {
+            Vec3d average = frames.stream().reduce(Vec3d.ZERO, (accum, bpos) -> accum.add((int) Math.round(bpos.getX() + 0.5), (int) Math.round(bpos.getY() + 0.5), (int) Math.round(bpos.getZ() + 0.5)), Vec3d::add).multiply(1d / frames.size());
+            return new BlockPos(new Vec3i((int) average.x, (int) average.y, (int) average.z));
+        }
+        return null;
+    }
+
+    // Simple check for if the center block of the end portal is present...
+    public static boolean isEndPortalOpened(AltoClef mod, BlockPos endPortalCenter) {
+        return endPortalCenter != null && mod.getBlockScanner().isBlockAtPosition(endPortalCenter, Blocks.END_PORTAL);
+    }
+
+    public static boolean isEndPortalFrameFilled(AltoClef mod, BlockPos pos) {
+        if (mod.getChunkTracker().isChunkLoaded(pos)) {
+            final BlockState blockState = mod.getWorld().getBlockState(pos);
+            if (blockState.getBlock() == Blocks.END_PORTAL_FRAME) {
+                return blockState.get(EndPortalFrameBlock.EYE);
+            }
+        }
+        return false;
     }
 
     public static boolean isInsidePlayer(AltoClef mod, BlockPos pos) {

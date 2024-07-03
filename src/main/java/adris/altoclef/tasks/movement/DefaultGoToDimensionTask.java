@@ -1,6 +1,7 @@
 package adris.altoclef.tasks.movement;
 
 import adris.altoclef.AltoClef;
+import adris.altoclef.Debug;
 import adris.altoclef.tasks.construction.compound.ConstructNetherPortalBucketTask;
 import adris.altoclef.tasks.construction.compound.ConstructNetherPortalObsidianTask;
 import adris.altoclef.tasksystem.Task;
@@ -126,6 +127,7 @@ public class DefaultGoToDimensionTask extends Task {
 
     private Task goToEndTask(AltoClef mod) {
         // Keep in mind that getting to the end requires going to the nether first.
+        Debug.logWarning("Bot attempted to go to End dimension via a SIMPLE TASK, which is unimplemented!");
         setDebugState("TODO: Get to End, Same as BeatMinecraft");
         return null;
     }
