@@ -245,7 +245,7 @@ public class BeatMinecraftTask extends Task {
             Optional<BlockPos> optionalPos = mod.getBlockScanner().getNearestBlock(Blocks.WATER);
             if (optionalPos.isEmpty()) return pair;
 
-            double distance = MathUtilVer.getDistanceSquared(optionalPos.get(), mod.getPlayer().getPos());
+            double distance = MathUtilVer.getDistance(optionalPos.get(), mod.getPlayer().getPos());
             if (distance > 55) return pair;
 
             pair.setRight(10 / distance * 77.3);
@@ -1476,6 +1476,7 @@ public class BeatMinecraftTask extends Task {
 
             // If we have bed, do bed strats, otherwise punk normally.
             updateCachedEndItems(mod);
+
             // Grab beds
             if (mod.getEntityTracker().itemDropped(ItemHelper.BED) && (needsBeds(mod) || WorldHelper.getCurrentDimension() == Dimension.END))
                 return new PickupDroppedItemTask(new ItemTarget(ItemHelper.BED), true);
@@ -1488,8 +1489,10 @@ public class BeatMinecraftTask extends Task {
             }
             if (!mod.getItemStorage().hasItem(Items.WATER_BUCKET) && mod.getEntityTracker().itemDropped(Items.WATER_BUCKET))
                 return new PickupDroppedItemTask(Items.WATER_BUCKET, 1);
+
             // Grab armor
             for (Item armorCheck : COLLECT_EYE_ARMOR_END) {
+                Debug.logInternal("ARMOR LOOP:" + armorCheck);
                 if (!StorageHelper.isArmorEquipped(mod, armorCheck)) {
                     if (mod.getItemStorage().hasItem(armorCheck)) {
                         setDebugState("Equipping armor.");
@@ -1498,8 +1501,12 @@ public class BeatMinecraftTask extends Task {
                     if (mod.getEntityTracker().itemDropped(armorCheck)) {
                         return new PickupDroppedItemTask(armorCheck, 1);
                     }
+                } else {
+                    Debug.logInternal("We have armor lets goo!!!");
                 }
             }
+            Debug.logInternal("BASS BY ARMOR LOOP!");
+
             // Dragons breath avoidance
             dragonBreathTracker.updateBreath(mod);
             for (BlockPos playerIn : WorldHelper.getBlocksTouchingPlayer(mod)) {
@@ -1913,11 +1920,6 @@ public class BeatMinecraftTask extends Task {
         // Get the target number of beds to have
         int targetBeds = getTargetBeds(mod);
 
-        // Log the values for debugging purposes
-        Debug.logInternal("Total End Items: " + totalEndItems);
-        Debug.logInternal("Item Count: " + itemCount);
-        Debug.logInternal("Target Beds: " + targetBeds);
-
         // Check if the player needs to acquire more beds
         boolean needsBeds = (itemCount + totalEndItems) < targetBeds;
 
@@ -2102,10 +2104,9 @@ public class BeatMinecraftTask extends Task {
         // Get blaze rods + pearls...
         switch (WorldHelper.getCurrentDimension()) {
             case OVERWORLD -> {
-                if (!forcedTaskTimer.elapsed() && isTaskRunning(mod, lastTask) && lastGather.calculatePriority(mod) > 0) {
+                if (!forcedTaskTimer.elapsed() && isTaskRunning(mod, lastTask) && lastGather != null && lastGather.calculatePriority(mod) > 0) {
                     return lastTask;
                 }
-
                 if (!changedTaskTimer.elapsed() && lastTask != null && !lastGather.bypassForceCooldown && isTaskRunning(mod, lastTask)) {
                     return lastTask;
                 }
@@ -2202,6 +2203,8 @@ public class BeatMinecraftTask extends Task {
                     setDebugState("Collecting building materials.");
                     return buildMaterialsTask;
                 }
+
+
                 // Then go to the nether.
                 setDebugState("Going to Nether");
 

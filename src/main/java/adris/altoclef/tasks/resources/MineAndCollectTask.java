@@ -209,9 +209,8 @@ public class MineAndCollectTask extends ResourceTask {
             }
 
             return new Pair<>(
-                    // + 5 to make the bot stop mining a bit less
-                    closestDrop.map(itemEntity -> itemEntity.squaredDistanceTo(pos) + 10).orElse(Double.POSITIVE_INFINITY),
-                    closestDrop
+                closestDrop.map(itemEntity -> itemEntity.squaredDistanceTo(pos) + 1.15).orElse(Double.POSITIVE_INFINITY),
+                closestDrop
             );
         }
 

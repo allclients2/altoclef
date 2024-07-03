@@ -234,7 +234,6 @@ public class PlaceBlockNearbyTask extends Task {
             if (interactionTest == ActionResult.SUCCESS && mod.getPlayer().isSneaking()) {
                 mod.getPlayer().swingHand(hand);
                 _justPlaced = targetPlace;
-                Debug.logMessage("PRESSED");
                 return true;
             }
 

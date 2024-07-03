@@ -38,10 +38,11 @@ public class ItemHelper {
             put(OreType.COAL, new MaterialData(
                     new OreBlockData[]{
                             new OreBlockData(Blocks.COAL_ORE, new OreDistribution(256, 95, 0)),
-                            //#if MC>=11800
+                            //#if MC >= 11800
                             new OreBlockData(Blocks.DEEPSLATE_COAL_ORE, new OreDistribution(0, -8, -64))
                             //#endif
-                    }, MiningRequirement.WOOD, Items.COAL
+                    },
+                    MiningRequirement.WOOD, Items.COAL
             ));
             put(OreType.IRON, new MaterialData(
                     new OreBlockData[]{
@@ -312,7 +313,7 @@ public class ItemHelper {
             Items.COPPER_INGOT,
             //#endif
             //#if MC >= 11900
-            //$$ Items.SCULK_CATALYST
+            Items.SCULK_CATALYST
             //#endif
     };
 
@@ -396,6 +397,7 @@ public class ItemHelper {
 
             //#if MC >= 12000
             put(Items.CHERRY_PLANKS, WoodType.CHERRY);
+            put(Items.BAMBOO_PLANKS, WoodType.BAMBOO);
             //#endif
             //#if MC >= 11900
             put(Items.MANGROVE_PLANKS, WoodType.MANGROVE);
