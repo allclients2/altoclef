@@ -37,7 +37,8 @@ public class AltoClefCommands {
                 new BranchMineCommand(),
                 new MiranCommand(),
                 new GamerCommand(),
-                new MarvionCommand()
+                new MarvionCommand(),
+                new MicroCommand()
         );
     }
 }

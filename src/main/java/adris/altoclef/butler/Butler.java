@@ -6,6 +6,7 @@ import adris.altoclef.eventbus.EventBus;
 import adris.altoclef.eventbus.events.ChatMessageEvent;
 import adris.altoclef.eventbus.events.TaskFinishedEvent;
 import adris.altoclef.ui.MessagePriority;
+import adris.altoclef.util.helpers.ConfigHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.message.MessageType;
 
@@ -20,6 +21,8 @@ import java.util.Objects;
  * and depends on the "useButlerWhitelist" and "useButlerBlacklist" settings in "altoclef_settings.json"
  */
 public class Butler {
+
+    public static ButlerConfig butlerConfig = new ButlerConfig();
 
     private static final String BUTLER_MESSAGE_START = "` ";
 
@@ -36,6 +39,9 @@ public class Butler {
     private boolean commandFinished = false;
 
     public Butler(AltoClef mod) {
+
+        ConfigHelper.loadConfig("altoclef/butler.json", ButlerConfig::new, ButlerConfig.class, newConfig -> butlerConfig = newConfig);
+
         this.mod = mod;
         userAuth = new UserAuth(mod);
 
@@ -48,7 +54,7 @@ public class Butler {
 
         // Receive system events
         EventBus.subscribe(ChatMessageEvent.class, evt -> {
-            boolean debug = ButlerConfig.getInstance().whisperFormatDebug;
+            boolean debug = butlerConfig.whisperFormatDebug;
             String message = evt.messageContent();
             String sender = evt.senderName();
             String receiver = mod.getPlayer().getName().getString();
@@ -68,14 +74,14 @@ public class Butler {
         WhisperChecker.MessageResult result = this.whisperChecker.receiveMessage(mod, receiver, msg);
         if (result != null) {
             this.receiveWhisper(result.from, result.message);
-        } else if (ButlerConfig.getInstance().whisperFormatDebug) {
+        } else if (butlerConfig.whisperFormatDebug) {
             Debug.logMessage("    Not Parsing: MSG format not found.");
         }
     }
 
     private void receiveWhisper(String username, String message) {
 
-        boolean debug = ButlerConfig.getInstance().whisperFormatDebug;
+        boolean debug = butlerConfig.whisperFormatDebug;
         // Ignore messages from other bots.
         if (message.startsWith(BUTLER_MESSAGE_START)) {
             if (debug) {
@@ -90,8 +96,8 @@ public class Butler {
             if (debug) {
                 Debug.logMessage("    Rejecting: User \"" + username + "\" is not authorized.");
             }
-            if (ButlerConfig.getInstance().sendAuthorizationResponse) {
-                sendWhisper(username, ButlerConfig.getInstance().failedAuthorizationResposne.replace("{from}", username), MessagePriority.UNAUTHORIZED);
+            if (butlerConfig.sendAuthorizationResponse) {
+                sendWhisper(username, butlerConfig.failedAuthorizationResposne.replace("{from}", username), MessagePriority.UNAUTHORIZED);
             }
         }
     }
@@ -132,7 +138,7 @@ public class Butler {
         currentUser = username;
         sendWhisper("Command Executing: " + message, MessagePriority.TIMELY);
 
-        String prefix = ButlerConfig.getInstance().requirePrefixMsg ? mod.getModSettings().getCommandPrefix() : "";
+        String prefix = butlerConfig.requirePrefixMsg ? mod.getModSettings().getCommandPrefix() : "";
         AltoClef.getCommandExecutor().execute(prefix + message, () -> {
             // On finish
             sendWhisper("Command Finished: " + message, MessagePriority.TIMELY);

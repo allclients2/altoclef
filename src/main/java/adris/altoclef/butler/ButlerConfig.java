@@ -4,20 +4,14 @@ import adris.altoclef.util.helpers.ConfigHelper;
 
 public class ButlerConfig {
 
-    private static ButlerConfig _instance = new ButlerConfig();
-
-    static {
-        ConfigHelper.loadConfig("altoclef/butler.json", ButlerConfig::new, ButlerConfig.class, newConfig -> _instance = newConfig);
-    }
-
     /**
      * If true, will use blacklist for rejecting users from using your player as a butler
      */
-    public boolean useButlerBlacklist = true;
+    public boolean useButlerBlacklist = false;
     /**
      * If true, will use whitelist to only accept users from said whitelist.
      */
-    public boolean useButlerWhitelist = false;
+    public boolean useButlerWhitelist = true;
     /**
      * Servers have different messaging plugins that change the way messages are displayed.
      * Rather than attempt to implement all of them and introduce a big security risk,
@@ -49,7 +43,7 @@ public class ButlerConfig {
      * <p>
      * Disable this if you need to stay undercover.
      */
-    public boolean sendAuthorizationResponse = true;
+    public boolean sendAuthorizationResponse = false;
     /**
      * The response sent in a failed execution due to non-authorization
      * {from}: the username of the player who triggered the failed authorization response
@@ -61,8 +55,4 @@ public class ButlerConfig {
      * Disable this if you want to be able to send normal messages and not butler commands.
      */
     public boolean requirePrefixMsg = false;
-
-    public static ButlerConfig getInstance() {
-        return _instance;
-    }
 }

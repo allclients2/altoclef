@@ -42,7 +42,7 @@ import java.util.Optional;
 // Only consists of about 320 lines of code. (This might limit compatibility for some situations)
 // Author: allclients2
 
-public class BeatMinecraftTaskMicro extends Task {
+public class BeatMinecraftMicroTask extends Task {
 
     // Configuration
     private static final int targetEnderEyeCount = 14;
@@ -118,7 +118,7 @@ public class BeatMinecraftTaskMicro extends Task {
         final List<EndermanEntity> endermanEntityList = mod.getEntityTracker().getTrackedEntities(EndermanEntity.class);
         sortHostileList(endermanEntityList, mod.getPlayer());
         if (!endermanEntityList.isEmpty()) {
-            final EndermanEntity bestTarget = endermanEntityList.getFirst();
+            final EndermanEntity bestTarget = endermanEntityList.get(0); // Can't use getFirst() due to compatibility
             if (bestTarget.getPos().isInRange(mod.getPlayer().getPos(), 50)) {
                 return new KillEntityTask(bestTarget);
             }
@@ -145,7 +145,7 @@ public class BeatMinecraftTaskMicro extends Task {
         final List<BlazeEntity> blazeEntityList = mod.getEntityTracker().getTrackedEntities(BlazeEntity.class);
         sortHostileList(blazeEntityList, mod.getPlayer());
         if (!blazeEntityList.isEmpty()) {
-            final BlazeEntity bestTarget = blazeEntityList.getFirst();
+            final BlazeEntity bestTarget = blazeEntityList.get(0); // Compatibility
             if (bestTarget.getPos().isInRange(mod.getPlayer().getPos(), 10)) {
                 return new KillEntityTask(bestTarget);
             }
@@ -157,7 +157,7 @@ public class BeatMinecraftTaskMicro extends Task {
     private static Task obtainEnderEyesTask(AltoClef mod) {
         if (mod.getItemStorage().getItemCount(Items.ENDER_PEARL) < targetEnderEyeCount) {
            return getEnderPearlsTask(mod);
-        } else if (mod.getItemStorage().getItemCount(Items.BLAZE_ROD) < Math.ceilDiv(targetEnderEyeCount, 2)) {
+        } else if (mod.getItemStorage().getItemCount(Items.BLAZE_ROD) < (int) Math.ceil((double) targetEnderEyeCount / 2)) {
             return getBlazeRodsTask(mod);
         } else { // Should just be able to craft it now...
             return TaskCatalogue.getItemTask(Items.ENDER_EYE, targetEnderEyeCount);
@@ -304,7 +304,7 @@ public class BeatMinecraftTaskMicro extends Task {
 
     @Override
     protected boolean isEqual(Task other) {
-        return other instanceof BeatMinecraftTaskMicro;
+        return other instanceof BeatMinecraftMicroTask;
     }
 
     @Override
@@ -312,3 +312,5 @@ public class BeatMinecraftTaskMicro extends Task {
         return "Beating the game. (allclients2 Micro version)";
     }
 }
+
+// No really, "under 320 lines of code"!

@@ -3,8 +3,7 @@ package adris.altoclef.commands;
 import adris.altoclef.AltoClef;
 import adris.altoclef.commandsystem.ArgParser;
 import adris.altoclef.commandsystem.Command;
-import adris.altoclef.tasks.speedrun.maintasks.BeatMinecraftTask;
-import adris.altoclef.tasks.speedrun.maintasks.BeatMinecraftTaskMicro;
+import adris.altoclef.tasks.speedrun.maintasks.BeatMinecraftMicroTask;
 
 public class MicroCommand extends Command {
     public MicroCommand() {
@@ -13,6 +12,6 @@ public class MicroCommand extends Command {
 
     @Override
     protected void call(AltoClef mod, ArgParser parser) {
-        mod.runUserTask(new BeatMinecraftTaskMicro(), this::finish);
+        mod.runUserTask(new BeatMinecraftMicroTask(), this::finish);
     }
 }
