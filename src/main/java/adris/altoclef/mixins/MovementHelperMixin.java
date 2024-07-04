@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public interface MovementHelperMixin {
 
     //FIXME: Reimplement this.
-    //FIXME: Check version.
+    //
 
     //#if MC>=12001
     @Redirect(method = "avoidBreaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;getBlock()Lnet/minecraft/block/Block;", ordinal = 1))

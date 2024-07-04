@@ -1,6 +1,6 @@
 package adris.altoclef.eventbus.events;
 
-//#if MC>=11904
+//#if MC>=12001
 import net.minecraft.client.gui.DrawContext;
 //#else
 //$$ import net.minecraft.client.gui.DrawableHelper;
@@ -9,7 +9,7 @@ import net.minecraft.client.gui.DrawContext;
 
 public class ClientRenderEvent {
 
-    //#if MC>=11904
+    //#if MC>=12001
     public DrawContext context;
     public float tickDelta;
 

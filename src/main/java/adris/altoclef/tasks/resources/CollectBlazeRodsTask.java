@@ -11,6 +11,7 @@ import adris.altoclef.tasks.movement.RunAwayFromHostilesTask;
 import adris.altoclef.tasks.movement.SearchChunkForBlockTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.Dimension;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -45,7 +46,7 @@ public class CollectBlazeRodsTask extends ResourceTask {
         int MAX_HEIGHT = 11;
         for (BlockPos check = entity.getBlockPos(); entity.getBlockPos().getY() - check.getY() < MAX_HEIGHT; check = check.down()) {
             if (mod.getWorld().getBlockState(check).getBlock() == Blocks.LAVA) return true;
-            if (WorldHelper.isSolidBlock(mod, check)) return false;
+            if (BlockHelper.isSolidBlock(mod, check)) return false;
         }
         return true;
     }

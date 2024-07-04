@@ -8,6 +8,7 @@ import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasksystem.ITaskRequiresGrounded;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.ItemTarget;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.progresscheck.MovementProgressChecker;
@@ -175,7 +176,7 @@ public class PlaceBlockTask extends Task implements ITaskRequiresGrounded {
     public boolean isFinished(AltoClef mod) {
         assert MinecraftClient.getInstance().world != null;
         if (useThrowaways) {
-            return WorldHelper.isSolidBlock(mod, target);
+            return BlockHelper.isSolidBlock(mod, target);
         }
         BlockState state = mod.getWorld().getBlockState(target);
         return ArrayUtils.contains(toPlace, state.getBlock());

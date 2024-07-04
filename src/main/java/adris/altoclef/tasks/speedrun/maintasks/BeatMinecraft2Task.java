@@ -21,10 +21,7 @@ import adris.altoclef.util.Dimension;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.MiningRequirement;
 import adris.altoclef.util.SmeltTarget;
-import adris.altoclef.util.helpers.ConfigHelper;
-import adris.altoclef.util.helpers.ItemHelper;
-import adris.altoclef.util.helpers.StorageHelper;
-import adris.altoclef.util.helpers.WorldHelper;
+import adris.altoclef.util.helpers.*;
 import adris.altoclef.util.time.TimerGame;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -204,7 +201,7 @@ public class BeatMinecraft2Task extends Task {
         // Don't break the bed we placed near the end portal
         mod.getBehaviour().avoidBlockBreaking(blockPos -> {
             if (_bedSpawnLocation != null) {
-                return blockPos.equals(WorldHelper.getBedHead(mod, _bedSpawnLocation)) || blockPos.equals(WorldHelper.getBedFoot(mod, _bedSpawnLocation));
+                return blockPos.equals(BlockHelper.getBedHead(mod, _bedSpawnLocation)) || blockPos.equals(BlockHelper.getBedFoot(mod, _bedSpawnLocation));
             }
             return false;
         });

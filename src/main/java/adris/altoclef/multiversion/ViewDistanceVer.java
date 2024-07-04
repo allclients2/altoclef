@@ -10,8 +10,8 @@ public class ViewDistanceVer {
     private static final GameOptions minecraftOptions = getInstance().options;
 
     public static void setViewDistance(int viewDistance) {
-        //FIXME: Don't know which version.
-        //#if MC >= 12001
+        
+        //#if MC >= 11904
         minecraftOptions.getViewDistance().setValue(viewDistance);
         //#else
         //$$  minecraftOptions.viewDistance = viewDistance;

@@ -54,15 +54,6 @@ public abstract class EntityVer {
         //#endif
     }
 
-    @Pattern
-    public boolean isSuitableFor(Item item, BlockState state) {
-        //#if MC >= 12005
-        return item.getDefaultStack().isSuitableFor(state);
-        //#else
-        //$$ return item.isSuitableFor(state);
-        //#endif
-    }
-
     //FIXME: I don't know if this is even accurate..
     private static double squaredAttackRange(MobEntity attacker, LivingEntity target) {
         return (double) (attacker.getWidth() * 2.0F * attacker.getWidth() * 2.0F + target.getWidth());

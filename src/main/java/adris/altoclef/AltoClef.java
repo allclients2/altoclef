@@ -193,7 +193,7 @@ public class AltoClef implements ModInitializer {
         altoClefTickChart = new AltoClefTickChart();
 
         // Render
-        //#if MC>=11904
+        //#if MC>=12001
         EventBus.subscribe(ClientRenderEvent.class, evt -> onClientRenderOverlay(evt.context));
         //#else
         //$$ EventBus.subscribe(ClientRenderEvent.class, evt -> onClientRenderOverlay(evt.context, evt.matrices));
@@ -239,7 +239,7 @@ public class AltoClef implements ModInitializer {
 
     /// GETTERS AND SETTERS
 
-    //#if MC>=11904
+    //#if MC>=12001
     private void onClientRenderOverlay(DrawContext context) {
         if (settings.shouldShowTaskChain()) {
             commandStatusOverlay.render(this, context.getMatrices());

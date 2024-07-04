@@ -4,8 +4,7 @@ import adris.altoclef.util.DumbClass;
 import org.spongepowered.asm.mixin.Mixin;
 import net.minecraft.client.MinecraftClient;
 
-//FIXME: Check version.
-//#if MC>=12000
+//#if MC>=11904
 import net.minecraft.client.option.SimpleOption;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Shadow;

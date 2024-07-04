@@ -2,6 +2,7 @@ package adris.altoclef.tasks.resources;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
+import adris.altoclef.multiversion.ItemVer;
 import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.multiversion.ToolMaterialVer;
 import adris.altoclef.tasks.block.AbstractDoToClosestObjectTask;
@@ -134,7 +135,7 @@ public class MineAndCollectTask extends ResourceTask {
             if (cursorStack != null && !cursorStack.isEmpty()) {
                 // We have something in our cursor stack
                 Item item = cursorStack.getItem();
-                if (item.getDefaultStack().isSuitableFor(mod.getWorld().getBlockState(subtask.miningPos()))) {
+                if (ItemVer.isSuitableFor(item, mod.getWorld().getBlockState(subtask.miningPos()))) {
                     // Our cursor stack would help us mine our current block
                     Item currentlyEquipped = StorageHelper.getItemStackInSlot(PlayerSlot.getEquipSlot()).getItem();
                     if (item instanceof MiningToolItem) {

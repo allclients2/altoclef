@@ -6,10 +6,7 @@ import adris.altoclef.tasks.movement.RunAwayFromPositionTask;
 import adris.altoclef.tasks.movement.SafeRandomShimmyTask;
 import adris.altoclef.tasksystem.ITaskRequiresGrounded;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.helpers.ItemHelper;
-import adris.altoclef.util.helpers.LookHelper;
-import adris.altoclef.util.helpers.StorageHelper;
-import adris.altoclef.util.helpers.WorldHelper;
+import adris.altoclef.util.helpers.*;
 import adris.altoclef.util.progresscheck.MovementProgressChecker;
 import adris.altoclef.util.slots.Slot;
 import baritone.api.pathing.goals.GoalBlock;
@@ -262,7 +259,7 @@ public class DestroyBlockTask extends Task implements ITaskRequiresGrounded {
 
         // Check if the block above the position is not solid, the player is above the position,
         // and the player is within a distance of 0.89 blocks from the position
-        if (!WorldHelper.isSolidBlock(mod, targetPosition.up()) && mod.getPlayer().getPos().y > targetPosition.getY() && targetPosition.isWithinDistance(mod.getPlayer().isOnGround() ? mod.getPlayer().getPos() : mod.getPlayer().getPos().add(0, -1, 0), 0.89)) {
+        if (!BlockHelper.isSolidBlock(mod, targetPosition.up()) && mod.getPlayer().getPos().y > targetPosition.getY() && targetPosition.isWithinDistance(mod.getPlayer().isOnGround() ? mod.getPlayer().getPos() : mod.getPlayer().getPos().add(0, -1, 0), 0.89)) {
             if (WorldHelper.dangerousToBreakIfRightAbove(mod, targetPosition)) {
                 setDebugState("It's dangerous to break as we're right above it, moving away and trying again.");
                 return new RunAwayFromPositionTask(3, targetPosition.getY(), targetPosition);

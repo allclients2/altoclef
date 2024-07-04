@@ -7,6 +7,7 @@ import adris.altoclef.Debug;
 import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.tasksystem.ITaskRequiresGrounded;
 import adris.altoclef.tasksystem.Task;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.EntityHelper;
 import adris.altoclef.util.helpers.StorageHelper;
 import adris.altoclef.util.helpers.WorldHelper;
@@ -46,7 +47,7 @@ public class ProjectileProtectionWallTask extends Task implements ITaskRequiresG
 
     @Override
     protected Task onTick(AltoClef mod) {
-        if (targetPlacePos != null && !WorldHelper.isSolidBlock(mod, targetPlacePos)) {
+        if (targetPlacePos != null && !BlockHelper.isSolidBlock(mod, targetPlacePos)) {
             Optional<adris.altoclef.util.slots.Slot> slot = StorageHelper.getSlotWithThrowawayBlock(this.mod, true);
             if(slot.isPresent()) {
                 place(targetPlacePos, Hand.MAIN_HAND, slot.get().getInventorySlot(), 0);
@@ -102,7 +103,7 @@ public class ProjectileProtectionWallTask extends Task implements ITaskRequiresG
             return false;
         }, SkeletonEntity.class);
 
-        return targetPlacePos != null && WorldHelper.isSolidBlock(mod, targetPlacePos) || entity.isEmpty();
+        return targetPlacePos != null && BlockHelper.isSolidBlock(mod, targetPlacePos) || entity.isEmpty();
     }
 
     @Override

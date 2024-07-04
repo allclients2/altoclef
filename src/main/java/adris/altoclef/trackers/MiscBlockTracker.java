@@ -2,6 +2,7 @@ package adris.altoclef.trackers;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.util.Dimension;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -48,7 +49,7 @@ public class MiscBlockTracker {
                         }
                     }
                     BlockPos below = check.down();
-                    if (WorldHelper.isSolidBlock(mod, below)) {
+                    if (BlockHelper.isSolidBlock(mod, below)) {
                         lastNetherPortalsUsed.put(WorldHelper.getCurrentDimension(), check);
                         newDimensionTriggered = false;
                     }

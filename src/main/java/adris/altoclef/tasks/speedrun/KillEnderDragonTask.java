@@ -295,8 +295,8 @@ public class KillEnderDragonTask extends Task {
                                 mod.getClientBaritone().getLookBehavior().updateTarget(targetRotation, true);
                                 // Also look towards the dragon
 
-                                //FIXME: Don't know which version.
-                                //#if MC >= 12001
+                                
+                                //#if MC >= 11902
                                 MinecraftClient.getInstance().options.getAutoJump().setValue(false);
                                 //#else
                                 //$$  MinecraftClient.getInstance().options.autoJump = false;

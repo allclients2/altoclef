@@ -9,6 +9,7 @@ import adris.altoclef.tasks.movement.GetToBlockTask;
 import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.ItemTarget;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.progresscheck.MovementProgressChecker;
@@ -134,7 +135,7 @@ public class PlaceObsidianBucketTask extends Task {
 
         // Build cast frame if not already built
         if (_currentCastTarget != null) {
-            if (WorldHelper.isSolidBlock(mod, _currentCastTarget)) {
+            if (BlockHelper.isSolidBlock(mod, _currentCastTarget)) {
                 _currentCastTarget = null;
             } else {
                 return new PlaceBlockTask(_currentCastTarget,
@@ -145,7 +146,7 @@ public class PlaceObsidianBucketTask extends Task {
 
         // Destroy block if needed
         if (_currentDestroyTarget != null) {
-            if (!WorldHelper.isSolidBlock(mod, _currentDestroyTarget)) {
+            if (!BlockHelper.isSolidBlock(mod, _currentDestroyTarget)) {
                 _currentDestroyTarget = null;
             } else {
                 return new DestroyBlockTask(_currentDestroyTarget);
@@ -153,13 +154,13 @@ public class PlaceObsidianBucketTask extends Task {
         }
 
         // Build the cast frame if not already built
-        if (_currentCastTarget != null && WorldHelper.isSolidBlock(mod, _currentCastTarget)) {
+        if (_currentCastTarget != null && BlockHelper.isSolidBlock(mod, _currentCastTarget)) {
             // Current cast frame already built.
             _currentCastTarget = null;
         }
         for (Vec3i castPosRelative : CAST_FRAME) {
             BlockPos castPos = _pos.add(castPosRelative);
-            if (!WorldHelper.isSolidBlock(mod, castPos)) {
+            if (!BlockHelper.isSolidBlock(mod, castPos)) {
                 _currentCastTarget = castPos;
                 Debug.logInternal("Building cast frame...");
                 return null;
@@ -174,18 +175,18 @@ public class PlaceObsidianBucketTask extends Task {
             if (!mod.getPlayer().getBlockPos().equals(targetPos) && mod.getItemStorage().hasItem(Items.LAVA_BUCKET)) {
                 return new GetToBlockTask(targetPos, false);
             }
-            if (WorldHelper.isSolidBlock(mod, _pos)) {
+            if (BlockHelper.isSolidBlock(mod, _pos)) {
                 Debug.logInternal("Clearing space around lava...");
                 _currentDestroyTarget = _pos;
                 return null;
             }
             // Clear the upper two as well, to make placing more reliable.
-            if (WorldHelper.isSolidBlock(mod, _pos.up())) {
+            if (BlockHelper.isSolidBlock(mod, _pos.up())) {
                 Debug.logInternal("Clearing space around lava...");
                 _currentDestroyTarget = _pos.up();
                 return null;
             }
-            if (WorldHelper.isSolidBlock(mod, _pos.up(2))) {
+            if (BlockHelper.isSolidBlock(mod, _pos.up(2))) {
                 Debug.logInternal("Clearing space around lava...");
                 _currentDestroyTarget = _pos.up(2);
                 return null;
@@ -203,11 +204,11 @@ public class PlaceObsidianBucketTask extends Task {
                 Debug.logInternal("Positioning player before placing water...");
                 return new GetToBlockTask(targetPos, false);
             }
-            if (WorldHelper.isSolidBlock(mod, waterCheck)) {
+            if (BlockHelper.isSolidBlock(mod, waterCheck)) {
                 _currentDestroyTarget = waterCheck;
                 return null;
             }
-            if (WorldHelper.isSolidBlock(mod, waterCheck.up())) {
+            if (BlockHelper.isSolidBlock(mod, waterCheck.up())) {
                 _currentDestroyTarget = waterCheck.up();
                 return null;
             }

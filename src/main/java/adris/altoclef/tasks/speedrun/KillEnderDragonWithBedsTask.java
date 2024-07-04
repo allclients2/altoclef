@@ -8,6 +8,7 @@ import adris.altoclef.tasks.construction.PlaceBlockTask;
 import adris.altoclef.tasks.movement.GetToBlockTask;
 import adris.altoclef.tasks.movement.GetToXZTask;
 import adris.altoclef.tasksystem.Task;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.LookHelper;
 import adris.altoclef.util.helpers.WorldHelper;
@@ -195,7 +196,7 @@ public class KillEnderDragonWithBedsTask extends Task {
 
         LookHelper.lookAt(mod, obsidian, dir);
 
-        BlockPos bedHead = WorldHelper.getBedHead(mod, endPortalTop);
+        BlockPos bedHead = BlockHelper.getBedHead(mod, endPortalTop);
         mod.getSlotHandler().forceEquipItem(ItemHelper.BED);
 
         if (bedHead == null) {

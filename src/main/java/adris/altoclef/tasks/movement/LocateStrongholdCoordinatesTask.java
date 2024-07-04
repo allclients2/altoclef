@@ -57,8 +57,8 @@ public class LocateStrongholdCoordinatesTask extends Task {
         double t2 = ((d1.z * s2.x) - (d1.z * s1.x) - (d1.x * s2.z) + (d1.x * s1.z)) / ((d1.x * d2.z) - (d1.z * d2.x));
 
 
-        //FIXME: Don't know which version.
-        //#if MC>=12000
+        
+        //#if MC>=11904
         BlockPos blockPos = BlockPos.ofFloored(start2.add(direction2.multiply(t2)));
         //#else
         //$$ BlockPos blockPos = new BlockPos(start2.add(direction2.multiply(t2)));

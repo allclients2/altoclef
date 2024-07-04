@@ -501,7 +501,7 @@ public class MarvionBeatMinecraftTask extends Task {
     protected void onStop(AltoClef mod, Task interruptTask) {
         // Disable walking on end portal
 
-        //FIXME: Check version.
+        //
         //#if MC>= 12000
         //$$ mod.getExtraBaritoneSettings().canWalkOnEndPortal(false);
         //#endif
@@ -799,8 +799,8 @@ public class MarvionBeatMinecraftTask extends Task {
         // Check if the bed spawn location is not null
         if (_bedSpawnLocation != null) {
             // Get the head and foot position of the bed
-            BlockPos bedHead = WorldHelper.getBedHead(mod, _bedSpawnLocation);
-            BlockPos bedFoot = WorldHelper.getBedFoot(mod, _bedSpawnLocation);
+            BlockPos bedHead = BlockHelper.getBedHead(mod, _bedSpawnLocation);
+            BlockPos bedFoot = BlockHelper.getBedFoot(mod, _bedSpawnLocation);
 
             // Prevent block breaking at the bed location
             mod.getBehaviour().avoidBlockBreaking(blockPos -> blockPos.equals(bedHead) || blockPos.equals(bedFoot));
@@ -1259,7 +1259,7 @@ public class MarvionBeatMinecraftTask extends Task {
                 dragonIsDead = true;
                 enteringEndPortal = true;
 
-                //FIXME: Check version.
+                //
                 //#if MC>= 12000
                 //$$ if (!mod.getExtraBaritoneSettings().isCanWalkOnEndPortal()) {
                 //$$     mod.getExtraBaritoneSettings().canWalkOnEndPortal(true);
@@ -1487,7 +1487,7 @@ public class MarvionBeatMinecraftTask extends Task {
                         // We're as ready as we'll ever be, hop into the portal!
                         setDebugState("Entering End");
                         enteringEndPortal = true;
-                        //FIXME: Check version.
+                        //
                         //#if MC>= 12000
                         //$$ if (!mod.getExtraBaritoneSettings().isCanWalkOnEndPortal()) {
                         //$$     mod.getExtraBaritoneSettings().canWalkOnEndPortal(true);

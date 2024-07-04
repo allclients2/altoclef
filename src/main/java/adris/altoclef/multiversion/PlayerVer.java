@@ -26,6 +26,16 @@ public class PlayerVer {
         //#endif
     }
 
+    public static int getPortalCooldown(ClientPlayerEntity player) {
+        //#if MC>=12001
+        return player.getPortalCooldown();
+        //#elseif MC>=11904
+        //$$ return player.getDefaultPortalCooldown();
+        //#else
+        //$$ return player.getDefaultNetherPortalCooldown();
+        //#endif
+    }
+
     public static void setHeadPitch(AltoClef mod, float pitch) {
         //#if MC>=11700
         mod.getPlayer().setPitch(pitch);

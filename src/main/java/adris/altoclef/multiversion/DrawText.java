@@ -5,7 +5,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 
-//#if MC >= 12001
+//#if MC >= 11904
 import org.joml.Matrix4f;
 //#else
 //$$ import net.minecraft.util.math.Matrix4f;

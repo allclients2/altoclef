@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
-//#if MC >= 11800
+//#if MC >= 11802
 import net.minecraft.registry.entry.RegistryEntry;
 //#else
 //$$ import net.minecraft.util.registry.Registry;
@@ -72,20 +72,6 @@ public abstract class WorldHelper {
         return new BlockPos((int) pos.getX(), (int) pos.getY(), (int) pos.getZ());
     }
 
-    public static boolean isSourceBlock(AltoClef mod, BlockPos pos, boolean onlyAcceptStill) {
-        BlockState s = mod.getWorld().getBlockState(pos);
-        if (s.getBlock() instanceof FluidBlock) {
-            // Only accept still fluids.
-            if (!s.getFluidState().isStill() && onlyAcceptStill) return false;
-            int level = s.getFluidState().getLevel();
-            // Ignore if there's liquid above, we can't tell if it's a source block or not.
-            BlockState above = mod.getWorld().getBlockState(pos.up());
-            if (above.getBlock() instanceof FluidBlock) return false;
-            return level == 8;
-        }
-        return false;
-    }
-
     public static double distanceXZSquared(Vec3d from, Vec3d to) {
         Vec3d delta = to.subtract(from);
         return (delta.x * delta.x) + (delta.z * delta.z);
@@ -97,14 +83,14 @@ public abstract class WorldHelper {
 
 
     // Loops over in a 3d box radius `radius` from the `pos`, if the block is found in `blocksSearch` then inputs through the `onBlockMatched`, which if `onBlockMatched` returns true, it will break the loop..
-    public static void forBlocksWithinBoxRadiusOfPos(AltoClef mod, BlockPos pos, int radius, List<Block> blocksSearch, Function<Block, Boolean> onBlockMatched) {
+    public static void forBlocksWithinBoxRadiusOfPos(AltoClef mod, BlockPos pos, int radius, List<Block> blocksSearch, Function<BlockPos, Boolean> onBlockMatched) {
         searchLoop:
         for (int x = -radius; x < radius; x++) {
             for (int y = -radius; y < radius; y++) {
                 for (int z = -radius; z < radius; z++) {
                     final BlockPos position = pos.add(x, y, z);
                     final Block block = mod.getWorld().getBlockState(position).getBlock();
-                    if (blocksSearch.contains(block) && onBlockMatched.apply(block)) {
+                    if (blocksSearch.contains(block) && onBlockMatched.apply(position)) {
                         break searchLoop;
                     }
                 }
@@ -147,8 +133,7 @@ public abstract class WorldHelper {
         ClientWorld world = MinecraftClient.getInstance().world;
         if (world == null) return Dimension.OVERWORLD;
 
-        //FIXME: Dont know which version again..
-        //#if MC>=12001
+        //#if MC>=11904
         if (world.getDimension().ultrawarm()) return Dimension.NETHER;
         if (world.getDimension().natural()) return Dimension.OVERWORLD;
         //#else
@@ -157,18 +142,6 @@ public abstract class WorldHelper {
         //#endif
 
         return Dimension.END;
-    }
-
-    /**
-     * WARNING: this method checks if the block at the given position is a SOLID BLOCK
-     * things like ice, dirtPaths, soulSand... don't count into this
-     * if you just want to check if a block is solid use `BlockState.isSolid()`
-     * (which includes more variety of blocks including the mentioned ones, signs, pressure plates...)
-     * <p>
-     * better method for blocks that can be walked on should be created instead
-     */
-    public static boolean isSolidBlock(AltoClef mod, BlockPos pos) {
-        return mod.getWorld().getBlockState(pos).isSolidBlock(mod.getWorld(), pos);
     }
 
     public static boolean isVulnurable(AltoClef mod) {
@@ -195,64 +168,10 @@ public abstract class WorldHelper {
         return false;
     }
 
-    /**
-     * Get the "head" of a block with a bed, if the block is a bed.
-     */
-    public static BlockPos getBedHead(AltoClef mod, BlockPos posWithBed) {
-        BlockState state = mod.getWorld().getBlockState(posWithBed);
-        if (state.getBlock() instanceof BedBlock) {
-            Direction facing = state.get(BedBlock.FACING);
-            if (mod.getWorld().getBlockState(posWithBed).get(BedBlock.PART).equals(BedPart.HEAD)) {
-                return posWithBed;
-            }
-            return posWithBed.offset(facing);
-        }
-        return null;
-    }
-
-    /**
-     * Get the "foot" of a block with a bed, if the block is a bed.
-     */
-    public static BlockPos getBedFoot(AltoClef mod, BlockPos posWithBed) {
-        BlockState state = mod.getWorld().getBlockState(posWithBed);
-        if (state.getBlock() instanceof BedBlock) {
-            Direction facing = state.get(BedBlock.FACING);
-            if (mod.getWorld().getBlockState(posWithBed).get(BedBlock.PART).equals(BedPart.FOOT)) {
-                return posWithBed;
-            }
-            return posWithBed.offset(facing.getOpposite());
-        }
-        return null;
-    }
-
-    // Get the left side of a chest, given a block pos.
-    // Used to consistently identify whether a double chest is part of the same chest.
-    public static BlockPos getChestLeft(AltoClef mod, BlockPos posWithChest) {
-        BlockState state = mod.getWorld().getBlockState(posWithChest);
-        if (state.getBlock() instanceof ChestBlock) {
-            ChestType type = state.get(ChestBlock.CHEST_TYPE);
-            if (type == ChestType.SINGLE || type == ChestType.LEFT) {
-                return posWithChest;
-            }
-            Direction facing = state.get(ChestBlock.FACING);
-            return posWithChest.offset(facing.rotateYCounterclockwise());
-        }
-        return null;
-    }
-
-    public static boolean isChestBig(AltoClef mod, BlockPos posWithChest) {
-        BlockState state = mod.getWorld().getBlockState(posWithChest);
-        if (state.getBlock() instanceof ChestBlock) {
-            ChestType type = state.get(ChestBlock.CHEST_TYPE);
-            return (type == ChestType.RIGHT || type == ChestType.LEFT);
-        }
-        return false;
-    }
-
     public static int getGroundHeight(AltoClef mod, int x, int z) {
         for (int y = WORLD_CEILING_Y; y >= WORLD_FLOOR_Y; --y) {
             BlockPos check = new BlockPos(x, y, z);
-            if (isSolidBlock(mod, check)) return y;
+            if (BlockHelper.isSolidBlock(mod, check)) return y;
         }
         return -1;
     }
@@ -322,7 +241,7 @@ public abstract class WorldHelper {
             if (MovementHelper.isWater(s))
                 return true;
             // We hit ground, depends
-            if (WorldHelper.isSolidBlock(mod, check)) {
+            if (BlockHelper.isSolidBlock(mod, check)) {
                 return tooFarToFall;
             }
         }
@@ -350,7 +269,7 @@ public abstract class WorldHelper {
         return !mod.getBlockScanner().isUnreachable(pos);
     }
 
-    //#if MC>=11800
+    //#if MC>=11802
     static boolean isOcean(RegistryEntry<Biome> biomeRegistryKey) {
         return (biomeRegistryKey.matchesKey(BiomeKeys.OCEAN)
                 || biomeRegistryKey.matchesKey(BiomeKeys.COLD_OCEAN)
@@ -383,7 +302,7 @@ public abstract class WorldHelper {
     //$$  }
     //#endif
 
-    //#if MC>=11800
+    //#if MC>=11802
     public static RegistryEntry<Biome> getBiomeAtBlockPos(World world, BlockPos pos) {
         return world.getBiome(pos);
     }

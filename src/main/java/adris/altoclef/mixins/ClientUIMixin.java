@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.util.math.MatrixStack;
 
 
-//#if MC>=11904
+//#if MC>=12001
 @Mixin(InGameHud.class)
 public final class ClientUIMixin {
 //#else
@@ -22,7 +22,7 @@ public final class ClientUIMixin {
 //#endif
 
 
-    //#if MC>=11904
+    //#if MC>=12001
     @Inject(
             method = "render",
             at = @At("TAIL")

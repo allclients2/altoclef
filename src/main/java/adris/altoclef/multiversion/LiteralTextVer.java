@@ -2,7 +2,7 @@ package adris.altoclef.multiversion;
 
 import net.minecraft.text.MutableText;
 
-//FIXME: Check version.
+//
 //#if MC>=11900
 import net.minecraft.text.Text;
 //#else

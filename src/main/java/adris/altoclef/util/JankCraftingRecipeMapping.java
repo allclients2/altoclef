@@ -37,7 +37,7 @@ public class JankCraftingRecipeMapping {
                     assert world != null;
                     Recipe<?> value = recipe.value();
 
-                    //#if MC>=12000
+                    //#if MC>=11904
                     Item output = value.getResult(world.getRegistryManager()).getItem();
                     //#else
                     //$$ Item output = value.getOutput().getItem();

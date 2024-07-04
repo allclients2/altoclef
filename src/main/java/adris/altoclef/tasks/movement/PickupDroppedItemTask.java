@@ -9,6 +9,7 @@ import adris.altoclef.tasksystem.ITaskRequiresGrounded;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.StlHelper;
 import adris.altoclef.util.helpers.StorageHelper;
 import adris.altoclef.util.helpers.WorldHelper;
@@ -219,7 +220,7 @@ public class PickupDroppedItemTask extends AbstractDoToClosestObjectTask<ItemEnt
         if (!obj.isOnGround() && !obj.isTouchingWater()) {
             // Assume we'll land down one or two blocks from here. We could do this more advanced but whatever.
             BlockPos p = obj.getBlockPos();
-            if (!WorldHelper.isSolidBlock(mod, p.down(3))) {
+            if (!BlockHelper.isSolidBlock(mod, p.down(3))) {
                 return obj.getPos().subtract(0, 2, 0);
             }
             return obj.getPos().subtract(0, 1, 0);

@@ -11,6 +11,7 @@ import adris.altoclef.tasks.movement.SafeRandomShimmyTask;
 import adris.altoclef.tasksystem.TaskRunner;
 import adris.altoclef.util.Dimension;
 import adris.altoclef.util.ItemTarget;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.LookHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.time.TimerGame;
@@ -68,7 +69,7 @@ public class WorldSurvivalChain extends SingleTaskChain {
                 // Extinguish ourselves
                 if (mod.getItemStorage().hasItem(Items.WATER_BUCKET)) {
                     BlockPos targetWaterPos = mod.getPlayer().getBlockPos();
-                    if (WorldHelper.isSolidBlock(mod, targetWaterPos.down()) && WorldHelper.canPlace(mod, targetWaterPos)) {
+                    if (BlockHelper.isSolidBlock(mod, targetWaterPos.down()) && WorldHelper.canPlace(mod, targetWaterPos)) {
                         Optional<Rotation> reach = LookHelper.getReach(targetWaterPos.down(), Direction.UP);
                         if (reach.isPresent()) {
                             mod.getClientBaritone().getLookBehavior().updateTarget(reach.get(), true);

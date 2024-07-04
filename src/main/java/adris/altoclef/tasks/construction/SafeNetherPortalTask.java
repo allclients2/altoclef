@@ -1,6 +1,7 @@
 package adris.altoclef.tasks.construction;
 
 import adris.altoclef.AltoClef;
+import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.helpers.LookHelper;
 import adris.altoclef.util.time.TimerGame;
@@ -41,11 +42,7 @@ public class SafeNetherPortalTask extends Task {
             mod.getClientBaritone().getInputOverrideHandler().clearAllKeys();
         }
 
-        //#if MC>=12001
-        if (mod.getPlayer().getPortalCooldown() < 10) {
-        //#else
-        //$$ if (mod.getPlayer().getDefaultNetherPortalCooldown() < 10) {
-        //#endif
+        if (PlayerVer.getPortalCooldown(mod.getPlayer()) < 10) {
             if (positions != null && directions != null) {
                 BlockPos pos1 = mod.getPlayer().getBlockPos().offset(axis, 1);
                 BlockPos pos2 = mod.getPlayer().getBlockPos().offset(axis, -1);

@@ -154,7 +154,7 @@ public class StorageHelper {
                 continue;
             ItemStack stack = getItemStackInSlot(slot);
             if (stack.getItem() instanceof ToolItem) {
-                if (stack.getItem().getDefaultStack().isSuitableFor(state)) {
+                if (ItemVer.isSuitableFor(stack.getItem(), state)) {
                     if (shouldSaveStack(mod, block, stack)) continue;
 
                     double speed = ToolSet.calculateSpeedVsBlock(stack, state);

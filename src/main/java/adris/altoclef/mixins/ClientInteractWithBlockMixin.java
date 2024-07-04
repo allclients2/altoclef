@@ -20,8 +20,8 @@ public final class ClientInteractWithBlockMixin {
             method = "interactBlock",
             at = @At("HEAD")
     )
-    //#FIXME: Check version.
-    //#if MC>=12000
+
+    //#if MC>=11904
     private void onClientBlockInteract(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> ci) {
     //#else
     //$$ private void onClientBlockInteract(ClientPlayerEntity player, ClientWorld world, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<Boolean> cir) {

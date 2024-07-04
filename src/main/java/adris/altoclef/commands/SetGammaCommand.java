@@ -19,8 +19,8 @@ public class SetGammaCommand extends Command {
         double gammaValue = parser.get(Double.class);
         Debug.logMessage("Gamma set to " + gammaValue);
 
-        //FIXME: Don't know which version.
-        //#if MC >= 12001
+        
+        //#if MC >= 11904
         MinecraftClient.getInstance().options.getGamma().setValue(gammaValue);
         //#else
         //$$   MinecraftClient.getInstance().options.gamma = gammaValue;

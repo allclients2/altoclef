@@ -10,6 +10,7 @@ import adris.altoclef.tasks.squashed.CataloguedResourceTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import net.minecraft.block.Block;
@@ -141,7 +142,7 @@ public class BeeMovieTask extends Task {
 
             // Fortify below
             //BlockState below = MinecraftClient.getInstance().world.getBlockState(currentSignPos.down());
-            boolean canPlace = WorldHelper.isSolidBlock(mod, currentSignPos.down());//isSideSolidFullSquare(MinecraftClient.getInstance().world, currentSignPos.down(), Direction.UP);
+            boolean canPlace = BlockHelper.isSolidBlock(mod, currentSignPos.down());//isSideSolidFullSquare(MinecraftClient.getInstance().world, currentSignPos.down(), Direction.UP);
             if (loaded && !canPlace) {
                 setDebugState("Placing block below for sign placement...");
                 return new PlaceStructureBlockTask(currentSignPos.down());

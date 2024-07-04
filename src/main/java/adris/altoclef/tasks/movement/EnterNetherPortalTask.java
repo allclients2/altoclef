@@ -6,6 +6,7 @@ import adris.altoclef.tasks.construction.compound.ConstructNetherPortalBucketTas
 import adris.altoclef.tasks.construction.compound.ConstructNetherPortalObsidianTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.Dimension;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.time.TimerGame;
 import baritone.api.utils.input.Input;
@@ -94,7 +95,7 @@ public class EnterNetherPortalTask extends Task {
                 return goodPortal.test(blockPos);
             }
             BlockPos below = blockPos.down();
-            boolean canStand = WorldHelper.isSolidBlock(mod, below) && !mod.getBlockScanner().isBlockAtPosition(below, Blocks.NETHER_PORTAL);
+            boolean canStand = BlockHelper.isSolidBlock(mod, below) && !mod.getBlockScanner().isBlockAtPosition(below, Blocks.NETHER_PORTAL);
             return canStand && goodPortal.test(blockPos);
         };
 

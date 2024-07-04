@@ -31,7 +31,7 @@ public class AltoClefTickChart {
         list.add(nanoTime);
     }
 
-    //#if MC>=11903
+    //#if MC>=12001
     public void render(AltoClef mod, DrawContext context, int x, int width) {
     //#else
     //$$ public void render(AltoClef mod, DrawableHelper helper, MatrixStack matrices, int x, int width) {
@@ -39,7 +39,7 @@ public class AltoClefTickChart {
 
         if (InGameHudVer.shouldShowDebugHud() || !mod.getTaskRunner().isActive()) return;
 
-        //#if MC>=11903
+        //#if MC>=12001
         final DrawContextVer contextVer = new DrawContextVer(context, context.getMatrices());
         //#else
         //$$ final DrawContextVer contextVer = new DrawContextVer(helper, matrices);
@@ -123,7 +123,7 @@ public class AltoClefTickChart {
     }
 
     public static int lerpColor(float delta, int start, int end) {
-        //FIXME: Check version.
+        //
         //#if MC>=12001
         return ColorHelper.Argb.lerp(delta, start, end);
         //#else

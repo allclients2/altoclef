@@ -9,14 +9,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.network.ClientPlayerEntity;
 
-//FIXME: Check version
-//#if MC>=12001
+//#if MC>=11904
 @Mixin(ClientPlayNetworkHandler.class)
 //#else
 //$$ @Mixin(ClientPlayerEntity.class)
 //#endif
 public final class ChatInputMixin {
-
 
     @Inject(
             method = "sendChatMessage",

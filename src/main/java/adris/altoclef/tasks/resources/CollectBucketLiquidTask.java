@@ -12,6 +12,7 @@ import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.Dimension;
 import adris.altoclef.util.ItemTarget;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.LookHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.progresscheck.MovementProgressChecker;
@@ -93,7 +94,7 @@ public class CollectBucketLiquidTask extends ResourceTask {
         // If we're standing inside a liquid, go pick it up.
         if (tryImmediatePickupTimer.elapsed() && !mod.getItemStorage().hasItem(Items.WATER_BUCKET)) {
             Block standingInside = mod.getWorld().getBlockState(mod.getPlayer().getBlockPos()).getBlock();
-            if (standingInside == toCollect && WorldHelper.isSourceBlock(mod, mod.getPlayer().getBlockPos(), false)) {
+            if (standingInside == toCollect && BlockHelper.isSourceBlock(mod, mod.getPlayer().getBlockPos(), false)) {
                 setDebugState("Trying to collect (we are in it)");
                 mod.getInputControls().forceLook(mod, 0, 90);
                 //mod.getClientBaritone().getLookBehavior().updateTarget(new Rotation(0, 90), true);
@@ -144,7 +145,7 @@ public class CollectBucketLiquidTask extends ResourceTask {
                 }
             }
 
-            return WorldHelper.isSourceBlock(mod, blockPos, false);
+            return BlockHelper.isSourceBlock(mod, blockPos, false);
         };
 
         // Find nearest water and right click it

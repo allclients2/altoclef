@@ -15,10 +15,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//#if MC >= 12001
+//#if MC >= 11904
 import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.network.message.SignedMessage;
-
 import java.util.UUID;
 //#else
 //$$ import net.minecraft.network.MessageType;
@@ -27,7 +26,7 @@ import java.util.UUID;
 //$$ import java.util.UUID;
 //#endif
 
-//#if MC >= 12001
+//#if MC >= 11904
 @Mixin(MessageHandler.class)
 public final class ChatReadMixin {
 //#else
@@ -35,7 +34,7 @@ public final class ChatReadMixin {
 //$$ public class ChatReadMixin {
 //#endif
 
-    //#if MC >= 12001
+    //#if MC >= 11904
     @Inject(
             method = "onChatMessage",
             at = @At("HEAD")

@@ -7,7 +7,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
 import static adris.altoclef.util.helpers.WorldHelper.getBiomeAtBlockPos;
 
-//#if MC>=11800
+//#if MC>=11802
 import net.minecraft.registry.entry.RegistryEntry;
 //#endif
 
@@ -21,7 +21,8 @@ public class SearchWithinBiomeTask extends SearchChunksExploreTask {
     public SearchWithinBiomeTask(RegistryKey<Biome> toSearch) {
         _toSearch = toSearch;
     }
-    //#if MC>=11800
+
+    //#if MC>=11802
     @Override
     protected boolean isChunkWithinSearchSpace(AltoClef mod, ChunkPos pos) {
         RegistryEntry<Biome> biome = getBiomeAtBlockPos(mod.getWorld(), pos.getStartPos().add(1, 1, 1));
@@ -45,6 +46,6 @@ public class SearchWithinBiomeTask extends SearchChunksExploreTask {
 
     @Override
     protected String toDebugString() {
-        return "Searching for+within biome: " + _toSearch;
+        return "Searching within biome: " + _toSearch;
     }
 }

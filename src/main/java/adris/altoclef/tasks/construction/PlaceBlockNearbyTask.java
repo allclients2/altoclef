@@ -8,10 +8,7 @@ import adris.altoclef.eventbus.events.BlockPlaceEvent;
 import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.helpers.ItemHelper;
-import adris.altoclef.util.helpers.LookHelper;
-import adris.altoclef.util.helpers.StorageHelper;
-import adris.altoclef.util.helpers.WorldHelper;
+import adris.altoclef.util.helpers.*;
 import adris.altoclef.util.progresscheck.MovementProgressChecker;
 import adris.altoclef.util.time.TimerGame;
 import baritone.api.utils.IPlayerContext;
@@ -225,7 +222,7 @@ public class PlaceBlockNearbyTask extends Task {
             final Hand hand = Hand.MAIN_HAND;
             assert MinecraftClient.getInstance().interactionManager != null;
 
-            //#if MC >= 12001
+            //#if MC >= 11904
             final ActionResult interactionTest = MinecraftClient.getInstance().interactionManager.interactBlock(mod.getPlayer(), hand, (BlockHitResult) mouseOver);
             //#else
             //$$ final ActionResult interactionTest = MinecraftClient.getInstance().interactionManager.interactBlock(mod.getPlayer(), mod.getWorld(), hand, (BlockHitResult) mouseOver);
@@ -258,7 +255,7 @@ public class PlaceBlockNearbyTask extends Task {
         BlockPos start = mod.getPlayer().getBlockPos().add(-range, -range, -range);
         BlockPos end = mod.getPlayer().getBlockPos().add(range, range, range);
         for (BlockPos blockPos : WorldHelper.scanRegion(mod, start, end)) {
-            boolean solid = WorldHelper.isSolidBlock(mod, blockPos);
+            boolean solid = BlockHelper.isSolidBlock(mod, blockPos);
             boolean inside = WorldHelper.isInsidePlayer(mod, blockPos);
             // We can't break this block.
             if (solid && !WorldHelper.canBreak(mod, blockPos)) {
@@ -272,7 +269,7 @@ public class PlaceBlockNearbyTask extends Task {
             if (!WorldHelper.canReach(mod, blockPos) || !WorldHelper.canPlace(mod, blockPos)) {
                 continue;
             }
-            boolean hasBelow = WorldHelper.isSolidBlock(mod, blockPos.down());
+            boolean hasBelow = BlockHelper.isSolidBlock(mod, blockPos.down());
             double distSq = MathUtilVer.getDistance(blockPos, mod.getPlayer().getPos());
 
             double score = distSq + (solid ? 4 : 0) + (hasBelow ? 0 : 10) + (inside ? 3 : 0);

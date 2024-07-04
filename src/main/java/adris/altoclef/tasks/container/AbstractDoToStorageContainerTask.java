@@ -7,6 +7,7 @@ import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.trackers.storage.ContainerCache;
 import adris.altoclef.trackers.storage.ContainerType;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
@@ -52,7 +53,7 @@ public abstract class AbstractDoToStorageContainerTask extends Task {
             Block type = mod.getWorld().getBlockState(targetPos).getBlock();
             currentContainerType = ContainerType.getFromBlock(type);
         }
-        if (WorldHelper.isChest(mod, targetPos) && WorldHelper.isSolidBlock(mod, targetPos.up()) && WorldHelper.canBreak(mod, targetPos.up())) {
+        if (WorldHelper.isChest(mod, targetPos) && BlockHelper.isSolidBlock(mod, targetPos.up()) && WorldHelper.canBreak(mod, targetPos.up())) {
             setDebugState("Clearing block above chest");
             return new DestroyBlockTask(targetPos.up());
         }

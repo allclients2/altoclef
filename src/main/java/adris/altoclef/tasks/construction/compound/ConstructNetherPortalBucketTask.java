@@ -13,6 +13,7 @@ import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasks.speedrun.maintasks.BeatMinecraftTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.ItemTarget;
+import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.progresscheck.MovementProgressChecker;
 import adris.altoclef.util.time.TimerGame;
@@ -166,7 +167,7 @@ public class ConstructNetherPortalBucketTask extends Task {
         }
 
         if (currentDestroyTarget != null) {
-            if (!WorldHelper.isSolidBlock(mod, currentDestroyTarget)) {
+            if (!BlockHelper.isSolidBlock(mod, currentDestroyTarget)) {
                 currentDestroyTarget = null;
             } else {
                 return new DestroyBlockTask(currentDestroyTarget);
@@ -246,7 +247,7 @@ public class ConstructNetherPortalBucketTask extends Task {
             if (frameBlock == Blocks.OBSIDIAN) {
                 // Already satisfied, clear water above if need be.
                 BlockPos waterCheck = framePos.up();
-                if (mod.getWorld().getBlockState(waterCheck).getBlock() == Blocks.WATER && WorldHelper.isSourceBlock(mod, waterCheck, true)) {
+                if (mod.getWorld().getBlockState(waterCheck).getBlock() == Blocks.WATER && BlockHelper.isSourceBlock(mod, waterCheck, true)) {
                     setDebugState("Clearing water from cast");
                     return new ClearLiquidTask(waterCheck);
                 }
@@ -387,7 +388,7 @@ public class ConstructNetherPortalBucketTask extends Task {
                                 break moveAlongLine;
                             }
                             // Also check for at least 1 solid block for us to place on...
-                            if (dy <= 1 && !solidFound && WorldHelper.isSolidBlock(mod, toCheck)) {
+                            if (dy <= 1 && !solidFound && BlockHelper.isSolidBlock(mod, toCheck)) {
                                 solidFound = true;
                             }
                         }

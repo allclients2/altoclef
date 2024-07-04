@@ -17,6 +17,7 @@
 ### Debug
 - Fix Obsidian task lagging so badly..
 - Mob defense chain takes over to ("run away" as seen by 75 priority) but then just stands there.
+- Fix in 1.16.5, it uses the wrong tools for breaking blocks. (It can be seen breaking a crafting table with its hand, when it has a stone axe.)
 
 ### Chores
 - Get rid of the baritone settings from BotBehavior class (Possibly move it into its own class)

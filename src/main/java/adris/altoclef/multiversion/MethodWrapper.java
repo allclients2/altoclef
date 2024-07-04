@@ -7,11 +7,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.block.spawner.MobSpawnerLogic;
 import net.minecraft.world.World;
 
-//#if MC>=12001
+//#if MC>=11904
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
 //#endif
+
 
 public class MethodWrapper {
 
@@ -20,7 +19,7 @@ public class MethodWrapper {
     public static Entity getRenderedEntity(MobSpawnerLogic logic, World world, BlockPos pos) {
         //#if MC>12002
         return logic.getRenderedEntity(world, pos);
-        //#elseif MC>=12001
+        //#elseif MC>=11904
         //$$ return logic.getRenderedEntity(world, Random.create(), pos);
         //#elseif MC>=11700
         //$$ return logic.getRenderedEntity(world);

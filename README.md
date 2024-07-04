@@ -28,11 +28,18 @@ this mod to, like 1.18.2. This is also a very experimental branch, if you experi
   - 1.20.4
   - 1.20.2
   - 1.20.1
+- 1.19.*
+  - 1.19.4
 - 1.18.*
+  - 1.18
   - 1.18.2
+- 1.17.*
+  - 1.17.1
 
 *note: All the versions use the "same release" of Alto clef, although some of them may utilize older versions of baritone.* 
 
+## Issues
+Have an issue? Report it in the issues tab! Note that on the older versions supported, there are more bugs, as the mod native to the latest version supported.
 
 ## How it works
 Take a look at this [Guide from the wiki](https://github.com/allclients2/altocleftest2/wiki/1:-Documentation:-Big-Picture)
