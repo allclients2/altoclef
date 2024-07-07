@@ -1168,7 +1168,6 @@ public class BeatMinecraftTask extends Task {
                     continue;
 
                 if (mod.getPlayer().squaredDistanceTo(entity.getPos()) < 150 && nearestTracking.get().isWithinDistance(entity.getPos(), 30)) {
-
                     Debug.logInternal("Blacklisting dangerous " + block.toString());
                     mod.getBlockScanner().requestBlockUnreachable(nearestTracking.get(), 0);
                 }

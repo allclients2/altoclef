@@ -37,6 +37,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
 
 import static adris.altoclef.multiversion.MathUtilVer.viAdd;
 
@@ -419,18 +420,8 @@ public class PlaceBedAndSetSpawnTask extends Task {
     protected void onStop(AltoClef mod, Task interruptTask) {
         // Pop the behaviour stack
         mod.getBehaviour().pop();
-
-        // Unsubscribe from respawn point set message
         EventBus.unsubscribe(respawnPointSetMessageCheck);
-
-        // Unsubscribe from respawn failure message
         EventBus.unsubscribe(respawnFailureMessageCheck);
-
-        // Logging statements for debugging
-        Debug.logInternal("Tracking stopped for beds");
-        Debug.logInternal("Behaviour popped");
-        Debug.logInternal("Unsubscribed from respawn point set message");
-        Debug.logInternal("Unsubscribed from respawn failure message");
     }
 
     /**
@@ -441,11 +432,9 @@ public class PlaceBedAndSetSpawnTask extends Task {
      */
     @Override
     protected boolean isEqual(Task other) {
-        // Check if the other task is an instance of PlaceBedAndSetSpawnTask
         boolean isSameTask = (other instanceof PlaceBedAndSetSpawnTask);
 
         if (!isSameTask) {
-            // Log a debug message if the tasks are not of the same type
             Debug.logInternal("Tasks are not of the same type");
         }
 
@@ -471,9 +460,8 @@ public class PlaceBedAndSetSpawnTask extends Task {
      */
     @Override
     public boolean isFinished(AltoClef mod) {
-        // Check if we are in the overworld
+
         if (WorldHelper.getCurrentDimension() != Dimension.OVERWORLD) {
-            Debug.logInternal("Can't place spawnpoint/sleep in a bed unless we're in the overworld!");
             return true;
         }
 
@@ -485,12 +473,6 @@ public class PlaceBedAndSetSpawnTask extends Task {
 
         // Check if spawnpoint is set, player is not sleeping, and timer has elapsed
         boolean isFinished = spawnSet && !isSleeping && timerElapsed;
-
-        // Log the values for debugging
-        Debug.logInternal("isSleeping: " + isSleeping);
-        Debug.logInternal("timerElapsed: " + timerElapsed);
-        Debug.logInternal("isFinished: " + isFinished);
-
         return isFinished;
     }
 
@@ -500,9 +482,6 @@ public class PlaceBedAndSetSpawnTask extends Task {
      * @return The BlockPos of the bed.
      */
     public BlockPos getBedSleptPos() {
-        // Log a debug message indicating that the bed slept position is being fetched
-        Debug.logInternal("Fetching bed slept position");
-
         // Return the stored bed position
         return bedForSpawnPoint;
     }
@@ -513,9 +492,6 @@ public class PlaceBedAndSetSpawnTask extends Task {
      * @return true if the spawn is set, false otherwise.
      */
     public boolean isSpawnSet() {
-        // Log internal message for debugging
-        Debug.logInternal("Checking if spawn is set");
-
         // Return the value of the _spawnSet variable
         return spawnSet;
     }
@@ -527,30 +503,24 @@ public class PlaceBedAndSetSpawnTask extends Task {
      * @param origin The origin position.
      * @return The closest good position.
      */
+    @Nullable
     private BlockPos locateBedRegion(AltoClef mod, BlockPos origin) {
-        final int SCAN_RANGE = 10;
+        final int SCAN_RANGE = 8;
 
         BlockPos closestGood = null;
-        double closestDist = Double.POSITIVE_INFINITY;
+        double closestDistSquared = Double.POSITIVE_INFINITY;
 
         for (int x = origin.getX() - SCAN_RANGE; x < origin.getX() + SCAN_RANGE; ++x) {
             for (int z = origin.getZ() - SCAN_RANGE; z < origin.getZ() + SCAN_RANGE; ++z) {
                 outer:
                 for (int y = origin.getY() - SCAN_RANGE; y < origin.getY() + SCAN_RANGE; ++y) {
-                    BlockPos attemptPos = new BlockPos(x, y, z);
-                    double distance = MathUtilVer.getDistance(attemptPos, mod.getPlayer().getPos());
 
-                    Debug.logInternal("Checking position: " + attemptPos);
+                    final BlockPos attemptPos = new BlockPos(x, y, z);
+                    double distance = MathUtilVer.getDistanceSquared(attemptPos, mod.getPlayer().getPos());
 
-                    if (distance > closestDist) {
-                        Debug.logInternal("Skipping position: " + attemptPos);
-                        continue;
-                    }
-
-                    if (isGoodPosition(mod, attemptPos)) {
-                        Debug.logInternal("Found good position: " + attemptPos);
+                    if (distance < closestDistSquared && isGoodPosition(mod, attemptPos)) {
                         closestGood = attemptPos;
-                        closestDist = distance;
+                        closestDistSquared = distance;
                     }
                 }
             }
@@ -576,14 +546,12 @@ public class PlaceBedAndSetSpawnTask extends Task {
                 for (int z = 0; z < BED_CLEAR_SIZE.getZ(); ++z) {
                     BlockPos checkPos = pos.add(x, y, z);
                     if (!isGoodToPlaceInsideOrClear(mod, checkPos)) {
-                        Debug.logInternal("Not a good position: " + checkPos);
                         return false;
                     }
                 }
             }
         }
 
-        Debug.logInternal("Good position");
         return true;
     }
 
@@ -610,12 +578,10 @@ public class PlaceBedAndSetSpawnTask extends Task {
         for (Vec3i offset : CHECK) {
             BlockPos newPos = pos.add(offset);
             if (!isGoodAsBorder(mod, newPos)) {
-                Debug.logInternal("Not good as border: " + newPos);
                 return false;
             }
         }
 
-        Debug.logInternal("Good to place inside or clear");
         return true;
     }
 
@@ -629,18 +595,13 @@ public class PlaceBedAndSetSpawnTask extends Task {
     private boolean isGoodAsBorder(AltoClef mod, BlockPos pos) {
         // Check if the block is solid
         boolean isSolid = BlockHelper.isSolidBlock(mod, pos);
-        Debug.logInternal("isSolid: " + isSolid);
 
         if (isSolid) {
             // Check if the block can be broken
-            boolean canBreak = WorldHelper.canBreak(mod, pos);
-            Debug.logInternal("canBreak: " + canBreak);
-            return canBreak;
+            return WorldHelper.canBreak(mod, pos);
         } else {
             // Check if the block is air
-            boolean isAir = WorldHelper.isAir(mod, pos);
-            Debug.logInternal("isAir: " + isAir);
-            return isAir;
+            return WorldHelper.isAir(mod, pos);
         }
     }
 }
