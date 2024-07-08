@@ -213,6 +213,7 @@ public class ItemHelper {
             .map(oreBlockData -> oreBlockData.oreBlock)
             .toArray(Block[]::new);
 
+
     // Wood-item arrays...
     public static final Item[] SAPLINGS = woodMap.values().stream()
             .map(woodItems -> woodItems.sapling)
@@ -265,11 +266,6 @@ public class ItemHelper {
     public static final Item[] LOG = woodMap.values().stream()
             .map(woodItems -> woodItems.log)
             .toArray(Item[]::new);
-    //#if MC >= 12000
-    public static final Item[] WOOD_HANGING_SIGN = woodMap.values().stream()
-            .map(woodItems -> woodItems.hangingSign)
-            .toArray(Item[]::new);
-    //#endif
     public static final Item[] LOGS_ALL = Stream.concat(Arrays.stream(STRIPPED_LOG), Arrays.stream(LOG)).toArray(Item[]::new);
     public static final Block[] WOOD_SIGNS_ALL = new Block[]{ //TODO: Make this `WOOD_SIGNS_ALL` from `woodItems` like all the others...
             Blocks.ACACIA_SIGN, Blocks.BIRCH_SIGN, Blocks.DARK_OAK_SIGN,
@@ -282,6 +278,12 @@ public class ItemHelper {
             Blocks.BAMBOO_SIGN, Blocks.BAMBOO_WALL_SIGN, Blocks.CHERRY_SIGN, Blocks.CHERRY_WALL_SIGN
             //#endif
     };
+    //#if MC >= 12000
+    public static final Item[] WOOD_HANGING_SIGN = woodMap.values().stream()
+            .map(woodItems -> woodItems.hangingSign)
+            .toArray(Item[]::new);
+    //#endif
+
 
     // Color-item Arrays...
     public static final Item[] DYE = colorMap.values().stream()
@@ -299,6 +301,7 @@ public class ItemHelper {
     public static final Item[] SHULKER_BOXES = colorMap.values().stream()
             .map(woodItems -> woodItems.shulker)
             .toArray(Item[]::new);
+
 
     public static final Item[] HOSTILE_MOB_DROPS = new Item[]{
             Items.BLAZE_ROD, Items.FEATHER, Items.CHICKEN,
@@ -364,22 +367,9 @@ public class ItemHelper {
 
     private static final Map<Item, Item> oreToDrop = new HashMap<>() {
         {
-            put(Items.COAL_ORE, Items.COAL);
-            put(Items.IRON_ORE, Items.IRON_INGOT);
-            put(Items.LAPIS_ORE, Items.LAPIS_LAZULI);
-            put(Items.GOLD_ORE, Items.GOLD_INGOT);
-            put(Items.DIAMOND_ORE, Items.DIAMOND);
-            put(Items.REDSTONE_ORE, Items.REDSTONE);
-            //#if MC >= 11800
-            put(Items.DEEPSLATE_IRON_ORE, Items.IRON_INGOT);
-            put(Items.DEEPSLATE_LAPIS_ORE, Items.LAPIS_LAZULI);
-            put(Items.DEEPSLATE_GOLD_ORE, Items.GOLD_INGOT);
-            put(Items.DEEPSLATE_DIAMOND_ORE, Items.DIAMOND);
-            put(Items.DEEPSLATE_COAL_ORE, Items.COAL);
-            put(Items.COPPER_ORE, Items.COPPER_INGOT);
-            put(Items.DEEPSLATE_COPPER_ORE, Items.COPPER_INGOT);
-            put(Items.DEEPSLATE_REDSTONE_ORE, Items.REDSTONE);
-            //#endif
+            MATERIAL_DATA.forEach((oreType, materialData) -> {
+                Arrays.stream(materialData.oreBlocks).forEach(block -> put(block.oreBlock.asItem(), materialData.rawItem));
+            });
         }
     };
 
