@@ -28,7 +28,9 @@ jobs:
       - name: Create versions directory and mainProject
         run: |
           mkdir -p ./versions
-          echo "1.20.6" > ./versions/mainProject
+          if [ ! -f ./versions/mainProject ]; then
+            echo "1.20.6" > ./versions/mainProject
+          fi
 
       - name: Build with Gradle
         run: ./gradlew build
