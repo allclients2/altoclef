@@ -3,5 +3,5 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
-      interval: "as-available"
+      interval: "daily"
     open-pull-requests-limit: 7
