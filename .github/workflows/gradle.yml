@@ -25,13 +25,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
-
       - name: Create versions directory and mainProject
         run: |
           mkdir -p ./versions
           echo "1.20.6" > ./versions/mainProject
+
+      - name: Build with Gradle
+        run: ./gradlew build
 
       - name: Create artifact directory structure
         run: |
