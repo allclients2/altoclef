@@ -356,9 +356,9 @@ public class BotBehaviour {
             }
             _allowWalkThroughFlowingWater = settings.isFlowingWaterPassAllowed();
 
-            //#if MC>=11800
+            // #if MC>=11800
             rayFluidHandling = RayTraceUtils.fluidHandling;
-            //#endif
+            // #endif
 
         }
 
@@ -410,9 +410,9 @@ public class BotBehaviour {
             sa.allowSwimThroughLava(swimThroughLava);
 
             // Extra / hard coded
-            //#if MC>=11800
+            // #if MC>=11800
             RayTraceUtils.fluidHandling = rayFluidHandling;
-            //#endif
+            // #endif
 
             // Minecraft
             MinecraftClient.getInstance().options.pauseOnLostFocus = pauseOnLostFocus;
