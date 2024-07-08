@@ -2,7 +2,7 @@
 .idea/
 .vs/
 run12004/
-versions/
+versions/1.*
 crash-reports/
 
 *.iml
