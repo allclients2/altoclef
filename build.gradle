@@ -16,7 +16,6 @@ plugins {
 }
 
 apply plugin: 'fabric-loom'
-
 apply plugin: 'com.replaymod.preprocess'
 
 preprocess {
@@ -24,7 +23,7 @@ preprocess {
 }
 
 
-sourceCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = sourceCompatibility
 
 
