@@ -355,6 +355,8 @@ public class ItemHelper {
     public static final Item[] NETHERITE_TOOLS = new Item[]{Items.NETHERITE_PICKAXE, Items.NETHERITE_SHOVEL, Items.NETHERITE_SWORD, Items.NETHERITE_AXE, Items.NETHERITE_HOE};
 
     //#if MC >= 12000
+    // Never used, and I don't like it. Deprecated.
+    @Deprecated
     public static final Block[] WOOD_HANGING_SIGNS_ALL = new Block[]{
             Blocks.ACACIA_HANGING_SIGN, Blocks.ACACIA_WALL_HANGING_SIGN, Blocks.BIRCH_HANGING_SIGN,
             Blocks.BIRCH_WALL_HANGING_SIGN, Blocks.DARK_OAK_HANGING_SIGN, Blocks.DARK_OAK_WALL_HANGING_SIGN,
@@ -376,63 +378,19 @@ public class ItemHelper {
 
     private static final Map<Item, WoodType> planksToType = new HashMap<>() {
         {
-            put(Items.ACACIA_PLANKS, WoodType.ACACIA);
-            put(Items.BIRCH_PLANKS, WoodType.BIRCH);
-            put(Items.CRIMSON_PLANKS, WoodType.CRIMSON);
-            put(Items.DARK_OAK_PLANKS, WoodType.DARK_OAK);
-            put(Items.OAK_PLANKS, WoodType.OAK);
-            put(Items.JUNGLE_PLANKS, WoodType.JUNGLE);
-            put(Items.SPRUCE_PLANKS, WoodType.SPRUCE);
-            put(Items.WARPED_PLANKS, WoodType.WARPED);
-
-            //#if MC >= 12000
-            put(Items.CHERRY_PLANKS, WoodType.CHERRY);
-            put(Items.BAMBOO_PLANKS, WoodType.BAMBOO);
-            //#endif
-            //#if MC >= 11900
-            put(Items.MANGROVE_PLANKS, WoodType.MANGROVE);
-            //#endif
+            woodMap.forEach((woodType, woodItems) -> put(woodItems.planks, woodType));
         }
     };
 
-    private static final Map<Item, WoodType> logsToTypeMap = new HashMap<Item, WoodType>() {
+    private static final Map<Item, WoodType> logsToTypeMap = new HashMap<>() {
         {
-            put(Items.ACACIA_LOG, WoodType.ACACIA);
-            put(Items.BIRCH_LOG, WoodType.BIRCH);
-            put(Items.CRIMSON_STEM, WoodType.CRIMSON);
-            put(Items.DARK_OAK_LOG, WoodType.DARK_OAK);
-            put(Items.OAK_LOG, WoodType.OAK);
-            put(Items.JUNGLE_LOG, WoodType.JUNGLE);
-            put(Items.SPRUCE_LOG, WoodType.SPRUCE);
-            put(Items.WARPED_STEM, WoodType.WARPED);
-
-            //#if MC>=12000
-            put(Items.CHERRY_LOG, WoodType.CHERRY);
-            put(Items.BAMBOO, WoodType.BAMBOO);
-            //#endif
-            //#if MC>=11900
-            put(Items.MANGROVE_LOG, WoodType.MANGROVE);
-            //#endif
+            woodMap.forEach((woodType, woodItems) -> put(woodItems.log, woodType));
         }
     };
 
-    private static final Map<Item, WoodType> strippedToWoodItemsMap = new HashMap<Item, WoodType>() {
+    private static final Map<Item, WoodType> strippedToWoodItemsMap = new HashMap<>() {
         {
-            put(Items.STRIPPED_ACACIA_LOG, WoodType.ACACIA);
-            put(Items.STRIPPED_BIRCH_LOG, WoodType.BIRCH);
-            put(Items.STRIPPED_CRIMSON_STEM, WoodType.CRIMSON);
-            put(Items.STRIPPED_DARK_OAK_LOG, WoodType.DARK_OAK);
-            put(Items.STRIPPED_OAK_LOG, WoodType.OAK);
-            put(Items.STRIPPED_JUNGLE_LOG, WoodType.JUNGLE);
-            put(Items.STRIPPED_SPRUCE_LOG, WoodType.SPRUCE);
-            put(Items.STRIPPED_WARPED_STEM, WoodType.WARPED);
-
-            //#if MC>=11900
-            put(Items.STRIPPED_MANGROVE_LOG, WoodType.MANGROVE);
-            //#endif
-            //#if MC>=12000
-            put(Items.STRIPPED_CHERRY_LOG, WoodType.CHERRY);
-            //#endif
+            woodMap.forEach((woodType, woodItems) -> put(woodItems.strippedLog, woodType));
         }
     };
 
@@ -630,9 +588,9 @@ public class ItemHelper {
                         || b == Blocks.NETHER_SPROUTS
                         //#if MC >= 12003
                         || b == Blocks.GRASS_BLOCK;
-        //#else
-        //$$ || b == Blocks.GRASS;
-        //#endif
+                        //#else
+                        //$$ || b == Blocks.GRASS;
+                        //#endif
     }
 
     public static boolean isStackProtected(AltoClef mod, ItemStack stack) {
@@ -658,7 +616,6 @@ public class ItemHelper {
         return to.getItem().equals(from.getItem()) && (from.getCount() + to.getCount() < to.getMaxCount());
     }
 
-    // "Get a record of this!"
     public static class ColorItems {
         public final DyeColor color;
         public final String colorName;
@@ -695,7 +652,6 @@ public class ItemHelper {
         }
     }
 
-    // Wish records were in java 8 ...
     public static class WoodItems {
         public final String prefix;
         public final Item planks;
