@@ -65,7 +65,7 @@ def fabricApiVersions = [
 ]
 
 def baritoneVersions = [
-        "1.16.5": "1.16.5",  // from allclients2 repo
+        "1.16.5": "1.16.5",  // from MiranCZ repo
         "1.17": "1.7", // from Marvion repo (Or Mirans because its just a fork of Marvion's)
         "1.17.1": "1.17.1",  // from Miran repo
         "1.18": "1.18",  // from Marvion repo
