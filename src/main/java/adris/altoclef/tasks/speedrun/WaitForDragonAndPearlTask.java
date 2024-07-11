@@ -22,7 +22,9 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.item.Items;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -119,7 +121,7 @@ public class WaitForDragonAndPearlTask extends Task {
         }
 
         // Our trigger to throw is that the dragon starts perching. We can be an arbitrary distance and we'll still do it lol
-        if (dragonIsPerching && LookHelper.cleanLineOfSight(mod.getPlayer(), targetToPearl.up(), 300)) {
+        if (dragonIsPerching && canThrowPearl(mod)) {
             Debug.logMessage("THROWING PEARL!!");
             return throwPearlTask;
         }
@@ -208,6 +210,31 @@ public class WaitForDragonAndPearlTask extends Task {
         }
         heightPillarTask = new GetToBlockTask(new BlockPos(0, minHeight, Y_COORDINATE));
         return heightPillarTask;
+    }
+
+    // basically same as LookHelper.cleanLineOfSight but edited so it has a small distance toleration
+    private boolean canThrowPearl(AltoClef mod) {
+        Vec3d targetPosition = WorldHelper.toVec3d(targetToPearl.up());
+
+        // Perform a raycast from the entity's camera position to the target position with the specified max range
+        BlockHitResult hitResult = LookHelper.raycast(mod.getPlayer(), LookHelper.getCameraPos(mod.getPlayer()), targetPosition, 300);
+
+        if (hitResult == null) {
+            // No hit result, clear line of sight
+            return true;
+        } else {
+            return switch (hitResult.getType()) {
+                case MISS ->
+                    // Missed the target, clear line of sight
+                        true;
+                case BLOCK ->
+                    // Hit a block, check if it's the same as the target block
+                        hitResult.getBlockPos().isWithinDistance(targetToPearl.up(), 10);
+                case ENTITY ->
+                    // Hit an entity, line of sight blocked
+                        false;
+            };
+        }
     }
 
     private boolean isFireballDangerous(AltoClef mod, Optional<Entity> fireball) {
