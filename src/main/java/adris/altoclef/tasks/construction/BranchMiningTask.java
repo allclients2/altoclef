@@ -144,8 +144,7 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
                 _blocksToMine.remove(blockPos);
             } while (!_blocksToMine.isEmpty());
         }
-        if (_prepareForMiningTask.isActive() && !_prepareForMiningTask.isFinished(mod)
-                || isNewPickaxeRequired(mod)) {
+        if (_prepareForMiningTask.isActive() && !_prepareForMiningTask.isFinished(mod) && isNewPickaxeRequired(mod)) {
             if (!_progressChecker.check(mod)) {
                 final BlockPos playerPos = mod.getPlayer().getBlockPos();
                 if (playerPos.getY() > _groundHeight) {
@@ -278,12 +277,12 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
                 Items.DIAMOND_PICKAXE,
                 Items.NETHERITE_PICKAXE,
                 Items.GOLDEN_PICKAXE
-        ).size() == 0) {
+        ).isEmpty()) {
             return true;
         }
 
         for (Item pickaxe : PICKAXES) {
-            if (mod.getItemStorage().getSlotsWithItemScreen(pickaxe).size() > 0) {
+            if (!mod.getItemStorage().getSlotsWithItemScreen(pickaxe).isEmpty()) {
                 for (Slot slot : mod.getItemStorage().getSlotsWithItemScreen(pickaxe)) {
                     if (
                             mod.getItemStorage().getItemStacksPlayerInventory(false).get(

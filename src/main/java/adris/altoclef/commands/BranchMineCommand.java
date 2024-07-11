@@ -13,24 +13,15 @@ import adris.altoclef.tasks.construction.BranchMiningTask;
 import adris.altoclef.ui.MessagePriority;
 import adris.altoclef.util.publictypes.OreType;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.NotNull;
 
 import static adris.altoclef.util.helpers.ItemHelper.MATERIAL_DATA;
 import static adris.altoclef.util.helpers.ItemHelper.OreBlockData;
 
 public class BranchMineCommand extends Command {
 
-    //private static Optional<Item> nameStringToItem(String name) {
-    //		Identifier identifier = new Identifier(name);
-    //		if (RegistriesVer.itemsRegistry().containsId(identifier)) {
-    //			return Optional.of(RegistriesVer.itemsRegistry().get(identifier));
-    //		} else {
-    //			Debug.logWarning("Invalid item name:" + name);
-    //			return Optional.empty();
-    //		}
-    //	}
-
     public BranchMineCommand() throws CommandException {
-        super("branchmine", "Branch mine from the current direction", new Arg(ItemList.class, MATERIAL_DATA.keySet().toString()));
+        super("branchmine", "Branch mine from the current direction", new Arg(ItemList.class, MATERIAL_DATA.keySet().toString().toLowerCase()));
     }
 
     private static void OnResourceDoesNotExist(AltoClef mod, String resource) {
@@ -43,36 +34,19 @@ public class BranchMineCommand extends Command {
 
     private void GetItems(AltoClef mod, OreType oreType) {
         if (oreType == null) {
-            Debug.logInternal("You must specify an ore type!");
+            Debug.logInternal("Must specify an ore type!");
             finish();
             return;
         }
 
         final BlockPos currentPlayerPos = mod.getPlayer().getBlockPos();
 
-        final List<OreBlockData> blocksToMineData;
-        final int currentYPos = currentPlayerPos.getY();
-        if (!MATERIAL_DATA.containsKey(oreType)) {
-            Debug.logInternal("Unexpected value: " + oreType.toString() + ", expected any of: " + MATERIAL_DATA.keySet(), MessagePriority.OPTIONAL);
-            finish();
-            return;
-        } else {
-            blocksToMineData = new ArrayList<>(Arrays.asList(MATERIAL_DATA.get(oreType).oreBlocks));
-        }
-
-        OreBlockData finalTargetData = null;
-        int bestTargetDiff = (2 ^ 31 - 1);
-
-        for (OreBlockData oreBlockData : blocksToMineData) {
-            final int targetDiff = oreBlockData.distribution.optimalHeight;
-            if (bestTargetDiff > Math.abs(targetDiff - currentYPos)) {
-                bestTargetDiff = targetDiff;
-                finalTargetData = oreBlockData;
-            }
-        }
+        final List<OreBlockData> blocksToMineData = Arrays.asList(MATERIAL_DATA.get(oreType).oreBlocks);
+        final OreBlockData finalTargetData = getOreBlockData(currentPlayerPos, blocksToMineData);
 
         if (finalTargetData == null) {
-            throw new RuntimeException("Failed to get finalTargetData, resulting in `finalTargetData` being null!");
+            Debug.logWarning("Failed to get `finalTargetData`! blocksToMineData: " + blocksToMineData);
+            return;
         }
 
         final BlockPos homePos = new BlockPos(currentPlayerPos.getX(), finalTargetData.distribution.optimalHeight, currentPlayerPos.getZ());
@@ -81,6 +55,28 @@ public class BranchMineCommand extends Command {
                 mod.getPlayer().getMovementDirection(),
                 finalTargetData.oreBlock
         ), this::finish);
+    }
+
+    private static OreBlockData getOreBlockData(BlockPos currentPlayerPos, List<OreBlockData> blocksToMineData) {
+        final int currentYPos = currentPlayerPos.getY();
+
+        OreBlockData finalTargetData = null;
+        int bestTargetDiff = 2147483647;
+
+        for (OreBlockData oreBlockData : blocksToMineData) {
+            final int targetDiff = Math.abs(oreBlockData.distribution.optimalHeight - currentYPos);
+            if (bestTargetDiff > targetDiff) {
+                bestTargetDiff = targetDiff;
+                finalTargetData = oreBlockData;
+            }
+        }
+
+        /*
+        if (finalTargetData == null) {
+            throw new RuntimeException("Failed to get finalTargetData, resulting in `finalTargetData` being null!");
+        }
+        */
+        return finalTargetData;
     }
 
     //	@Override
@@ -95,7 +91,20 @@ public class BranchMineCommand extends Command {
 
     @Override
     protected void call(AltoClef mod, ArgParser parser) throws CommandException {
-        OreType items = parser.get(OreType.class);
-        GetItems(mod, items);
+        final String[] args = parser.getArgUnits();
+
+        if (args.length == 0) {
+            Debug.logWarning("No oretype specified!");
+            return;
+        }
+
+        final String name = args[0];
+        for (OreType oreType : OreType.values()) {
+            if (Objects.equals(oreType.name().toLowerCase(), name)) {
+                GetItems(mod, oreType);
+                return;
+            }
+        };
+        Debug.logWarning("Oretype named `" + name + "` is not valid!");
     }
 }
