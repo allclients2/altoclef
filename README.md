@@ -35,6 +35,8 @@ this mod to, like 1.18.2. This is also a very experimental branch, if you experi
   - 1.18.2
 - 1.17.*
   - 1.17.1
+- 1.16.*
+  - 1.16.5
 
 *note: All the versions use the "same release" of Alto clef, although some of them may utilize older versions of baritone.* 
 
