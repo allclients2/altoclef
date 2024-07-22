@@ -1,5 +1,6 @@
 package adris.altoclef.mixins;
 
+import adris.altoclef.AltoClef;
 import adris.altoclef.eventbus.EventBus;
 import adris.altoclef.eventbus.events.SlotClickChangedEvent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,7 +11,9 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,18 +21,21 @@ import java.util.List;
 @Mixin(ScreenHandler.class)
 public class SlotClickMixin {
 
-    @Redirect(
+    @Inject(
             method = "internalOnSlotClick",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/ScreenHandler;internalOnSlotClick(IILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/entity/player/PlayerEntity;)V")
+            at = @At("HEAD") // Correct me if im wrong (who ever sees this) i changed the mixin target because i dont think this should be accessing things related to "quick crafting" when its relating to storage tasks.
+            //at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/ScreenHandler;internalOnSlotClick(IILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/entity/player/PlayerEntity;)V")
     )
-    private void slotClick(ScreenHandler self, int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        // TODO: "self" is misleading, reread Mixin docs to understand the implications here.
-        // This calculation is already done, BUT we also want a "before&after" type beat.
+    private void slotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
+        if (AltoClef.INSTANCE == null || AltoClef.INSTANCE.getPlayer() == null)
+            return;
+
+        ScreenHandler screenHandler = AltoClef.INSTANCE.getPlayer().currentScreenHandler;
 
         //#if MC >= 11800
-        DefaultedList<Slot> afterSlots = self.slots;
+        DefaultedList<Slot> afterSlots = screenHandler.slots;
         //#else
-        //$$ List<Slot> afterSlots = self.slots;
+        //$$ List<Slot> afterSlots = screenHandler.slots;
         //#endif
 
         List<ItemStack> beforeStacks = new ArrayList<>(afterSlots.size());
@@ -37,7 +43,7 @@ public class SlotClickMixin {
             beforeStacks.add(slot.getStack().copy());
         }
         // Perform slot changes potentially
-        self.onSlotClick(slotIndex, button, actionType, player);
+        screenHandler.onSlotClick(slotIndex, button, actionType, player);
         // Check for changes and alert
         for (int i = 0; i < beforeStacks.size(); ++i) {
             ItemStack before = beforeStacks.get(i);

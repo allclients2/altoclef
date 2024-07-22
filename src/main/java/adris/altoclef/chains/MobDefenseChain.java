@@ -503,12 +503,15 @@ public class MobDefenseChain extends SingleTaskChain {
                 } else if (ToDealWith instanceof SkeletonEntity && ((SkeletonEntity) ToDealWith).getHandItems() == Items.BOW) {
                     // Any skeleton with a bow is REALLY dangerous so we'll count them as 5 entities
                     entityscore += 5;
-                } else if (ToDealWith instanceof EndermanEntity) {
+                } else if (ToDealWith instanceof EndermanEntity || ToDealWith instanceof WitherSkeletonEntity) {
                     // Enderman can be also really dangerous as they hit hard.
                     entityscore += 3;
                 } else if (ToDealWith instanceof DrownedEntity && ((DrownedEntity) ToDealWith).getHandItems() == Items.TRIDENT) {
                     // Drowned with tridents are also REALLY dangerous, maybe we should increase this??
                     entityscore += 5;
+                } else if (ToDealWith instanceof WitherEntity) {
+                    // How did we get here?!
+                    entityscore += 15;
                 }
             }
         }

@@ -116,12 +116,8 @@ public class PlaceBedAndSetSpawnTask extends Task {
      * @return The current instance of PlaceBedAndSetSpawnTask.
      */
     public PlaceBedAndSetSpawnTask stayInBed() {
-        // Log method call
-        Debug.logInternal("Stay in bed method called");
-
         // Set _stayInBed flag to true
         this.stayInBed = true;
-        Debug.logInternal("Setting _stayInBed to true");
 
         // Return current instance
         return this;

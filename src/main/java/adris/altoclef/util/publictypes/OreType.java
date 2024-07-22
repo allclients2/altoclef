@@ -11,7 +11,6 @@ public enum OreType {
     LAPIS_LAZULI,
     EMERALD,
 
-
     NETHERITE,
     QUARTZ,
 

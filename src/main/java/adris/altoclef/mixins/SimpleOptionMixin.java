@@ -1,23 +1,24 @@
 package adris.altoclef.mixins;
 
-import adris.altoclef.util.DumbClass;
 import org.spongepowered.asm.mixin.Mixin;
 import net.minecraft.client.MinecraftClient;
 
 //#if MC>=11904
 import net.minecraft.client.option.SimpleOption;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.client.option.SimpleOption;
+//#else
+//$$ import adris.altoclef.util.DumbClass;
+//#endif
 
+
+//#if MC>=11904
 @Mixin(SimpleOption.class)
 public class SimpleOptionMixin<T> {
     @Shadow

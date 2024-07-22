@@ -1,6 +1,5 @@
 package adris.altoclef.util;
 
-import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
 import adris.altoclef.util.helpers.ItemHelper;
 import net.minecraft.item.Item;
@@ -161,7 +160,7 @@ public class ItemTarget {
             if (itemMatches != null) {
                 for (Item item : itemMatches) {
                     if (item == null) {
-                        result.append("(null??)");
+                        result.append("null??");
                     } else {
                         result.append(ItemHelper.trimItemName(item.getTranslationKey()));
                     }

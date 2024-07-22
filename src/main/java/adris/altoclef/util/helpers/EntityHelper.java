@@ -50,6 +50,9 @@ public class EntityHelper {
             if (mob instanceof WitherSkeletonEntity witherSkeleton) {
                 return witherSkeleton.isAttacking();
             }
+            if (mob instanceof WitherSkeletonEntity witherSkeleton) {
+                return witherSkeleton.isAttacking();
+            }
             if (mob instanceof PillagerEntity pillager) {
                 return pillager.isAngryAt(mod.getPlayer());
             }

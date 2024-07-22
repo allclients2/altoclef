@@ -49,7 +49,6 @@ public class BeatMinecraftMicroTask extends Task {
     private static final int targetBedCount = 12;
     private static final boolean getMaxSetBeforeNether = true;
 
-
     private static final ItemTarget[] woodToolTargets = ItemHelper.toItemTargets(ItemHelper.WOODEN_TOOLS);
     private static final ItemTarget[] stoneToolTargets = ItemHelper.toItemTargets(ItemHelper.STONE_TOOLS);
     private static final ItemTarget[] ironToolTargets = ItemHelper.toItemTargets(ItemHelper.IRON_TOOLS);
@@ -92,9 +91,7 @@ public class BeatMinecraftMicroTask extends Task {
     }
 
     @Override
-    protected void onStart(AltoClef mod) {
-        Debug.logMessage("Difficulty detected: " + mod.getWorld().getDifficulty());
-    }
+    protected void onStart(AltoClef mod) {}
 
     // Sort enderman by if angry or by distance.
     public static void sortHostileList(List<? extends HostileEntity> hostileEntities, ClientPlayerEntity player) {
@@ -191,7 +188,6 @@ public class BeatMinecraftMicroTask extends Task {
                 final BlockPos searchForEndPortal = WorldHelper.doSimpleSearchForEndPortal(mod);
                 if (searchForEndPortal != null) {
                     final boolean isOpen = WorldHelper.isEndPortalOpened(mod, searchForEndPortal);
-
                     // Check if the end portal found is not opened, but if `searchForEndPortal` is open, then dont write it...
                     if (!endPortalCenterFound.getRight() || isOpen)
                         endPortalCenterFound = new Pair<>(searchForEndPortal, isOpen);
@@ -209,9 +205,9 @@ public class BeatMinecraftMicroTask extends Task {
         final boolean hasIronArmorSet = StorageHelper.isArmorEquippedAll(mod, ItemHelper.IRON_ARMORS);
         final boolean hasMaxArmorSet = StorageHelper.isArmorEquippedAll(mod, armorSetMax);
 
-        // Just in case `taskUnfinished` fails to detect if the task isnt finished??
         final boolean hasBed = mod.getItemStorage().hasItem(ItemHelper.BED);
         final boolean hasWaterBucket = mod.getItemStorage().hasItem(Items.WATER_BUCKET);
+        final boolean hasShield = mod.getItemStorage().hasItem(Items.SHIELD);
 
         // We could find an End portal along the way maybe....
         findPossibleEndPortals(mod);
@@ -233,14 +229,14 @@ public class BeatMinecraftMicroTask extends Task {
                     } else {
                         getToolSet = TaskCatalogue.getSquashedItemTask(stoneToolTargets);
                     }
-                } else if (taskUnfinished(mod, equipShield)) { // AFTER stone tool set Get shield and bed before iron toolset, i think it's very important.
+                } else if (!hasShield) { // AFTER stone tool set Get shield and bed before iron toolset, i think it's very important.
                     return equipShield;
                 } else {
                     getToolSet = TaskCatalogue.getSquashedItemTask(ironToolTargets);
                 }
             } else if (taskUnfinished(mod, getWaterBucket) || !hasWaterBucket) { // AFTER iron tool Get water bucket for falls.
                 return getWaterBucket;
-            } else if (taskUnfinished(mod, getBed) || !hasBed) { // AFTER Water Bucket get a bed
+            } else if (!hasBed) { // AFTER Water Bucket get a bed
                 return getBed;
             } else if (!hasIronArmorSet) { // AFTER Bed get iron armor.
                 equipArmorSet = new EquipArmorTask(ItemHelper.IRON_ARMORS);
@@ -268,7 +264,7 @@ public class BeatMinecraftMicroTask extends Task {
         }
 
         // Priority
-        if (mod.IsNight()) {
+        if (mod.IsNight() && WorldHelper.getCurrentDimension() == Dimension.OVERWORLD) {
             setDebugState("Sleeping through night");
             return sleepThroughNight;
         } else if (taskUnfinished(mod, getFood)) {

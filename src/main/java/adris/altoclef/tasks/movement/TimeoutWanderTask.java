@@ -12,7 +12,6 @@ import adris.altoclef.util.slots.Slot;
 import adris.altoclef.util.time.TimerGame;
 import baritone.api.utils.input.Input;
 import net.minecraft.block.*;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.BlockPos;
@@ -22,19 +21,20 @@ import java.util.Optional;
 
 /**
  * Call this when the place you're currently at is bad for some reason, and you just want to get away.
+ * Or if you want the bot to explore infinitely to find something.
  */
 public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
     private final MovementProgressChecker stuckCheck = new MovementProgressChecker();
     private final float _distanceToWander;
-    private final MovementProgressChecker _progressChecker = new MovementProgressChecker();
+    private final MovementProgressChecker progressChecker = new MovementProgressChecker();
     private final boolean _increaseRange;
-    private final TimerGame _timer = new TimerGame(60);
+    private final TimerGame timer = new TimerGame(60);
     private final Block[] annoyingBlocks = AltoClef.INSTANCE.getModSettings().getAnnoyingBlocks();
-    private Vec3d _origin;
+    private Vec3d origin;
     //private DistanceProgressChecker _distanceProgressChecker = new DistanceProgressChecker(10, 0.1f);
     private boolean _forceExplore;
     private Task _unstuckTask = null;
-    private int _failCounter;
+    private int failCounter;
     private double _wanderDistanceExtension;
 
     public TimeoutWanderTask(float distanceToWander, boolean increaseRange) {
@@ -116,12 +116,13 @@ public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
         mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.value = 3.25;
         mod.getClientBaritoneSettings().blockPlacementPenalty.value = 23.5;
 
-        _timer.reset();
+        timer.reset();
         mod.getClientBaritone().getPathingBehavior().forceCancel();
-        _origin = mod.getPlayer().getPos();
-        _progressChecker.reset();
+        origin = mod.getPlayer().getPos();
+        progressChecker.reset();
         stuckCheck.reset();
-        _failCounter = 0;
+        failCounter = 0;
+
         ItemStack cursorStack = StorageHelper.getItemStackInCursorSlot();
         if (!cursorStack.isEmpty()) {
             Optional<Slot> moveTo = mod.getItemStorage().getSlotThatCanFitInPlayerInventory(cursorStack, false);
@@ -141,7 +142,7 @@ public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
     @Override
     protected Task onTick(AltoClef mod) {
         if (mod.getClientBaritone().getPathingBehavior().isPathing()) {
-            _progressChecker.reset();
+            progressChecker.reset();
         }
         if (WorldHelper.isInNetherPortal(mod)) {
             if (!mod.getClientBaritone().getPathingBehavior().isPathing()) {
@@ -169,10 +170,10 @@ public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
             mod.getClientBaritone().getExploreProcess().onLostControl();
             return _unstuckTask;
         }
-        if (!_progressChecker.check(mod) || !stuckCheck.check(mod)) {
+        if (!progressChecker.check(mod) || !stuckCheck.check(mod)) {
             BlockPos blockStuck = stuckInBlock(mod);
             if (blockStuck != null) {
-                _failCounter++;
+                failCounter++;
                 _unstuckTask = getFenceUnstuckTask();
                 return _unstuckTask;
             }
@@ -180,41 +181,39 @@ public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
         }
         switch (WorldHelper.getCurrentDimension()) {
             case END -> {
-                if (_timer.getDuration() >= 30) {
-                    _timer.reset();
+                if (timer.getDuration() >= 30) {
+                    timer.reset();
                 }
             }
             case OVERWORLD, NETHER -> {
                 // Commented out only because empty if statement
                 // if (_timer.getDuration() >= 30) {}
-                if (_timer.elapsed()) {
-                    _timer.reset();
+                if (timer.elapsed()) {
+                    timer.reset();
                 }
             }
         }
         if (!mod.getClientBaritone().getExploreProcess().isActive()) {
-            mod.getClientBaritone().getExploreProcess().explore((int) _origin.getX(), (int) _origin.getZ());
+            mod.getClientBaritone().getExploreProcess().explore((int) origin.getX(), (int) origin.getZ());
         }
-        if (!_progressChecker.check(mod)) {
-            _progressChecker.reset();
-            _failCounter++;
+        if (!progressChecker.check(mod)) {
+            progressChecker.reset();
+            failCounter++;
             if (!_forceExplore) {
                 Debug.logMessage("Failed exploring.");
             }
         }
         // We are getting a little worried. Let us try more options...
-        if (_failCounter > 5 && _failCounter < 10 || _forceExplore) {
+        if (failCounter > 5 && failCounter < 10 || _forceExplore) {
             setDebugState("Exploring; worried.");
             mod.getBehaviour().setBlockBreakAdditionalPenalty(0.2);
             mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.value = 0.2;
-            mod.getBehaviour().setBlockPlacePenalty(15.0);
             mod.getClientBaritoneSettings().blockPlacementPenalty.value = 15.0;
             mod.getClientBaritoneSettings().costHeuristic.value = 6.5;
-        } else if (_failCounter > 10) {
+        } else if (failCounter > 10) {
             setDebugState("Exploring; desperately.");
             mod.getBehaviour().setBlockBreakAdditionalPenalty(0.0);
             mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.value = 0.0;
-            mod.getBehaviour().setBlockPlacePenalty(0.0);
             mod.getClientBaritoneSettings().blockPlacementPenalty.value = 0.0;
             mod.getClientBaritoneSettings().costHeuristic.value = 40.5;
         } else {
@@ -226,8 +225,9 @@ public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
     @Override
     protected void onStop(AltoClef mod, Task interruptTask) {
         //Reset
-        mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.value = 0.0;
+        mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.reset();
         mod.getClientBaritoneSettings().blockPlacementPenalty.reset();
+        mod.getClientBaritoneSettings().costHeuristic.reset();
 
 
         mod.getClientBaritone().getPathingBehavior().forceCancel();
@@ -248,13 +248,13 @@ public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
         if (Float.isInfinite(_distanceToWander)) return false;
 
         // If we fail 2 times, we may as well try the previous task again.
-        if (_failCounter >= 10) {
+        if (failCounter >= 10) {
             return true;
         }
 
         if (mod.getPlayer() != null && mod.getPlayer().getPos() != null && (mod.getPlayer().isOnGround() ||
-                mod.getPlayer().isTouchingWater()) && _origin != null) {
-            double sqDist = mod.getPlayer().getPos().squaredDistanceTo(_origin);
+                mod.getPlayer().isTouchingWater()) && origin != null) {
+            double sqDist = mod.getPlayer().getPos().squaredDistanceTo(origin);
             double toWander = _distanceToWander + _wanderDistanceExtension;
             return sqDist > toWander * toWander;
         } else {

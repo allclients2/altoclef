@@ -2,6 +2,7 @@ package adris.altoclef.multiversion;
 
 import adris.altoclef.AltoClef;
 
+// Some versions of baritone may not have `isCanWalkOnEndPortal` or other methods.
 public class BaritoneVer {
 
     @Deprecated
@@ -9,14 +10,12 @@ public class BaritoneVer {
         return isCanWalkOnEndPortal(AltoClef.INSTANCE);
     }
 
-
     public static boolean isCanWalkOnEndPortal(AltoClef mod) {
-        //FIXME: Any replacement for lower versions?
-        //#if MC >= 12000
-        return mod.getExtraBaritoneSettings().isCanWalkOnEndPortal();
-        //#else
-        //$$ return true;
-        //#endif
+        try {
+            return mod.getExtraBaritoneSettings().isCanWalkOnEndPortal();
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     @Deprecated
@@ -25,8 +24,8 @@ public class BaritoneVer {
     }
 
     public static void canWalkOnEndPortal(AltoClef mod, boolean value) {
-        //#if MC >= 12000
-        mod.getExtraBaritoneSettings().canWalkOnEndPortal(value);
-        //#endif
+        try {
+            mod.getExtraBaritoneSettings().canWalkOnEndPortal(value);
+        } catch (Exception ignored) {}
     }
 }

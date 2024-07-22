@@ -42,7 +42,7 @@ public class ElytraToXZTask extends Task {
     protected boolean RocketBoosted = true;
     protected boolean FailToStart = false;
 
-    protected Task _test_task_; //(I don't know).
+    protected Task mainTask; //(I don't know).
     protected Optional<Input> InputToRelease = Optional.empty();
     protected Optional<BlockPos> TakeOffPosition = Optional.empty();
     protected boolean FlightControls = true;
@@ -73,8 +73,8 @@ public class ElytraToXZTask extends Task {
     protected Task onTick(AltoClef mod) {
         InputToRelease.ifPresent(input -> mod.getInputControls().release(input));
 
-        Vec3d Velocity = mod.getPlayer().getVelocity();
-        Vec3d Position = mod.getPlayer().getPos();
+        final Vec3d Velocity = mod.getPlayer().getVelocity();
+        final Vec3d Position = mod.getPlayer().getPos();
         double Diff = (FlyAltitude - Position.y);
 
         //To keep track of damage
@@ -83,19 +83,19 @@ public class ElytraToXZTask extends Task {
             for (ItemStack ArmorPiece : armorItems) {
                 if (ArmorPiece.getItem() == Items.ELYTRA) {
                     CurrentElytra = ArmorPiece;
-                    return _test_task_;
+                    return mainTask;
                 }
             }
             Debug.logMessage("Alto clef Failed to detect Elytra.");
             FailToStart = true;
-            return _test_task_;
+            return mainTask;
         }
 
         // Always equip Elytra
         if (CurrentElytra.getDamage() > Items.ELYTRA.getDefaultStack().getMaxDamage() * 0.95) {
             Debug.logInternal("Low Elytra health warning, equip new elytra..");
             FailToStart = true;
-            return _test_task_;
+            return mainTask;
         }
 
         //Present TakeOffPosition Indicates we are landed and need more rockets. We need else it's going to fight to equip the firework rocket.
@@ -113,16 +113,16 @@ public class ElytraToXZTask extends Task {
                 Debug.logInternal("Getting firework rockets..");
                 TakeOffPosition = Optional.of(mod.getPlayer().getBlockPos());
                 Debug.logInternal(mod.getPlayer().getEquippedStack(EquipmentSlot.MAINHAND).getCount() + " Firework count");
-                _test_task_ = TaskCatalogue.getItemTask(Items.FIREWORK_ROCKET, RocketsGetCount);
+                mainTask = TaskCatalogue.getItemTask(Items.FIREWORK_ROCKET, RocketsGetCount);
             }
-            return _test_task_;
+            return mainTask;
         } else if (TakeOffPosition.isPresent()) {
             FlightControls = false; //No Flight
-            _test_task_ = new GetToBlockTask(TakeOffPosition.get());
+            mainTask = new GetToBlockTask(TakeOffPosition.get());
             TakeOffPosition = Optional.empty();
-            return _test_task_;
-        } else if (_test_task_ == null || _test_task_.isFinished(mod)) {
-            _test_task_ = null;
+            return mainTask;
+        } else if (mainTask == null || mainTask.isFinished(mod)) {
+            mainTask = null;
             FlightControls = true;
         }
 
@@ -143,9 +143,9 @@ public class ElytraToXZTask extends Task {
                 } else if (YVelocity < -0.05) {
                     Debug.logInternal("Falling!");
 
-                    SendInput(mod, Input.JUMP); //Enable elytra
+                    SendInput(mod, Input.JUMP); // Enable elytra
                 } else if (mod.getPlayer().isOnGround()) {
-                    SendInput(mod, Input.JUMP); //Jumpstart
+                    SendInput(mod, Input.JUMP); // Jumpstart
                 }
             } else { //In Flight
                 if (isRangeFromGoal(RangeDescend)) { // Descending, at `RangeClose` blocks range.
@@ -171,7 +171,7 @@ public class ElytraToXZTask extends Task {
             }
         }
 
-        return _test_task_;
+        return mainTask;
     }
 
     @Override
@@ -185,9 +185,9 @@ public class ElytraToXZTask extends Task {
         GoalPosition = new Vec3d(_x, mod.getPlayer().getPos().y, _z);
         if (_dimension != null && WorldHelper.getCurrentDimension() != _dimension) {
             if (_dimension == Dimension.NETHER) {
-                _test_task_ = new GetToBlockTask(new BlockPos(0, 128, 0), Dimension.NETHER);
+                mainTask = new GetToBlockTask(new BlockPos(0, 128, 0), Dimension.NETHER);
             } else {
-                _test_task_ = new DefaultGoToDimensionTask(_dimension);
+                mainTask = new DefaultGoToDimensionTask(_dimension);
             }
         }
     }

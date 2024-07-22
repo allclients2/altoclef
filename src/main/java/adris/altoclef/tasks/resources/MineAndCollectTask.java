@@ -157,7 +157,6 @@ public class MineAndCollectTask extends ResourceTask {
     }
 
     public static class MineOrCollectTask extends AbstractDoToClosestObjectTask<Object> {
-
         private final Block[] blocks;
         private final ItemTarget[] targets;
         private final Set<BlockPos> blacklist = new HashSet<>();
@@ -209,22 +208,21 @@ public class MineAndCollectTask extends ResourceTask {
                 closestDrop = mod.getEntityTracker().getClosestItemDrop(pos, items);
             }
 
-            return new Pair<>(
-                closestDrop.map(itemEntity -> itemEntity.squaredDistanceTo(pos) + 1.15).orElse(Double.POSITIVE_INFINITY),
+            return new Pair<>( // Subtract 2 so it attempts to pick up more drops!
+                closestDrop.map(itemEntity -> itemEntity.squaredDistanceTo(pos) - 2).orElse(Double.POSITIVE_INFINITY),
                 closestDrop
             );
         }
 
         public static Pair<Double,Optional<BlockPos> > getClosestBlock(AltoClef mod,Vec3d pos ,Block... blocks) {
             Optional<BlockPos> closestBlock = mod.getBlockScanner().getNearestBlock(pos, check -> {
-
                 if (mod.getBlockScanner().isUnreachable(check)) return false;
                 return WorldHelper.canBreak(mod, check);
             }, blocks);
 
             return new Pair<>(
-                    closestBlock.map(blockPos -> MathUtilVer.getDistanceSquared(blockPos, pos)).orElse(Double.POSITIVE_INFINITY),
-                    closestBlock
+                closestBlock.map(blockPos -> MathUtilVer.getDistanceSquared(blockPos, pos)).orElse(Double.POSITIVE_INFINITY),
+                closestBlock
             );
         }
 

@@ -115,8 +115,6 @@ public abstract class AbstractDoToEntityTask extends Task implements ITaskRequir
                     mod.getClientBaritone().getPathingBehavior().isSafeToCancel() &&
                     mod.getPlayer().isOnGround()) {
                 progress.reset();
-                //LookAtPos.lookAtPos(mod, entity.getEyePos()); // Look at entity
-                //LookAtPos.updatePosLook(mod);
                 return onEntityInteract(mod, entity);
             } else if (!tooClose) {
                 setDebugState("Approaching target");
