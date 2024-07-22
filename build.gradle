@@ -47,6 +47,7 @@ def mappingsVersions = [
         12004: "1.20.4+build.3",
         12005: "1.20.5+build.1",
         12006: "1.20.6+build.3",
+        12100: "1.21+build.9",
 ]
 
 def fabricApiVersions = [
@@ -62,6 +63,7 @@ def fabricApiVersions = [
         12004: "0.96.3+1.20.4",
         12005: "0.97.8+1.20.5",
         12006: "0.100.0+1.20.6",
+        12100: "0.100.7+1.21",
 ]
 
 def baritoneVersions = [

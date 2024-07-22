@@ -2,6 +2,7 @@ package adris.altoclef.multiversion;
 
 import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.block.spawner.MobSpawnerLogic;
@@ -28,13 +29,15 @@ public class MethodWrapper {
         //#endif
     }
 
-    public static float getDamageLeft(double damage, DamageSource source, double armor, double armorToughness) {
-        return getDamageLeft((float)damage,source,(float)armor,(float)armorToughness);
+    public static float getDamageLeft(LivingEntity armorWearer, double damage, DamageSource source, double armor, double armorToughness) {
+        return getDamageLeft(armorWearer, (float)damage,source,(float)armor,(float)armorToughness);
     }
 
-    public static float getDamageLeft(float damage, DamageSource source, float armor, float armorToughness) {
-        //#if MC>=12005
-        return DamageUtil.getDamageLeft(damage, source, armor, armorToughness);
+    public static float getDamageLeft(LivingEntity armorWearer, float damage, DamageSource source, float armor, float armorToughness) {
+        //#if MC >= 12100
+        return DamageUtil.getDamageLeft(armorWearer, damage, source, armor, armorToughness);
+        //#elseif MC>=12005
+        //$$ return DamageUtil.getDamageLeft(damage, source, armor, armorToughness);
         //#else
         //$$ return DamageUtil.getDamageLeft(damage,armor,armorToughness);
         //#endif

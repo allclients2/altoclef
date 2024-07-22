@@ -15,8 +15,8 @@ subprojects {
     }
 }
 
-
 preprocess {
+    val mc12100 = createNode("1.21", 12100, "yarn")
     val mc12006 = createNode("1.20.6", 12006, "yarn")
     val mc12005 = createNode("1.20.5", 12005, "yarn")
     val mc12004 = createNode("1.20.4", 12004, "yarn")
@@ -33,6 +33,7 @@ preprocess {
     // IMPORTANT!!
     // When adding a version like (1.17 or 1.18.2)
     // Make sure to a corresponding directory in `./versions/`
+    mc12100.link(mc12006)
     mc12006.link(mc12005)
     mc12005.link(mc12004)
     mc12004.link(mc12002)
@@ -44,6 +45,5 @@ preprocess {
     mc11701.link(mc11605)
 
     //mc11902.link(mc11802)
-    // mc11700.link(mc11605)
-
+    //mc11700.link(mc11605)
 }
