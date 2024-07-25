@@ -22,6 +22,8 @@ This fork extends [Miran's fork of altoclef](https://github.com/allclients2/alto
 this mod to, like 1.18.2. This is also a very experimental branch, if you experience an issue while using, feel free to create an issue on this repo!
 
 ### Supported versions:
+- 1.21.*
+  - 1.21
 - 1.20.*
   - 1.20.6
   - 1.20.5

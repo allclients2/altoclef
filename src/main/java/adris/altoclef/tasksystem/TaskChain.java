@@ -7,6 +7,7 @@ import java.util.List;
 
 public abstract class TaskChain {
 
+    private static final short maxTaskCountSize = 1024; // For safety
     private final List<Task> cachedTaskChain = new ArrayList<>();
 
     public TaskChain(TaskRunner runner) {
@@ -39,7 +40,11 @@ public abstract class TaskChain {
         return cachedTaskChain;
     }
 
+
     void addTaskToChain(Task task) {
+        if (cachedTaskChain.size() >= maxTaskCountSize) {
+            throw new RuntimeException("Task overflow! (Attempt add task when task count is " + maxTaskCountSize + " or more)");
+        }
         cachedTaskChain.add(task);
     }
 

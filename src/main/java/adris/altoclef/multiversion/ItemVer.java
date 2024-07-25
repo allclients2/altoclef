@@ -1,6 +1,7 @@
 package adris.altoclef.multiversion;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 
 //#if MC <= 11605
@@ -12,6 +13,8 @@ import net.minecraft.item.*;
 //$$ import java.util.List;
 //$$ import net.minecraft.tag.BlockTags;
 //$$ import net.minecraft.block.Blocks;
+//$$ import adris.altoclef.mixins.AxeItemAccessor;
+//$$ import adris.altoclef.mixins.MiningToolItemAccessor;
 //#endif
 
 public class ItemVer {
@@ -24,59 +27,36 @@ public class ItemVer {
         //#endif
     }
 
-    //#if MC <= 11605
-    //$$ private static final List<Tag.Identified<Block>> woodRelatedTags = List.of(
-    //$$          BlockTags.PLANKS,
-    //$$          BlockTags.LOGS,
-    //$$          BlockTags.SIGNS,
-    //$$          BlockTags.WOODEN_DOORS,
-    //$$          BlockTags.WOODEN_BUTTONS,
-    //$$          BlockTags.WOODEN_STAIRS,
-    //$$          BlockTags.WOODEN_SLABS,
-    //$$          BlockTags.WOODEN_FENCES,
-    //$$          BlockTags.FENCE_GATES,
-    //$$          BlockTags.WOODEN_PRESSURE_PLATES,
-    //$$          BlockTags.WOODEN_TRAPDOORS,
-    //$$          BlockTags.CAMPFIRES
-    //$$  );
-    //$$
-    //$$ private static final List<Block> shovelObliterates = new ArrayList<>();
-    //$$  static {
-    //$$      shovelObliterates.addAll(Arrays.stream(ItemHelper.DIRTS).map(Block::getBlockFromItem).toList()); // Dirts
-    //$$      shovelObliterates.addAll(ItemHelper.colorMap.values().stream().map(colorItems -> Block.getBlockFromItem(colorItems.concretePowder)).toList()); // Concrete Powder
-    //$$      shovelObliterates.addAll(List.of( // Other Blocks
-    //$$              Blocks.SNOW,
-    //$$              Blocks.SNOW_BLOCK,
-    //$$              Blocks.GRAVEL,
-    //$$              Blocks.SAND
-    //$$      ));
-    //$$ }
-    //#endif
-    public static boolean isSuitableFor(Item itemUse, BlockState targetState) {
+    public static boolean isSuitableFor(Item item, BlockState state) {
         //#if MC <= 11605
-        //$$ final Block targetBlock = targetState.getBlock();
-        //$$ if (itemUse instanceof AxeItem) {
-        //$$     for (Tag.Identified<Block> blockTag : woodRelatedTags) {
-        //$$         if (targetBlock.isIn(blockTag)) {
-        //$$             return true;
-        //$$         }
-        //$$     }
-        //$$     return targetBlock == Blocks.CRAFTING_TABLE;
-        //$$ } else if (itemUse instanceof ShovelItem) {
-        //$$     if (shovelObliterates.stream().anyMatch(block -> block == targetBlock))
-        //$$         return true;
-        //$$ } else if (itemUse instanceof HoeItem) {
-        //$$     if (targetBlock == Blocks.HAY_BLOCK)
-        //$$         return true;
+        //$$ if (item instanceof PickaxeItem pickaxe) {
+        //$$     return pickaxe.isSuitableFor(state);
         //$$ }
-        //$$ return itemUse.isSuitableFor(targetState);
-        //#elseif MC >= 12005
-        return itemUse.getDefaultStack().isSuitableFor(targetState);
+        //$$
+        //$$ if (item instanceof MiningToolItem) {
+        //$$     boolean isInEffectiveBlocks = ((MiningToolItemAccessor)item).getEffectiveBlocks().contains(state.getBlock());
+        //$$
+        //$$     if (item instanceof AxeItem) {
+        //$$         return isInEffectiveBlocks || ((AxeItemAccessor)item).getEffectiveMaterials().contains(state.getMaterial());
+        //$$     }
+        //$$     return isInEffectiveBlocks;
+        //$$ }
+        //#endif
+
+        //#if MC >= 12005
+        return item.getDefaultStack().isSuitableFor(state);
         //#else
-        //$$ return itemUse.isSuitableFor(targetState);
+        //$$ return item.isSuitableFor(state);
         //#endif
     }
 
+    public static int getMaxUseTime(ItemStack itemStack, PlayerEntity player) {
+        //#if MC>=12100
+        return itemStack.getMaxUseTime(player);
+        //#else
+        //$$ return itemStack.getMaxUseTime();
+        //#endif
+    }
 
 
     public static boolean isFood(ItemStack stack) {

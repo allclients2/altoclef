@@ -90,7 +90,7 @@ public class CommandStatusOverlay {
         }
 
         // FIXME: Don't think the number of displayed "Other tasks" is accurate...
-        for (int i = 0; i < tasks.size(); ++i) {
+        for (byte i = 0; i < tasks.size(); ++i) {
             if (i == 2) { // So we can see the second top task..
                 x += addX * 2;
                 DrawText.draw(matrixStack, renderer, "... " + (tasks.size() - maxLines) + " other task(s) ...", x, y, whiteColor, true, matrix, vertexConsumers, seeThrough, 0, 255);

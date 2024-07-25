@@ -6,7 +6,7 @@ public class IdentifierVer {
 
 
     @Pattern
-    private static Identifier newCreation(String str) {
+    public static Identifier newCreation(String str) {
         //#if MC >= 12100
         return Identifier.of(str);
         //#else

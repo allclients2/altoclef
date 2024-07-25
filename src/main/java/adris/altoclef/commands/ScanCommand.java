@@ -7,6 +7,7 @@ import adris.altoclef.commandsystem.Arg;
 import adris.altoclef.commandsystem.ArgParser;
 import adris.altoclef.commandsystem.Command;
 import adris.altoclef.commandsystem.CommandException;
+import adris.altoclef.multiversion.IdentifierVer;
 import adris.altoclef.multiversion.RegistriesVer;
 import adris.altoclef.util.helpers.ItemHelper;
 import net.minecraft.block.Block;
@@ -32,7 +33,7 @@ public class ScanCommand extends Command {
 
         for (Item item : RegistriesVer.itemsRegistry()) {
             final String blockKey = ItemHelper.trimItemName(blockName);
-            final Identifier identifier = new Identifier(blockKey);
+            final Identifier identifier = IdentifierVer.newCreation(blockKey);
             if (item.getName().equals(identifier)) {
                 block = RegistriesVer.blockRegistry().get(identifier);
             }

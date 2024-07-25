@@ -21,10 +21,10 @@ import java.util.List;
 @Mixin(ScreenHandler.class)
 public class SlotClickMixin {
 
+    //#if MC>11605
     @Inject(
             method = "internalOnSlotClick",
-            at = @At("HEAD") // Correct me if im wrong (who ever sees this) i changed the mixin target because i dont think this should be accessing things related to "quick crafting" when its relating to storage tasks.
-            //at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/ScreenHandler;internalOnSlotClick(IILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/entity/player/PlayerEntity;)V")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/ScreenHandler;internalOnSlotClick(IILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/entity/player/PlayerEntity;)V")
     )
     private void slotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
         if (AltoClef.INSTANCE == null || AltoClef.INSTANCE.getPlayer() == null)
@@ -54,4 +54,6 @@ public class SlotClickMixin {
             }
         }
     }
+    //#endif
+
 }

@@ -3,6 +3,7 @@ package adris.altoclef.tasks.speedrun.maintasks;
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
+import adris.altoclef.multiversion.EnchantmentHelperVer;
 import adris.altoclef.multiversion.ViewDistanceVer;
 import adris.altoclef.tasks.block.DoToClosestBlockTask;
 import adris.altoclef.tasks.block.InteractWithBlockTask;
@@ -116,7 +117,7 @@ public class MarvionBeatMinecraftTask extends Task {
     private static final int TWISTING_VINES_COUNT = 28;
     private static final int TWISTING_VINES_COUNT_MIN = 14;
     // We don't want curse of binding
-    private static final Predicate<ItemStack> _noCurseOfBinding = stack -> !EnchantmentHelper.hasBindingCurse(stack);
+    private static final Predicate<ItemStack> _noCurseOfBinding = stack -> !EnchantmentHelperVer.hasBindingCurse(stack);
     private static BeatMinecraftConfig config;
     private static GoToStrongholdPortalTask _locateStrongholdTask;
     private static boolean openingEndPortal = false;

@@ -31,6 +31,8 @@ public class UpgradeInSmithingTableTask extends ResourceTask {
 
     private final Task _innerTask;
 
+    //FIXME: crashes when crafting in 1.16.5 because `netherite_upgrade_smithing_template` was not a thing.
+
     public UpgradeInSmithingTableTask(ItemTarget tool, ItemTarget material, ItemTarget output) {
         super(output);
         _tool = new ItemTarget(tool, output.getTargetCount());

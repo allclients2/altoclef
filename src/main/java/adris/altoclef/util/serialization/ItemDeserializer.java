@@ -1,6 +1,7 @@
 package adris.altoclef.util.serialization;
 
 import adris.altoclef.Debug;
+import adris.altoclef.multiversion.IdentifierVer;
 import adris.altoclef.multiversion.RegistriesVer;
 import adris.altoclef.util.helpers.ItemHelper;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -42,7 +43,7 @@ public class ItemDeserializer extends StdDeserializer<Object> {
                 // Translation key (the proper way)
                 String itemKey = p.getText();
                 itemKey = ItemHelper.trimItemName(itemKey);
-                Identifier identifier = new Identifier(itemKey);
+                Identifier identifier = IdentifierVer.newCreation(itemKey);
                 if (RegistriesVer.itemsRegistry().containsId(identifier)) {
                     item = RegistriesVer.itemsRegistry().get(identifier);
                 } else {

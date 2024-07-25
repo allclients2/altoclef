@@ -3,6 +3,7 @@ package adris.altoclef.tasks.speedrun.maintasks;
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
+import adris.altoclef.multiversion.EnchantmentHelperVer;
 import adris.altoclef.tasks.block.DoToClosestBlockTask;
 import adris.altoclef.tasks.block.InteractWithBlockTask;
 import adris.altoclef.tasks.construction.DestroyBlockTask;
@@ -80,7 +81,7 @@ public class BeatMinecraft2Task extends Task {
     private static final int END_PORTAL_FRAME_COUNT = 12;
     private static final double END_PORTAL_BED_SPAWN_RANGE = 8;
     // We don't want curse of binding
-    private static final Predicate<ItemStack> _noCurseOfBinding = stack -> !EnchantmentHelper.hasBindingCurse(stack);
+    private static final Predicate<ItemStack> _noCurseOfBinding = stack -> !EnchantmentHelperVer.hasBindingCurse(stack);
 
     private static BeatMinecraftConfig config;
 

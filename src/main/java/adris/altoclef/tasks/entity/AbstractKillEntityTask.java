@@ -1,7 +1,6 @@
 package adris.altoclef.tasks.entity;
 
 import adris.altoclef.AltoClef;
-import adris.altoclef.chains.MobDefenseChain;
 import adris.altoclef.control.LookAtPos;
 import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.tasksystem.Task;

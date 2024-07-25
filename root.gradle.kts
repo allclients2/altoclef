@@ -1,11 +1,11 @@
 plugins {
     id("fabric-loom") version "1.6-SNAPSHOT" apply false
-    id("com.replaymod.preprocess") version "b09f534"
+    id("com.replaymod.preprocess") version "c2041a3"
 }
 
 subprojects {
     repositories {
-        mavenLocal()
+        //mavenLocal()
         mavenCentral()
         maven("https://libraries.minecraft.net/")
         maven("https://repo.spongepowered.org/repository/maven-public/")
@@ -27,12 +27,7 @@ preprocess {
     val mc11800 = createNode("1.18", 11800, "yarn")
     val mc11701 = createNode("1.17.1", 11701, "yarn")
     val mc11605 = createNode("1.16.5", 11605, "yarn")
-    // val mc11700 = createNode("1.17", 11700, "yarn")
-    // val mc11902 = createNode("1.19.2", 11902, "yarn")
 
-    // IMPORTANT!!
-    // When adding a version like (1.17 or 1.18.2)
-    // Make sure to a corresponding directory in `./versions/`
     mc12100.link(mc12006)
     mc12006.link(mc12005)
     mc12005.link(mc12004)
@@ -43,7 +38,4 @@ preprocess {
     mc11802.link(mc11800)
     mc11800.link(mc11701)
     mc11701.link(mc11605)
-
-    //mc11902.link(mc11802)
-    //mc11700.link(mc11605)
 }

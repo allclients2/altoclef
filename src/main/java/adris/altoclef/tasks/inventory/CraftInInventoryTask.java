@@ -1,6 +1,7 @@
 package adris.altoclef.tasks.inventory;
 
 import adris.altoclef.AltoClef;
+import adris.altoclef.Debug;
 import adris.altoclef.tasks.resources.CollectRecipeCataloguedResourcesTask;
 import adris.altoclef.tasks.resources.ResourceTask;
 import adris.altoclef.tasksystem.Task;
@@ -17,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

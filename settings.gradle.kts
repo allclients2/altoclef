@@ -17,7 +17,7 @@ pluginManagement {
 }
 
 
-rootProject.name = "altoclefprivate"
+rootProject.name = "altoclef"
 rootProject.buildFileName = "root.gradle.kts"
 
 listOf(
@@ -28,11 +28,9 @@ listOf(
     "1.20.2",
     "1.20.1",
     "1.19.4",
-    // "1.19.2",
     "1.18.2",
     "1.18",
     "1.17.1",
-    // "1.17",
     "1.16.5"
 ).forEach { version ->
     include(":$version")

@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.ItemVer;
+import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.tasks.construction.ProjectileProtectionWallTask;
 import adris.altoclef.tasks.movement.*;
 import adris.altoclef.tasksystem.Task;
@@ -185,7 +185,7 @@ public class MobDefenseChain extends SingleTaskChain {
             } else if (activeItem.getUseAction(player.getActiveItem()) != UseAction.BLOCK) {
                 return 0;
             } else {
-                return Math.min(activeItem.getMaxUseTime(player.getActiveItem()) - player.getItemUseTimeLeft(), 6);
+                return Math.min(ItemVer.getMaxUseTime(activeItem.getDefaultStack(), player) - player.getItemUseTimeLeft(), 6);
             }
         }
         return 0;

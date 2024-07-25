@@ -48,7 +48,6 @@ import net.minecraft.item.*;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Difficulty;
@@ -56,7 +55,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static adris.altoclef.tasks.resources.CollectMeatTask.COOKABLE_FOODS;
 import static adris.altoclef.util.helpers.ItemHelper.MATERIAL_DATA;

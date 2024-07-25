@@ -44,7 +44,7 @@ public class ItemHelper {
                             new OreBlockData(Blocks.DEEPSLATE_COAL_ORE, new OreDistribution(0, -8, -64))
                             //#endif
                     },
-                    MiningRequirement.WOOD, Items.COAL
+                    MiningRequirement.WOOD, Items.COAL, Blocks.COAL_BLOCK
             ));
             put(OreType.IRON, new MaterialData(
                     new OreBlockData[]{
@@ -58,7 +58,7 @@ public class ItemHelper {
                     //#else
                     //$$ Items.IRON_ORE,
                     //#endif
-                    Items.IRON_INGOT, IRON_ARMORS, IRON_TOOLS
+                    Items.IRON_INGOT, IRON_ARMORS, IRON_TOOLS, Blocks.IRON_BLOCK
             ));
             put(OreType.GOLD, new MaterialData(
                     new OreBlockData[]{
@@ -73,7 +73,7 @@ public class ItemHelper {
                     //#else
                     //$$ Items.GOLD_ORE,
                     //#endif
-                    Items.GOLD_INGOT, GOLDEN_ARMORS, GOLDEN_TOOLS
+                    Items.GOLD_INGOT, GOLDEN_ARMORS, GOLDEN_TOOLS, Blocks.GOLD_BLOCK
             ));
             put(OreType.DIAMOND, new MaterialData(
                     new OreBlockData[]{
@@ -81,7 +81,7 @@ public class ItemHelper {
                             //#if MC>=11800
                             new OreBlockData(Blocks.DEEPSLATE_DIAMOND_ORE, new OreDistribution(-59, -59, -64))
                             //#endif
-                    }, MiningRequirement.IRON, Items.DIAMOND, DIAMOND_ARMORS, DIAMOND_TOOLS
+                    }, MiningRequirement.IRON, Items.DIAMOND, DIAMOND_ARMORS, DIAMOND_TOOLS, Blocks.DIAMOND_BLOCK
             ));
             put(OreType.REDSTONE, new MaterialData(
                     new OreBlockData[]{
@@ -89,7 +89,7 @@ public class ItemHelper {
                             //#if MC>=11800
                             new OreBlockData(Blocks.DEEPSLATE_REDSTONE_ORE, new OreDistribution(-59, -59, -64))
                             //#endif
-                    }, MiningRequirement.IRON, Items.REDSTONE
+                    }, MiningRequirement.IRON, Items.REDSTONE, Blocks.REDSTONE_BLOCK
             ));
             put(OreType.LAPIS_LAZULI, new MaterialData(
                     new OreBlockData[]{
@@ -97,12 +97,12 @@ public class ItemHelper {
                             //#if MC>=11800
                             new OreBlockData(Blocks.DEEPSLATE_LAPIS_ORE, new OreDistribution(0, 0, -64))
                             //#endif
-                    }, MiningRequirement.STONE, Items.LAPIS_LAZULI
+                    }, MiningRequirement.STONE, Items.LAPIS_LAZULI, Blocks.LAPIS_BLOCK
             ));
             put(OreType.QUARTZ, new MaterialData(
                     new OreBlockData[]{
                             new OreBlockData(Blocks.NETHER_QUARTZ_ORE, new OreDistribution(117, 20, 10, Dimension.NETHER))
-                    }, MiningRequirement.WOOD, Items.QUARTZ
+                    }, MiningRequirement.WOOD, Items.QUARTZ, Blocks.QUARTZ_BLOCK
             ));
             put(OreType.EMERALD, new MaterialData( // TODO: Make this need the Mountain biome
                     new OreBlockData[]{
@@ -110,14 +110,14 @@ public class ItemHelper {
                             //#if MC>=11800
                             new OreBlockData(Blocks.DEEPSLATE_EMERALD_ORE, new OreDistribution(224, 96, -23))
                             //#endif
-                    }, MiningRequirement.IRON, Items.EMERALD
+                    }, MiningRequirement.IRON, Items.EMERALD, Blocks.EMERALD_BLOCK
             ));
             //#if MC>=11800
             put(OreType.COPPER, new MaterialData(
                     new OreBlockData[]{
                             new OreBlockData(Blocks.COPPER_ORE, new OreDistribution(112, 48, -16)),
                             new OreBlockData(Blocks.DEEPSLATE_COPPER_ORE, new OreDistribution(48, 48, -16))
-                    }, MiningRequirement.STONE, Items.RAW_COPPER, Items.COPPER_INGOT
+                    }, MiningRequirement.STONE, Items.RAW_COPPER, Items.COPPER_INGOT, Blocks.COPPER_BLOCK
             ));
             //#endif
         }
@@ -680,36 +680,39 @@ public class ItemHelper {
         }
     }
 
+
+
     public static class MaterialData {
         public final OreBlockData[] oreBlocks;
         public final Item[] armorSetItems;
         public final Item[] toolSetItems;
+        public final Block fullBlock;
         public final MiningRequirement miningRequirement;
-
 
         public final Item rawItem;
         public final Item defaultItem;
 
 
-        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item rawItem, Item defaultItem, Item[] armorSetItems, Item[] toolSetItems) {
+        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item rawItem, Item defaultItem, Item[] armorSetItems, Item[] toolSetItems, Block fullBlock) {
             this.rawItem = rawItem;
             this.defaultItem = defaultItem;
+            this.fullBlock = fullBlock;
             this.oreBlocks = oreBlocks;
             this.armorSetItems = armorSetItems;
             this.toolSetItems = toolSetItems;
             this.miningRequirement = miningRequirement;
         }
 
-        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item rawItem, Item defaultItem) {
-            this(oreBlocks, miningRequirement, rawItem, defaultItem, null, null);
+        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item rawItem, Item defaultItem, Block fullBlock) {
+            this(oreBlocks, miningRequirement, rawItem, defaultItem, null, null, fullBlock);
         }
 
-        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item item, Item[] armorSetItems, Item[] toolSetItems) {
-            this(oreBlocks, miningRequirement, null, item, armorSetItems, toolSetItems);
+        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item item, Item[] armorSetItems, Item[] toolSetItems, Block fullBlock) {
+            this(oreBlocks, miningRequirement, null, item, armorSetItems, toolSetItems, fullBlock);
         }
 
-        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item item) {
-            this(oreBlocks, miningRequirement, null, item, null, null);
+        public MaterialData(OreBlockData[] oreBlocks, MiningRequirement miningRequirement, Item item, Block fullBlock) {
+            this(oreBlocks, miningRequirement, null, item, null, null, fullBlock);
         }
     }
 

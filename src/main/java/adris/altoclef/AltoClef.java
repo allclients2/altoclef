@@ -150,6 +150,7 @@ public class AltoClef implements ModInitializer {
         slotHandler = new SlotHandler(this);
 
         initializeCommands();
+        TaskCatalogue.InitRecipes();
 
         // Load settings
         adris.altoclef.Settings.load(newSettings -> {
@@ -262,11 +263,7 @@ public class AltoClef implements ModInitializer {
     //#endif
 
     private void initializeBaritoneSettings() {
-
-        //FIXME: I don't actually know which version this was added
-        //#if MC>11900
         getExtraBaritoneSettings().canWalkOnEndPortal(false);
-        //#endif
 
         getClientBaritoneSettings().freeLook.value = false;
         getClientBaritoneSettings().overshootTraverse.value = false;

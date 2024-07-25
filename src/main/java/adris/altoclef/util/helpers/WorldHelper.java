@@ -4,6 +4,7 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.mixins.ClientConnectionAccessor;
 import adris.altoclef.mixins.EntityAccessor;
+import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.MethodWrapper;
 import adris.altoclef.multiversion.WorldBoundsVer;
 import adris.altoclef.util.Dimension;
@@ -217,10 +218,11 @@ public abstract class WorldHelper {
         return result;
     }
 
+    @Deprecated
     public static boolean isInNetherPortal(AltoClef mod) {
         if (mod.getPlayer() == null)
             return false;
-        return adris.altoclef.multiversion.entity.EntityHelper.isInNetherPortal(mod.getPlayer());
+        return EntityVer.isInNetherPortal(mod.getPlayer());
     }
 
     public static boolean dangerousToBreakIfRightAbove(AltoClef mod, BlockPos toBreak) {

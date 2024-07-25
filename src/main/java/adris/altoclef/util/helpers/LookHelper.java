@@ -1,7 +1,6 @@
 package adris.altoclef.util.helpers;
 
 import adris.altoclef.AltoClef;
-import adris.altoclef.Debug;
 import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.util.slots.Slot;

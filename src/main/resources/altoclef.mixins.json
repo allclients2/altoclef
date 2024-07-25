@@ -4,8 +4,8 @@
   "package": "adris.altoclef.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MovementHelperMixin",
     "AbstractFurnaceScreenHandlerAccessor",
+    "AxeItemAccessor",
     "BlockModifiedByPlayerMixin",
     "ClientBlockBreakAccessor",
     "ClientConnectionAccessor",
@@ -14,6 +14,8 @@
     "DeathScreenAccessor",
     "EntityAccessor",
     "GameOverlayMixin",
+    "MiningToolItemAccessor",
+    "MovementHelperMixin",
     "PersistentProjectileEntityAccessor",
     "PortalManagerAccessor",
     "SlotClickMixin",

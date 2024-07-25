@@ -1,7 +1,7 @@
 import com.replaymod.gradle.preprocess.PreprocessTask
 
 buildscript {
-    def (major, minor, patch) = minecraft_version.split("-")[0].tokenize('.')
+    def (major, minor, patch) = project.name.split("-")[0].tokenize('.')
     project.ext.mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
 
     dependencies {
@@ -22,25 +22,24 @@ preprocess {
     patternAnnotation.set("adris.altoclef.multiversion.Pattern")
 }
 
-
-sourceCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = mcVersion >= 12006 ?  JavaVersion.VERSION_21 : JavaVersion.VERSION_17
 targetCompatibility = sourceCompatibility
 
 
+
 tasks.withType(JavaCompile).configureEach {
-    options.release = mcVersion >= 12006 ? 21 : 17
+    options.release = mcVersion >= 12006 ?  21 : 17
 }
 
 archivesBaseName = project.archives_base_name
 version = "${project.name}-${project.mod_version}"
 group = project.maven_group
+
 def mappingsVersions = [
         11605: "1.16.5+build.10",
-        11700: "1.17+build.9",
-        11701: "1.17.1+build.65", // 65 BUILDS?!!
+        11701: "1.17.1+build.65", // Thats alot of builds!
         11800: "1.18+build.1",
         11802: "1.18.2+build.4",
-        11902: "1.19.2+build.28", // Impressive, but not as much as 1.17.1.
         11904: "1.19.4+build.2",
         12001: "1.20.1+build.10",
         12002: "1.20.2+build.4",
@@ -52,11 +51,9 @@ def mappingsVersions = [
 
 def fabricApiVersions = [
         11605: "0.42.0+1.16",
-        11700: "0.36.0+1.17",
         11701: "0.46.1+1.17",
         11800: "0.44.0+1.18",
         11802: "0.77.0+1.18.2",
-        11902: "0.77.0+1.19.2",
         11904: "0.87.2+1.19.4",
         12001: "0.92.2+1.20.1",
         12002: "0.91.2+1.20.2",
@@ -70,7 +67,7 @@ def baritoneVersions = [
         "1.16.5": "1.16.5",  // from MiranCZ repo
         "1.17": "1.7", // from Marvion repo (Or Mirans because its just a fork of Marvion's)
         "1.17.1": "1.17.1",  // from Miran repo
-        "1.18": "1.18",  // from Miran repo
+        "1.18": "1.18-2",  // from Miran repo // I USED 1.18-2 because for SOME reason it just wouldn't use MiranCZ's version of 1.18 baritone so i just made 1.18-2 in my own maven and using that.
         "1.19.2": "1.19.2",  // from Marvion repo
         "1.18.2": "1.18.2",  // from allclients2 repo
         "1.19.4": "1.19.4",  // from Marvion repo
@@ -79,61 +76,23 @@ def baritoneVersions = [
         "1.20.4": "1.20.4",
         "1.20.5": "1.20.5",
         "1.20.6": "1.20.6",
-]
-
-
-def baritoneApiPaths = [
-        //11700: "baritone-unoptimized", // 1.17 support not added, because i cant find the source code, and im too lazy.
-        11605: "baritone-unoptimized",
-        11701: "baritone-unoptimized",
-        11800: "baritone-unoptimized",
-        11802: "baritone-unoptimized",
-        11902: "baritone-unoptimized",
-        11904: "baritone-unoptimized",
-        12001: "baritone-unoptimized",
-        12002: "baritone-unoptimized-fabric",
-        12004: "baritone-unoptimized-fabric",
-        12005: "baritone-unoptimized-fabric",
-        12006: "baritone-unoptimized-fabric",
-]
-
-def baritonePaths = [
-        11605: "baritone-unoptimized",
-        11700: "baritone-unoptimized",
-        11701: "baritone-unoptimized",
-        11800: "baritone-unoptimized",
-        11802: "baritone-unoptimized-fabric",
-        11902: "baritone-unoptimized",
-        11904: "baritone-unoptimized",
-        12001: "baritone-unoptimized",
-        12002: "baritone-unoptimized",
-        12004: "baritone-unoptimized-fabric",
-        12005: "baritone-unoptimized-fabric",
-        12006: "baritone-unoptimized-fabric",
+        "1.21": "1.21"
 ]
 
 repositories {
     mavenCentral()
+    maven {
+        name = "allclients2Repo"
+        url = "https://allclients2.github.io/maven/"
+    }
     maven {
         name = "MiranCZRepo"
         url = "https://mirancz.github.io/maven/"
         artifactUrls("https://mirancz.github.io/maven/cabaletta/baritone-unoptimized/${project.name}")
     }
     maven {
-        name = "allclients2Repo"
-        url = "https://allclients2.github.io/maven/"
-    }
-    maven {
-        name = "MarvionKiritoRepo"
-        url = "https://marvionkirito.github.io/maven/"
-    }
-    maven {
         name = 'babbaj-repo'
         url = 'https://babbaj.github.io/maven/'
-    }
-    maven {
-        name = "gaucho-matrero-repo"
-        url = "https://gaucho-matrero.github.io/maven/"
     }
     flatDir {
         dirs '../baritone/dist'
@@ -164,6 +123,7 @@ dependencies {
     shadow('com.fasterxml.jackson.core:jackson-annotations:2.16.0')
     shadow('com.fasterxml.jackson.core:jackson-databind:2.16.0')
 
+    // Thank you georgeagostino for fixing my garbage
     if (getProject().hasProperty("altoclef.development")) {
         // Must run build from baritone-plus once
         modImplementation "baritone-api-fabric:baritone-unoptimized-fabric-${baritoneVersions[project.name]}"

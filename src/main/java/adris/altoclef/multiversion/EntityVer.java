@@ -1,46 +1,82 @@
 package adris.altoclef.multiversion;
 
-import net.minecraft.block.BlockState;
+import adris.altoclef.mixins.PortalManagerAccessor;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.*;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.List;
 
-
-//#if MC<11800
-//$$ import net.minecraft.block.Block;
-//$$ import net.minecraft.tag.BlockTags;
-//$$ import net.minecraft.util.math.BlockPos;
-//$$ import net.minecraft.util.math.MathHelper;
+//#if MC <= 12006
+import adris.altoclef.mixins.EntityAccessor;
 //#endif
 
-public abstract class EntityVer {
+public class EntityVer {
+
+    @Pattern
+    public static boolean isInNetherPortal(Entity entity) {
+        //#if MC <= 12006
+        //$$ return ((EntityAccessor)entity).isInNetherPortal();
+        //#else
+        return (entity.portalManager != null && ((PortalManagerAccessor)entity.portalManager).accessPortal() instanceof NetherPortalBlock && entity.portalManager.isInPortal())
+                || entity.getPortalCooldown() > 0;
+        //#endif
+    }
+
+    @Pattern
+    public int getPortalCooldown(Entity entity) {
+        //#if MC >= 12001
+        return entity.getPortalCooldown();
+        //#else
+        //$$ return ((EntityAccessor) entity).getPortalCooldown();
+        //#endif
+    }
+
+
+    @Pattern
+    public BlockPos getLandingPos(Entity entity) {
+        //#if MC >= 11701
+        return entity.getSteppingPos();
+        //#else
+        //$$ return ((adris.altoclef.mixins.EntityAccessor) entity).invokeGetLandingPos();
+        //#endif
+    }
+
+    @Pattern
+    private static ChunkPos getChunkPos(Entity entity) {
+        //#if MC >= 11701
+        return entity.getChunkPos();
+        //#else
+        //$$ return new ChunkPos(entity.getBlockPos());
+        //#endif
+    }
 
     // For MobDefenseChain, Threats that are of high priority...
     public static final List<Class<? extends Monster>> immediateThreat = Arrays.asList(
-        WitherEntity.class,
-        EndermanEntity.class,
-        BlazeEntity.class,
-        WitherSkeletonEntity.class,
-        HoglinEntity.class,
-        ZoglinEntity.class,
-        PiglinBruteEntity.class,
-        VindicatorEntity.class
+            WitherEntity.class,
+            EndermanEntity.class,
+            BlazeEntity.class,
+            WitherSkeletonEntity.class,
+            HoglinEntity.class,
+            ZoglinEntity.class,
+            PiglinBruteEntity.class,
+            VindicatorEntity.class
 
-        //#if MC >= 11900
-        , WardenEntity.class
-        //#endif
+            //#if MC >= 11900
+            , WardenEntity.class
+            //#endif
 
-        // #if MC < BETA_17003
-        // $$ HerobrineSubject.class,
-        // #endif
+            // #if MC < BETA_17003
+            // $$ HerobrineSubject.class,
+            // #endif
     );
 
     // FIXME this should be possible with mappings, right?
@@ -95,28 +131,5 @@ public abstract class EntityVer {
         //$$ return false; //Wasn't even added in the game yet...
         //#endif
     }
-
-    // CTRL + C
-    // CTRL + V
-    // My problems saved!
-    //
-    //#if MC <= 11600
-    //$$ private static BlockPos getLandingPosCopied(Entity entity) {
-    //$$      int i = MathHelper.floor(entity.getPos().x);
-    //$$      int j = MathHelper.floor(entity.getPos().y - 0.20000000298023224);
-    //$$      int k = MathHelper.floor(entity.getPos().z);
-    //$$      BlockPos blockPos = new BlockPos(i, j, k);
-    //$$      if (entity.world.getBlockState(blockPos).isAir()) {
-    //$$          BlockPos blockPos2 = blockPos.down();
-    //$$          BlockState blockState = entity.world.getBlockState(blockPos2);
-    //$$          Block block = blockState.getBlock();
-    //$$           if (!block.isIn(BlockTags.FENCES)) {
-    //$$                block.isIn(BlockTags.WALLS);
-    //$$           }
-    //$$      }
-    //$$      return blockPos;
-    //$$  }
-    //#endif
-
 
 }

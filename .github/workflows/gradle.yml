@@ -1,6 +1,3 @@
-# This workflow will build a Java project with Gradle
-# For more information check https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
 name: Java CI with Gradle
 
 on:
@@ -12,6 +9,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      LATEST_VERSION: "1.21"
+      INCLUDE_DEVLIBS: "true"
+
+      # Warning: Don't add too many versions because it takes a lot of space in the artifacts,
+      # and I've gotten an email from GitHub about it so please just don't.
+      VERSIONS_TO_BUILD: "1.16.5 1.17.1 1.18.2 1.20.4 1.21"
 
     steps:
       - uses: actions/checkout@v2
@@ -29,7 +34,7 @@ jobs:
         run: |
           mkdir -p ./versions
           if [ ! -f ./versions/mainProject ]; then
-            echo "1.20.6" > ./versions/mainProject
+            echo $LATEST_VERSION > ./versions/mainProject
           fi
 
       - name: Build with Gradle
@@ -38,11 +43,13 @@ jobs:
       - name: Create artifact directory structure
         run: |
           mkdir -p artifacts
-          for version in 1.18.2 1.20.1 1.20.2 1.20.4 1.20.5 1.20.6; do
-            mkdir -p artifacts/$version/devlibs
+          for version in $VERSIONS_TO_BUILD; do
             mkdir -p artifacts/$version/libs
-            cp ./versions/$version/build/devlibs/*.jar artifacts/$version/devlibs/
             cp ./versions/$version/build/libs/*.jar artifacts/$version/libs/
+            if [ "$INCLUDE_DEVLIBS" = "true" ]; then
+              mkdir -p artifacts/$version/devlibs
+              cp ./versions/$version/build/devlibs/*.jar artifacts/$version/devlibs/
+            fi
           done
 
       - name: Compute hashes

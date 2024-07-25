@@ -2,9 +2,9 @@ package adris.altoclef.util.helpers;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.multiversion.DamageSourcesVer;
-import adris.altoclef.multiversion.EntityVer;
+import adris.altoclef.multiversion.EnchantmentHelperVer;
 import adris.altoclef.multiversion.MethodWrapper;
-import net.minecraft.enchantment.EnchantmentHelper;
+import adris.altoclef.multiversion.EntityVer;
 import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -87,6 +87,7 @@ public class EntityHelper {
         return false;
     }
 
+
     /**
      * Calculate the resulting damage dealt to a player as a result of some damage.
      * If this player were to receive this damage, the player's health will be subtracted by the resulting value.
@@ -99,7 +100,7 @@ public class EntityHelper {
 
         // Armor Base
         if (!DamageSourcesVer.bypassesArmor(source)) {
-            damageAmount = MethodWrapper.getDamageLeft(damageAmount,source,player.getArmor(),player.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
+            damageAmount = MethodWrapper.getDamageLeft(player, damageAmount,source,player.getArmor(),player.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
         }
 
         // Enchantments & Potions
@@ -117,7 +118,7 @@ public class EntityHelper {
             if (damageAmount <= 0.0) {
                 damageAmount = 0.0;
             } else {
-                k = EnchantmentHelper.getProtectionAmount(player.getArmorItems(), source);
+                k = (int) EnchantmentHelperVer.getProtectionAmount(player, source);
                 if (k > 0) {
                     damageAmount = DamageUtil.getInflictedDamage((float) damageAmount, (float) k);
                 }
