@@ -13,10 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -99,11 +96,20 @@ public class ItemStorageTracker extends Tracker {
      * (ex. crafting table slots/furnace input, stuff the player is use )
      */
     public boolean hasItem(Item... items) {
-        return Arrays.stream(getCurrentConversionSlots()).anyMatch(slot -> {
-            ItemStack stack = StorageHelper.getItemStackInSlot(slot);
-            return ArrayUtils.contains(items, stack.getItem());
-        }) || inventory.hasItem(true, items);
+        if (inventory.hasItem(true, items)) {
+            return true;
+        } else {
+            Set<Item> itemSet = new HashSet<>(Arrays.asList(items));
+            for (Slot slot : getCurrentConversionSlots()) {
+                final ItemStack stack = StorageHelper.getItemStackInSlot(slot);
+                if (itemSet.contains(stack.getItem())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
+
 
     public boolean hasItem(boolean playerInventoryOnly, Item... items) {
         return inventory.hasItem(playerInventoryOnly, items);
