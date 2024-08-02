@@ -2,6 +2,7 @@ package adris.altoclef.scanner;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
+import adris.altoclef.eventbus.events.BlockBreakingEvent;
 import adris.altoclef.scanner.blacklist.spatial.entry.BlacklistRangeBlockPosEntry;
 import adris.altoclef.util.time.TimerGame;
 import net.minecraft.block.Block;
