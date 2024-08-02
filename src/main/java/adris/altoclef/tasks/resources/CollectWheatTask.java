@@ -5,7 +5,7 @@ import adris.altoclef.tasks.inventory.CraftInInventoryTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.CraftingRecipe;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.RecipeTarget;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -35,7 +35,7 @@ public class CollectWheatTask extends ResourceTask {
         // We may have enough hay blocks to meet our needs.
         int potentialCount = mod.getItemStorage().getItemCount(Items.WHEAT) + 9 * mod.getItemStorage().getItemCount(Items.HAY_BLOCK);
         if (potentialCount >= _count) {
-            setDebugState("Crafting wheat");
+            setDebugState("Crafting wheat from haybale");
             return new CraftInInventoryTask(new RecipeTarget(Items.WHEAT, _count, CraftingRecipe.newShapedRecipe("wheat", new ItemTarget[]{new ItemTarget(Items.HAY_BLOCK, 1), null, null, null}, 9)));
         }
         if (mod.getBlockScanner().anyFound(Blocks.HAY_BLOCK) || mod.getEntityTracker().itemDropped(Items.HAY_BLOCK)) {

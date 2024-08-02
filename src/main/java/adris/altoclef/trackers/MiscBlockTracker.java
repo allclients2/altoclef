@@ -1,7 +1,7 @@
 package adris.altoclef.trackers;
 
 import adris.altoclef.AltoClef;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.helpers.BlockHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import net.minecraft.block.Block;

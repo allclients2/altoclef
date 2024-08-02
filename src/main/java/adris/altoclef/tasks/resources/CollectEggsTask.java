@@ -5,7 +5,7 @@ import adris.altoclef.tasks.entity.DoToClosestEntityTask;
 import adris.altoclef.tasks.movement.DefaultGoToDimensionTask;
 import adris.altoclef.tasks.movement.GetToEntityTask;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.helpers.WorldHelper;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.item.Items;

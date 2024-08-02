@@ -4,7 +4,7 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.TaskCatalogue;
 import adris.altoclef.tasks.construction.compound.ConstructNetherPortalObsidianTask;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.time.TimerGame;
@@ -88,7 +88,7 @@ public class FastTravelTask extends Task {
 
                     if (mod.getBlockScanner().anyFound(Blocks.END_PORTAL_FRAME)) {
                         setDebugState("Walking to portal");
-                        return new GetToBlockTask(mod.getBlockScanner().getNearestBlock(Blocks.END_PORTAL_FRAME).get());
+                        return new GetToBlockTask(mod.getBlockScanner().getNearestBlockType(Blocks.END_PORTAL_FRAME).get());
                     }
                     return new GetToBlockTask(target);
                 }

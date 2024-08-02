@@ -32,7 +32,7 @@ public class PlayerInteractionFixChain extends TaskChain {
     private final TimerGame betterToolTimer = new TimerGame(0);
     private final TimerGame mouseMovingButScreenOpenTimeout = new TimerGame(1);
     private ItemStack lastHandStack = null;
-    private BlockPos LastBreakingPosition = new BlockPos(0, -512, 0);
+    private BlockPos lastBreakingPosition = new BlockPos(0, -512, 0);
 
 
     private Screen lastScreen;
@@ -65,8 +65,8 @@ public class PlayerInteractionFixChain extends TaskChain {
             // Equip the right tool for the job if we're not using one.
             betterToolTimer.reset();
             if (mod.getControllerExtras().isBreakingBlock()) {
-                BlockPos BreakingPos = mod.getControllerExtras().getBreakingBlockPos();
-                BlockState state = mod.getWorld().getBlockState(BreakingPos);
+                BlockPos breakingPos = mod.getControllerExtras().getBreakingBlockPos();
+                BlockState state = mod.getWorld().getBlockState(breakingPos);
                 Optional<Slot> bestToolSlot = StorageHelper.getBestToolSlot(mod, state);
                 Slot currentEquipped = PlayerSlot.getEquipSlot();
 
@@ -80,16 +80,14 @@ public class PlayerInteractionFixChain extends TaskChain {
                         if (
                                 isAllowedToManage &&
                             !(
-                                BreakingPos.getX() == LastBreakingPosition.getX() &&
-                                BreakingPos.getY() == LastBreakingPosition.getY() &&
-                                BreakingPos.getZ() == LastBreakingPosition.getZ()
+                                breakingPos.getX() == lastBreakingPosition.getX() &&
+                                breakingPos.getY() == lastBreakingPosition.getY() &&
+                                breakingPos.getZ() == lastBreakingPosition.getZ()
                             )
                         ) {
                             Debug.logMessage("Found better tool in inventory, equipping.");
-                            //Debug.logMessage(BreakingPos + " BREAKPOS");
-                            //Debug.logMessage(LastBreakingPosition + " LASTBREAKPOS");
 
-                            LastBreakingPosition = BreakingPos; //To prevent fighting of tool equipping
+                            lastBreakingPosition = breakingPos; //To prevent fighting of tool equipping
                             ItemStack bestToolItemStack = StorageHelper.getItemStackInSlot(bestToolSlot.get());
                             Item bestToolItem = bestToolItemStack.getItem();
 

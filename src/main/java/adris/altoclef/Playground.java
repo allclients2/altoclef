@@ -22,21 +22,19 @@ import adris.altoclef.tasks.resources.CollectFoodTask;
 import adris.altoclef.tasks.resources.TradeWithPiglinsTask;
 import adris.altoclef.tasks.speedrun.KillEnderDragonTask;
 import adris.altoclef.tasks.speedrun.KillEnderDragonWithBedsTask;
-import adris.altoclef.tasks.speedrun.WaitForDragonAndPearlTask;
 import adris.altoclef.util.*;
 import adris.altoclef.util.helpers.WorldHelper;
+import adris.altoclef.util.publicenums.Dimension;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.EmptyChunk;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 

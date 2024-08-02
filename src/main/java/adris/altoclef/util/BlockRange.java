@@ -1,6 +1,7 @@
 package adris.altoclef.util;
 
 import adris.altoclef.util.helpers.WorldHelper;
+import adris.altoclef.util.publicenums.Dimension;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.minecraft.util.math.BlockPos;
 

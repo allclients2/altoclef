@@ -2,12 +2,11 @@ package adris.altoclef.util.helpers;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.multiversion.ItemVer;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
-import adris.altoclef.util.publictypes.OreType;
-import adris.altoclef.util.publictypes.WoodType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import adris.altoclef.util.publicenums.MiningRequirement;
+import adris.altoclef.util.publicenums.OreType;
+import adris.altoclef.util.publicenums.WoodType;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
@@ -21,7 +20,6 @@ import net.minecraft.util.DyeColor;
 import org.jetbrains.annotations.Nullable;
 
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Function;

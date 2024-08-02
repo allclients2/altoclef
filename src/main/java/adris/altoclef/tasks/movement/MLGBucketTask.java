@@ -4,7 +4,7 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.multiversion.PlayerVer;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.helpers.*;
 import adris.altoclef.util.serialization.ItemDeserializer;
 import adris.altoclef.util.serialization.ItemSerializer;
@@ -30,8 +30,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
-
-import net.minecraft.entity.damage.DamageSource;
 
 import java.util.Arrays;
 import java.util.List;

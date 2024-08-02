@@ -1,6 +1,6 @@
 package adris.altoclef.trackers.storage;
 
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.FurnaceScreenHandler;

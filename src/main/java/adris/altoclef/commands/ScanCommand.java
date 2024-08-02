@@ -11,13 +11,11 @@ import adris.altoclef.multiversion.IdentifierVer;
 import adris.altoclef.multiversion.RegistriesVer;
 import adris.altoclef.util.helpers.ItemHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import adris.altoclef.util.BlockScanner;
+import adris.altoclef.scanner.BlockScanner;
 
-import java.lang.reflect.Field;
 import java.util.Optional;
 
 public class ScanCommand extends Command {
@@ -46,7 +44,7 @@ public class ScanCommand extends Command {
 
         BlockScanner blockScanner = mod.getBlockScanner();
 
-        Optional<BlockPos> scannedBlockPos = blockScanner.getNearestBlock(block, mod.getPlayer().getPos());
+        Optional<BlockPos> scannedBlockPos = blockScanner.getNearestBlock(block, mod.getPlayer().getPos(), Integer.MAX_VALUE);
 
         if (scannedBlockPos.isPresent()) {
             Debug.logInternal("Found! Closest Block Location: " +  scannedBlockPos.get());

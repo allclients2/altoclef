@@ -1,15 +1,18 @@
-package adris.altoclef.util;
+package adris.altoclef.util.publicenums;
 
 import adris.altoclef.Debug;
 import adris.altoclef.multiversion.ItemVer;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 
 public enum MiningRequirement implements Comparable<MiningRequirement> {
-    HAND(Items.AIR), WOOD(Items.WOODEN_PICKAXE), STONE(Items.STONE_PICKAXE), IRON(Items.IRON_PICKAXE), DIAMOND(Items.DIAMOND_PICKAXE);
+    HAND(Items.AIR),
+    WOOD(Items.WOODEN_PICKAXE),
+    STONE(Items.STONE_PICKAXE),
+    IRON(Items.IRON_PICKAXE),
+    DIAMOND(Items.DIAMOND_PICKAXE);
 
     private final Item _minPickaxe;
 

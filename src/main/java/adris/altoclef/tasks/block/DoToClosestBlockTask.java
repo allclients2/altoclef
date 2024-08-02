@@ -57,7 +57,7 @@ public class DoToClosestBlockTask extends AbstractDoToClosestObjectTask<BlockPos
         if (getClosest != null) {
             return getClosest.apply(pos);
         }
-        return mod.getBlockScanner().getNearestBlock(pos, isValid, targetBlocks);
+        return mod.getBlockScanner().getNearestBlockType(pos, isValid, targetBlocks);
     }
 
     @Override

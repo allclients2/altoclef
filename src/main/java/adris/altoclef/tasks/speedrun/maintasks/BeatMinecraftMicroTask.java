@@ -14,7 +14,7 @@ import adris.altoclef.tasks.resources.CollectFoodTask;
 import adris.altoclef.tasks.speedrun.KillEnderDragonTask;
 import adris.altoclef.tasks.speedrun.KillEnderDragonWithBedsTask;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.StorageHelper;
@@ -134,7 +134,7 @@ public class BeatMinecraftMicroTask extends Task {
                 return new SearchChunkForBlockTask(netherFortressCommonBlocks);
             }
         } else if (!mod.getEntityTracker().entityFound(BlazeEntity.class)) {
-            final Optional<BlockPos> blazeSpawnerPosOptional = mod.getBlockScanner().getNearestBlock(Blocks.SPAWNER);
+            final Optional<BlockPos> blazeSpawnerPosOptional = mod.getBlockScanner().getNearestBlockType(Blocks.SPAWNER);
             if (blazeSpawnerPosOptional.isPresent()) { // Hopefully its always present, it should be...
                 return new GetToBlockTask(blazeSpawnerPosOptional.get());
             }
@@ -165,7 +165,7 @@ public class BeatMinecraftMicroTask extends Task {
     // Or if an end portal before has already been found (endPortalCenterFound != null) then just travels to that.
     private static Task enterEndWithEnderEyesTask(AltoClef mod) {
         if (endPortalCenterFound != null) {
-            final Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlock(Blocks.END_PORTAL);
+            final Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlockType(Blocks.END_PORTAL);
             if (endPortal.isPresent()) { // Enter portal
                 return new DoToClosestBlockTask(blockPos -> new GetToBlockTask(blockPos.up()), Blocks.END_PORTAL);
             } else { // Light portal
@@ -181,7 +181,7 @@ public class BeatMinecraftMicroTask extends Task {
     // Every tick, find any end portals around us, if found set to the found end portal (endPortalCenterFound)..
     private static void findPossibleEndPortals(AltoClef mod) {
         if (WorldHelper.getCurrentDimension() == Dimension.OVERWORLD) {
-            final Optional<BlockPos> nearestEndPortalBlockPos = mod.getBlockScanner().getNearestBlock(Blocks.END_PORTAL);
+            final Optional<BlockPos> nearestEndPortalBlockPos = mod.getBlockScanner().getNearestBlockType(Blocks.END_PORTAL);
             if (nearestEndPortalBlockPos.isPresent()) {
                 endPortalCenterFound = new Pair<>(nearestEndPortalBlockPos.get(), true); // `isOpen` always true because the `END_PORTAL` block is present... Which is the portal block its-self...
             } else {

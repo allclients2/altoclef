@@ -7,6 +7,8 @@ import adris.altoclef.tasksystem.Task;
 import adris.altoclef.trackers.storage.ItemStorageTracker;
 import adris.altoclef.util.*;
 import adris.altoclef.util.helpers.ItemHelper;
+import adris.altoclef.util.publicenums.Dimension;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import net.minecraft.item.Item;
 
 import java.util.ArrayList;

@@ -11,9 +11,8 @@ import adris.altoclef.commandsystem.CommandException;
 import adris.altoclef.commandsystem.ItemList;
 import adris.altoclef.tasks.construction.BranchMiningTask;
 import adris.altoclef.ui.MessagePriority;
-import adris.altoclef.util.publictypes.OreType;
+import adris.altoclef.util.publicenums.OreType;
 import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.NotNull;
 
 import static adris.altoclef.util.helpers.ItemHelper.MATERIAL_DATA;
 import static adris.altoclef.util.helpers.ItemHelper.OreBlockData;

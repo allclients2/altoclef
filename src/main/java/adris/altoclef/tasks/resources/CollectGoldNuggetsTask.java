@@ -7,6 +7,8 @@ import adris.altoclef.tasks.movement.DefaultGoToDimensionTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.*;
 import adris.altoclef.util.helpers.WorldHelper;
+import adris.altoclef.util.publicenums.Dimension;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;

@@ -1,6 +1,6 @@
 package adris.altoclef.commandsystem;
 
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 
 import java.util.ArrayList;
 import java.util.List;

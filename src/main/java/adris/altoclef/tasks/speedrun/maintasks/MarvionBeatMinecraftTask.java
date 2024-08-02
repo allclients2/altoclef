@@ -3,6 +3,7 @@ package adris.altoclef.tasks.speedrun.maintasks;
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
+import adris.altoclef.multiversion.BaritoneVer;
 import adris.altoclef.multiversion.EnchantmentHelperVer;
 import adris.altoclef.multiversion.ViewDistanceVer;
 import adris.altoclef.tasks.block.DoToClosestBlockTask;
@@ -20,9 +21,9 @@ import adris.altoclef.tasks.resources.*;
 import adris.altoclef.tasks.speedrun.*;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.trackers.EntityTracker;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.SmeltTarget;
 import adris.altoclef.util.helpers.*;
 import adris.altoclef.util.slots.Slot;
@@ -31,9 +32,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.EndPortalFrameBlock;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.CreditsScreen;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -502,10 +501,7 @@ public class MarvionBeatMinecraftTask extends Task {
     protected void onStop(AltoClef mod, Task interruptTask) {
         // Disable walking on end portal
 
-        //
-        //#if MC>= 12000
-        //$$ mod.getExtraBaritoneSettings().canWalkOnEndPortal(false);
-        //#endif
+       BaritoneVer.canWalkOnEndPortal(mod, false);
 
         // Pop the top behaviour from the stack
         mod.getBehaviour().pop();
@@ -611,7 +607,7 @@ public class MarvionBeatMinecraftTask extends Task {
 
         // Find the nearest tracking block position
         try {
-            return mod.getBlockScanner().getNearestBlock(blockPos -> {
+            return mod.getBlockScanner().getNearestBlockType(blockPos -> {
                 boolean isNotRuinedPortalChest = !_notRuinedPortalChests.contains(blockPos);
                 boolean isUnopenedChest = WorldHelper.isUnopenedChest(mod, blockPos);
                 boolean isWithinDistance = mod.getPlayer().getBlockPos().isWithinDistance(blockPos, 150);
@@ -919,7 +915,7 @@ public class MarvionBeatMinecraftTask extends Task {
                 }
             }
         }
-        Optional<BlockPos> coalOrePos = mod.getBlockScanner().getNearestBlock(Blocks.COAL_ORE);
+        Optional<BlockPos> coalOrePos = mod.getBlockScanner().getNearestBlockType(Blocks.COAL_ORE);
         if (coalOrePos.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
             for (Entity entity : entities) {
@@ -937,7 +933,7 @@ public class MarvionBeatMinecraftTask extends Task {
         }
 
         //#if MC>=11800
-        Optional<BlockPos> deepslateCoalOre = mod.getBlockScanner().getNearestBlock(Blocks.DEEPSLATE_COAL_ORE);
+        Optional<BlockPos> deepslateCoalOre = mod.getBlockScanner().getNearestBlockType(Blocks.DEEPSLATE_COAL_ORE);
         if (deepslateCoalOre.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
             for (Entity entity : entities) {
@@ -953,7 +949,7 @@ public class MarvionBeatMinecraftTask extends Task {
                 }
             }
         }
-        Optional<BlockPos> deepslateIronOrePos = mod.getBlockScanner().getNearestBlock(Blocks.DEEPSLATE_IRON_ORE);
+        Optional<BlockPos> deepslateIronOrePos = mod.getBlockScanner().getNearestBlockType(Blocks.DEEPSLATE_IRON_ORE);
         if (deepslateIronOrePos.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
             for (Entity entity : entities) {
@@ -971,7 +967,7 @@ public class MarvionBeatMinecraftTask extends Task {
         }
         //#endif
 
-        Optional<BlockPos> ironOrePos = mod.getBlockScanner().getNearestBlock(Blocks.IRON_ORE);
+        Optional<BlockPos> ironOrePos = mod.getBlockScanner().getNearestBlockType(Blocks.IRON_ORE);
         if (ironOrePos.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
             for (Entity entity : entities) {
@@ -1260,12 +1256,10 @@ public class MarvionBeatMinecraftTask extends Task {
                 dragonIsDead = true;
                 enteringEndPortal = true;
 
-                //
-                //#if MC>= 12000
-                //$$ if (!mod.getExtraBaritoneSettings().isCanWalkOnEndPortal()) {
-                //$$     mod.getExtraBaritoneSettings().canWalkOnEndPortal(true);
-                //$$ }
-                //#endif
+
+                if (!BaritoneVer.isCanWalkOnEndPortal(mod)) {
+                    BaritoneVer.canWalkOnEndPortal(mod, true);
+                }
 
                 return new DoToClosestBlockTask(
                         blockPos -> new GetToBlockTask(blockPos.up()),
@@ -1286,7 +1280,7 @@ public class MarvionBeatMinecraftTask extends Task {
 
         // Check for end portals. Always.
         if (!endPortalOpened(mod, _endPortalCenterLocation) && WorldHelper.getCurrentDimension() == Dimension.OVERWORLD) {
-            Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlock(Blocks.END_PORTAL);
+            Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlockType(Blocks.END_PORTAL);
             if (endPortal.isPresent()) {
                 _endPortalCenterLocation = endPortal.get();
                 _endPortalOpened = true;
@@ -1465,7 +1459,7 @@ public class MarvionBeatMinecraftTask extends Task {
                 if (endPortalFound(mod, _endPortalCenterLocation)) {
                     // Destroy silverfish spawner
                     if (StorageHelper.miningRequirementMetInventory(mod, MiningRequirement.WOOD)) {
-                        Optional<BlockPos> silverfish = mod.getBlockScanner().getNearestBlock(blockPos -> {
+                        Optional<BlockPos> silverfish = mod.getBlockScanner().getNearestBlockType(blockPos -> {
                             return WorldHelper.getSpawnerEntity(mod, blockPos) instanceof SilverfishEntity;
                         }, Blocks.SPAWNER);
                         if (silverfish.isPresent()) {
@@ -1488,12 +1482,9 @@ public class MarvionBeatMinecraftTask extends Task {
                         // We're as ready as we'll ever be, hop into the portal!
                         setDebugState("Entering End");
                         enteringEndPortal = true;
-                        //
-                        //#if MC>= 12000
-                        //$$ if (!mod.getExtraBaritoneSettings().isCanWalkOnEndPortal()) {
-                        //$$     mod.getExtraBaritoneSettings().canWalkOnEndPortal(true);
-                        //$$ }
-                        //#endif
+                        if (!BaritoneVer.isCanWalkOnEndPortal(mod)) {
+                            BaritoneVer.canWalkOnEndPortal(mod, true);
+                        }
                         return new DoToClosestBlockTask(
                                 blockPos -> new GetToBlockTask(blockPos.up()),
                                 Blocks.END_PORTAL

@@ -4,6 +4,8 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.tasks.inventory.CraftInInventoryTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.*;
+import adris.altoclef.util.publicenums.Dimension;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
@@ -33,7 +35,7 @@ public class CollectCoarseDirtTask extends ResourceTask {
     @Override
     protected Task onResourceTick(AltoClef mod) {
         double c = Math.ceil((double) (_count - mod.getItemStorage().getItemCount(Items.COARSE_DIRT)) / 4) * 2; // Minimum number of dirt / gravel needed to complete the recipe, accounting for coarse dirt already collected.
-        Optional<BlockPos> closest = mod.getBlockScanner().getNearestBlock(Blocks.COARSE_DIRT);
+        Optional<BlockPos> closest = mod.getBlockScanner().getNearestBlockType(Blocks.COARSE_DIRT);
 
         // If not enough dirt and gravel for the recipe, and coarse dirt within a certain distance, collect coarse dirt
         if (!(mod.getItemStorage().getItemCount(Items.DIRT) >= c &&

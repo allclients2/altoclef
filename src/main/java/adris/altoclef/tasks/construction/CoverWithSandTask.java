@@ -5,7 +5,7 @@ import adris.altoclef.TaskCatalogue;
 import adris.altoclef.tasks.movement.DefaultGoToDimensionTask;
 import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.time.TimerGame;
 import net.minecraft.block.Blocks;
@@ -76,7 +76,7 @@ public class CoverWithSandTask extends Task {
                                 !WorldHelper.isBlock(mod, blockPos.south().up(), Blocks.LAVA) ||
                                 !WorldHelper.isBlock(mod, blockPos.east().up(), Blocks.LAVA) ||
                                 !WorldHelper.isBlock(mod, blockPos.west().up(), Blocks.LAVA));
-        Optional<BlockPos> lava = mod.getBlockScanner().getNearestBlock(validLava, Blocks.LAVA);
+        Optional<BlockPos> lava = mod.getBlockScanner().getNearestBlockType(validLava, Blocks.LAVA);
         if (lava.isPresent()) {
             if (lavaPos == null) {
                 lavaPos = lava.get();

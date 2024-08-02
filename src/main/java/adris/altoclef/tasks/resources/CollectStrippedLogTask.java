@@ -6,7 +6,7 @@ import adris.altoclef.tasks.block.InteractWithBlockTask;
 import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.helpers.ItemHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -56,13 +56,13 @@ public class CollectStrippedLogTask extends ResourceTask {
             return TaskCatalogue.getItemTask(Items.WOODEN_AXE, 1);
         }
         if (mod.getItemStorage().getItemCount(_strippedLogs) < _targetCount) {
-            Optional<BlockPos> strippedLogBlockPos = mod.getBlockScanner().getNearestBlock(ItemHelper.itemsToBlocks(_strippedLogs));
+            Optional<BlockPos> strippedLogBlockPos = mod.getBlockScanner().getNearestBlockType(ItemHelper.itemsToBlocks(_strippedLogs));
             if (strippedLogBlockPos.isPresent()) {
                 setDebugState("Getting stripped log");
                 return new MineAndCollectTask(new ItemTarget(_strippedLogs), ItemHelper.itemsToBlocks(_strippedLogs), MiningRequirement.HAND);
             }
         }
-        Optional<BlockPos> strippableLogBlockPos = mod.getBlockScanner().getNearestBlock(ItemHelper.itemsToBlocks(_strippableLogs));
+        Optional<BlockPos> strippableLogBlockPos = mod.getBlockScanner().getNearestBlockType(ItemHelper.itemsToBlocks(_strippableLogs));
         if (strippableLogBlockPos.isPresent()) {
             setDebugState("Stripping log");
             return new InteractWithBlockTask(new ItemTarget(_axes), strippableLogBlockPos.get());

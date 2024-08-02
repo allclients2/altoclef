@@ -11,9 +11,9 @@ import adris.altoclef.multiversion.ToolMaterialVer;
 import adris.altoclef.tasks.inventory.CraftInInventoryTask;
 import adris.altoclef.util.CraftingRecipe;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.RecipeTarget;
-import adris.altoclef.util.publictypes.OreType;
+import adris.altoclef.util.publicenums.OreType;
 import adris.altoclef.util.slots.CraftingTableSlot;
 import adris.altoclef.util.slots.CursorSlot;
 import adris.altoclef.util.slots.PlayerSlot;
@@ -104,7 +104,7 @@ public class StorageHelper {
         return MiningRequirement.HAND;
     }
 
-    private static boolean h(AltoClef mod, boolean inventoryOnly, Item... items) {
+    private static boolean hasItem2(AltoClef mod, boolean inventoryOnly, Item... items) {
         if (inventoryOnly) {
             return mod.getItemStorage().hasItemInventoryOnly(items);
         }
@@ -114,19 +114,20 @@ public class StorageHelper {
     private static boolean miningRequirementMetInner(AltoClef mod, boolean inventoryOnly, MiningRequirement requirement) {
         return switch (requirement) {
             case HAND -> true;
-            case WOOD ->
-                    h(mod, inventoryOnly, Items.WOODEN_PICKAXE) || h(mod, inventoryOnly, Items.STONE_PICKAXE) || h(mod, inventoryOnly, Items.IRON_PICKAXE) || h(mod, inventoryOnly, Items.GOLDEN_PICKAXE) || h(mod, inventoryOnly, Items.DIAMOND_PICKAXE) || h(mod, inventoryOnly, Items.NETHERITE_PICKAXE);
-            case STONE ->
-                    h(mod, inventoryOnly, Items.STONE_PICKAXE) || h(mod, inventoryOnly, Items.IRON_PICKAXE) || h(mod, inventoryOnly, Items.GOLDEN_PICKAXE) || h(mod, inventoryOnly, Items.DIAMOND_PICKAXE) || h(mod, inventoryOnly, Items.NETHERITE_PICKAXE);
-            case IRON ->
-                    h(mod, inventoryOnly, Items.IRON_PICKAXE) || h(mod, inventoryOnly, Items.GOLDEN_PICKAXE) || h(mod, inventoryOnly, Items.DIAMOND_PICKAXE) || h(mod, inventoryOnly, Items.NETHERITE_PICKAXE);
-            case DIAMOND ->
-                    h(mod, inventoryOnly, Items.DIAMOND_PICKAXE) || h(mod, inventoryOnly, Items.NETHERITE_PICKAXE);
-            default -> {
-                Debug.logError("You missed a spot");
-                yield false;
-            }
+            case WOOD -> hasAnyPickaxe(mod, inventoryOnly, Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.GOLDEN_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
+            case STONE -> hasAnyPickaxe(mod, inventoryOnly, Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.GOLDEN_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
+            case IRON -> hasAnyPickaxe(mod, inventoryOnly, Items.IRON_PICKAXE, Items.GOLDEN_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
+            case DIAMOND -> hasAnyPickaxe(mod, inventoryOnly, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
         };
+    }
+
+    private static boolean hasAnyPickaxe(AltoClef mod, boolean inventoryOnly, Item... pickaxes) {
+        for (Item pickaxe : pickaxes) {
+            if (hasItem2(mod, inventoryOnly, pickaxe)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean miningRequirementMet(AltoClef mod, MiningRequirement requirement) {

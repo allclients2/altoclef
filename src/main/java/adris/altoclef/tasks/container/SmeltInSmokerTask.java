@@ -8,7 +8,7 @@ import adris.altoclef.tasks.inventory.MoveInaccessibleItemToInventoryTask;
 import adris.altoclef.tasks.inventory.MoveItemToSlotFromInventoryTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.SmeltTarget;
 import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.StorageHelper;
@@ -75,7 +75,7 @@ public class SmeltInSmokerTask extends ResourceTask {
 
     @Override
     protected Task onResourceTick(AltoClef mod) {
-        Optional<BlockPos> smokerPos = mod.getBlockScanner().getNearestBlock(Blocks.SMOKER);
+        Optional<BlockPos> smokerPos = mod.getBlockScanner().getNearestBlockType(Blocks.SMOKER);
         smokerPos.ifPresent(blockPos -> mod.getBehaviour().avoidBlockBreaking(blockPos));
         return doTask;
     }
@@ -332,7 +332,7 @@ public class SmeltInSmokerTask extends ResourceTask {
         }
 
         @Override
-        protected double getCostToMakeNew(AltoClef mod) {
+        protected double getCostToMakeNewContainer(AltoClef mod) {
             if (_smokerCache.burnPercentage > 0 || _smokerCache.burningFuelCount > 0 ||
                     _smokerCache.fuelSlot != null || _smokerCache.materialSlot != null ||
                     _smokerCache.outputSlot != null) {

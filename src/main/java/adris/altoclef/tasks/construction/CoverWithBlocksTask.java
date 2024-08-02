@@ -5,9 +5,9 @@ import adris.altoclef.tasks.movement.DefaultGoToDimensionTask;
 import adris.altoclef.tasks.movement.TimeoutWanderTask;
 import adris.altoclef.tasks.resources.MineAndCollectTask;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.StorageHelper;
 import adris.altoclef.util.helpers.WorldHelper;
@@ -95,7 +95,7 @@ public class CoverWithBlocksTask extends Task {
                                 !WorldHelper.isBlock(mod, blockPos.south().up(), Blocks.LAVA) ||
                                 !WorldHelper.isBlock(mod, blockPos.east().up(), Blocks.LAVA) ||
                                 !WorldHelper.isBlock(mod, blockPos.west().up(), Blocks.LAVA));
-        Optional<BlockPos> lava = mod.getBlockScanner().getNearestBlock(validLava, Blocks.LAVA);
+        Optional<BlockPos> lava = mod.getBlockScanner().getNearestBlockType(validLava, Blocks.LAVA);
         if (lava.isPresent()) {
             if (lavaPos == null) {
                 lavaPos = lava.get();

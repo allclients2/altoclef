@@ -6,7 +6,11 @@ import adris.altoclef.tasks.container.SmeltInFurnaceTask;
 import adris.altoclef.tasks.movement.DefaultGoToDimensionTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.*;
+import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.WorldHelper;
+import adris.altoclef.util.publicenums.Dimension;
+import adris.altoclef.util.publicenums.MiningRequirement;
+import adris.altoclef.util.publicenums.OreType;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
@@ -33,11 +37,7 @@ public class CollectGoldIngotTask extends ResourceTask {
     @Override
     protected Task onResourceTick(AltoClef mod) {
         if (WorldHelper.getCurrentDimension() == Dimension.OVERWORLD) {
-            //#if MC>=11700
-            return new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.GOLD_INGOT, count), new ItemTarget(Items.RAW_GOLD, count)));
-            //#else
-            //$$ return new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.GOLD_INGOT, count), new ItemTarget(Items.GOLD_ORE, count)));
-            //#endif
+            return new SmeltInFurnaceTask(new SmeltTarget(new ItemTarget(Items.GOLD_INGOT, count), new ItemTarget(ItemHelper.MATERIAL_DATA.get(OreType.GOLD).rawItem, count)));
         } else if (WorldHelper.getCurrentDimension() == Dimension.NETHER) {
             // If we have enough nuggets, craft them.
             int nuggs = mod.getItemStorage().getItemCount(Items.GOLD_NUGGET);

@@ -3,6 +3,7 @@ package adris.altoclef.multiversion;
 import adris.altoclef.AltoClef;
 
 // Some versions of baritone may not have `isCanWalkOnEndPortal` or other methods.
+// Also for safety on if any of the methods were implemented poorly and may throw an exception.
 public class BaritoneVer {
 
     @Deprecated

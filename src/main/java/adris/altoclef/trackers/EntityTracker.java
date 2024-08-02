@@ -4,9 +4,9 @@ import adris.altoclef.Debug;
 import adris.altoclef.eventbus.EventBus;
 import adris.altoclef.eventbus.events.PlayerCollidedWithEntityEvent;
 import adris.altoclef.mixins.PersistentProjectileEntityAccessor;
-import adris.altoclef.trackers.blacklisting.EntityLocateBlacklist;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.baritone.CachedProjectile;
+import adris.altoclef.scanner.blacklist.object.ObjectFailureBlacklist;
 import adris.altoclef.util.helpers.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -42,7 +42,7 @@ public class EntityTracker extends Tracker {
     private final HashMap<String, PlayerEntity> playerMap = new HashMap<>();
     private final HashMap<String, Vec3d> playerLastCoordinates = new HashMap<>();
 
-    private final EntityLocateBlacklist entityBlacklist = new EntityLocateBlacklist();
+    private final ObjectFailureBlacklist<Entity> entityBlacklist = new ObjectFailureBlacklist<>();
 
     private final HashMap<PlayerEntity, List<Entity>> entitiesCollidingWithPlayerAccumulator = new HashMap<>();
     private final HashMap<PlayerEntity, HashSet<Entity>> entitiesCollidingWithPlayer = new HashMap<>();
@@ -125,7 +125,7 @@ public class EntityTracker extends Tracker {
             for (Item item : target.getMatches()) {
                 if (!itemDropped(item)) continue;
                 for (ItemEntity entity : itemDropLocations.get(item)) {
-                    if (entityBlacklist.unreachable(entity)) continue;
+                    if (entityBlacklist.isBlacklisted(entity)) continue;
                     if (!entity.getStack().getItem().equals(item)) continue;
                     if (!acceptPredicate.test(entity)) continue;
 
@@ -160,7 +160,7 @@ public class EntityTracker extends Tracker {
                 if (entityMap.containsKey(toFind)) {
                     for (Entity entity : entityMap.get(toFind)) {
                         // Don't accept entities that no longer exist
-                        if (entityBlacklist.unreachable(entity)) continue;
+                        if (entityBlacklist.isBlacklisted(entity)) continue;
                         if (!entity.isAlive()) continue;
                         if (!acceptPredicate.test(entity)) continue;
                         double cost = entity.squaredDistanceTo(position);
@@ -181,7 +181,7 @@ public class EntityTracker extends Tracker {
             if (itemDropLocations.containsKey(item)) {
                 // Find a non-blacklisted item
                 for (ItemEntity entity : itemDropLocations.get(item)) {
-                    if (!entityBlacklist.unreachable(entity)) return true;
+                    if (!entityBlacklist.isBlacklisted(entity)) return true;
                 }
             }
         }
@@ -301,14 +301,14 @@ public class EntityTracker extends Tracker {
      * Tells the entity tracker that we were unable to reach this entity.
      */
     public void requestEntityUnreachable(Entity entity) {
-        entityBlacklist.blackListItem(mod, entity, 3);
+        entityBlacklist.objectFailed(entity, 3);
     }
 
     /**
      * Whether we have decided that this entity is unreachable.
      */
     public boolean isEntityReachable(Entity entity) {
-        return !entityBlacklist.unreachable(entity);
+        return !entityBlacklist.isBlacklisted(entity);
     }
 
     @Override
@@ -408,6 +408,6 @@ public class EntityTracker extends Tracker {
     @Override
     protected void reset() {
         // Dirty clears everything else.
-        entityBlacklist.clear();
+        entityBlacklist.clearBlacklists();
     }
 }

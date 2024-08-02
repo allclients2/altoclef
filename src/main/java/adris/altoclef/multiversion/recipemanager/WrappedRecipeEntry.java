@@ -4,6 +4,7 @@ import net.minecraft.recipe.Recipe;
 //#if MC>12001
 import net.minecraft.recipe.RecipeEntry;
 //#endif
+
 import net.minecraft.util.Identifier;
 
 public record WrappedRecipeEntry(Identifier id, Recipe<?> value) {
@@ -13,7 +14,7 @@ public record WrappedRecipeEntry(Identifier id, Recipe<?> value) {
         return new RecipeEntry<Recipe<?>>(id, value);
     }
     //#else
-    //$$ public Recipe<?> asRecipe(){
+    //$$ public Recipe<?> asRecipe() {
     //$$     return value;
     //$$ }
     //#endif

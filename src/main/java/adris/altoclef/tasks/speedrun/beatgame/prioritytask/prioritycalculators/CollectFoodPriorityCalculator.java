@@ -47,7 +47,7 @@ public class CollectFoodPriorityCalculator extends ItemPriorityCalculator {
         //prevents from going to the nether without any food
         if (Double.isInfinite(distance) && foodPotential < foodUnits) return 0.1d;
 
-        Optional<BlockPos> hay = mod.getBlockScanner().getNearestBlock(Blocks.HAY_BLOCK);
+        Optional<BlockPos> hay = mod.getBlockScanner().getNearestBlockType(Blocks.HAY_BLOCK);
         if ((hay.isPresent() && WorldHelper.inRangeXZ(hay.get(),mod.getPlayer().getBlockPos(),75))|| mod.getEntityTracker().itemDropped(Items.HAY_BLOCK)) {
             multiplier = 50;
         }
@@ -159,7 +159,7 @@ public class CollectFoodPriorityCalculator extends ItemPriorityCalculator {
             if (!WorldHelper.canBreak(mod, blockPos)) return false;
             return accept.test(blockPos);
         };
-        Optional<BlockPos> nearestBlock = mod.getBlockScanner().getNearestBlock(mod.getPlayer().getPos(), acceptPlus, blockToCheck);
+        Optional<BlockPos> nearestBlock = mod.getBlockScanner().getNearestBlockType(mod.getPlayer().getPos(), acceptPlus, blockToCheck);
 
         if (nearestBlock.isPresent() && !nearestBlock.get().isWithinDistance(mod.getPlayer().getPos(), maxRange)) {
             nearestBlock = Optional.empty();

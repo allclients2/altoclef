@@ -9,7 +9,7 @@ import adris.altoclef.tasks.inventory.MoveInaccessibleItemToInventoryTask;
 import adris.altoclef.tasks.inventory.MoveItemToSlotFromInventoryTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.SmeltTarget;
 import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.StorageHelper;
@@ -80,7 +80,7 @@ public class SmeltInBlastFurnaceTask extends ResourceTask {
 
     @Override
     protected Task onResourceTick(AltoClef mod) {
-        Optional<BlockPos> blastFurnacePos = mod.getBlockScanner().getNearestBlock(Blocks.BLAST_FURNACE);
+        Optional<BlockPos> blastFurnacePos = mod.getBlockScanner().getNearestBlockType(Blocks.BLAST_FURNACE);
         blastFurnacePos.ifPresent(blockPos -> mod.getBehaviour().avoidBlockBreaking(blockPos));
         return _doTask;
     }
@@ -336,7 +336,7 @@ public class SmeltInBlastFurnaceTask extends ResourceTask {
         }
 
         @Override
-        protected double getCostToMakeNew(AltoClef mod) {
+        protected double getCostToMakeNewContainer(AltoClef mod) {
             if (_blastFurnaceCache.burnPercentage > 0 || _blastFurnaceCache.burningFuelCount > 0 ||
                     _blastFurnaceCache.fuelSlot != null || _blastFurnaceCache.materialSlot != null ||
                     _blastFurnaceCache.outputSlot != null) {

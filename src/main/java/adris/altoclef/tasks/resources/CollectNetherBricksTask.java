@@ -5,7 +5,7 @@ import adris.altoclef.tasks.inventory.CraftInInventoryTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.CraftingRecipe;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.RecipeTarget;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;

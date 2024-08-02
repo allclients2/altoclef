@@ -4,10 +4,10 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.tasks.block.InteractWithBlockTask;
 import adris.altoclef.tasks.resources.GetBuildingMaterialsTask;
-import adris.altoclef.tasks.speedrun.maintasks.BeatMinecraft2Task;
+import adris.altoclef.tasks.speedrun.maintasks.BeatMinecraftTask;
 import adris.altoclef.tasks.squashed.CataloguedResourceTask;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.baritone.GoalAnd;
 import adris.altoclef.util.helpers.StorageHelper;
@@ -24,7 +24,7 @@ import net.minecraft.util.math.Vec3i;
 import java.util.Optional;
 
 public class GetToOuterEndIslandsTask extends Task {
-    public final int END_ISLAND_START_RADIUS = 800;
+    public final int END_ISLAND_START_RADIUS = 700;
     public final Vec3i[] OFFSETS = {
             new Vec3i(1, -1, 1),
             new Vec3i(1, -1, -1),
@@ -35,7 +35,7 @@ public class GetToOuterEndIslandsTask extends Task {
             new Vec3i(-2, -1, 0),
             new Vec3i(0, -1, -2)
     };
-    private Task _beatTheGame;
+    private Task beatTheGame;
 
     public GetToOuterEndIslandsTask() {
 
@@ -44,7 +44,7 @@ public class GetToOuterEndIslandsTask extends Task {
     @Override
     protected void onStart(AltoClef mod) {
         mod.getBehaviour().push();
-        _beatTheGame = new BeatMinecraft2Task();
+             beatTheGame = new BeatMinecraftTask(mod);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class GetToOuterEndIslandsTask extends Task {
                 setDebugState("Getting an ender pearl");
                 return new CataloguedResourceTask(new ItemTarget(Items.ENDER_PEARL, 1));
             }
-            Optional<BlockPos> gatewayFound = mod.getBlockScanner().getNearestBlock(Blocks.END_GATEWAY);
+            Optional<BlockPos> gatewayFound = mod.getBlockScanner().getNearestBlockType(Blocks.END_GATEWAY);
             if (gatewayFound.isPresent()) {
                 final BlockPos gateway = gatewayFound.get();
                 final BlockPos playerPos = mod.getPlayer().getBlockPos();
@@ -80,7 +80,7 @@ public class GetToOuterEndIslandsTask extends Task {
             }
         }
         setDebugState("Beating the Game to get to an end gateway");
-        return _beatTheGame;
+        return beatTheGame;
     }
 
     @Override

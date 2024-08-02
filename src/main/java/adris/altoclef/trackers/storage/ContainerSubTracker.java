@@ -7,7 +7,7 @@ import adris.altoclef.eventbus.events.ScreenOpenEvent;
 import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.trackers.Tracker;
 import adris.altoclef.trackers.TrackerManager;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.helpers.WorldHelper;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;

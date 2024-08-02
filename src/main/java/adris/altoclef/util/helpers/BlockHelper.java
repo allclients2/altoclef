@@ -9,6 +9,7 @@ import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 public abstract class BlockHelper {
     public static boolean isSourceBlock(AltoClef mod, BlockPos pos, boolean onlyAcceptStill) {
@@ -91,6 +92,9 @@ public abstract class BlockHelper {
         return false;
     }
 
+    public static boolean isBlockPosLoaded(World world, BlockPos pos) {
+        return world.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
+    }
 
 }
 

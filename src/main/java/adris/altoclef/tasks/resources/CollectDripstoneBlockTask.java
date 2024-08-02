@@ -5,6 +5,8 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.tasks.inventory.CraftInInventoryTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.*;
+import adris.altoclef.util.publicenums.Dimension;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;

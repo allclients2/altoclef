@@ -1,4 +1,4 @@
-package adris.altoclef.util;
+package adris.altoclef.util.publicenums;
 
 public enum Dimension {
     OVERWORLD,

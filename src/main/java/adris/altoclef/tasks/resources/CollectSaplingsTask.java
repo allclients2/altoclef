@@ -1,7 +1,7 @@
 package adris.altoclef.tasks.resources;
 
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.helpers.ItemHelper;
 
 public class CollectSaplingsTask extends MineAndCollectTask {

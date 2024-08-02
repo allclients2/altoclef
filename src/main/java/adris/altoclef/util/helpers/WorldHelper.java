@@ -1,13 +1,11 @@
 package adris.altoclef.util.helpers;
 
 import adris.altoclef.AltoClef;
-import adris.altoclef.Debug;
 import adris.altoclef.mixins.ClientConnectionAccessor;
-import adris.altoclef.mixins.EntityAccessor;
 import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.MethodWrapper;
 import adris.altoclef.multiversion.WorldBoundsVer;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import baritone.api.BaritoneAPI;
 import baritone.pathing.movement.CalculationContext;
 import baritone.pathing.movement.MovementHelper;
@@ -16,8 +14,6 @@ import baritone.utils.BlockStateInterface;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.block.enums.BedPart;
-import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -28,6 +24,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import org.jetbrains.annotations.Nullable;
 
 //#if MC >= 11802
 import net.minecraft.registry.entry.RegistryEntry;
@@ -84,22 +81,25 @@ public abstract class WorldHelper {
 
 
     // Loops over in a 3d box radius `radius` from the `pos`, if the block is found in `blocksSearch` then inputs through the `onBlockMatched`, which if `onBlockMatched` returns true, it will break the loop..
-    public static void forBlocksWithinBoxRadiusOfPos(AltoClef mod, BlockPos pos, int radius, List<Block> blocksSearch, Function<BlockPos, Boolean> onBlockMatched) {
-        searchLoop:
-        for (int x = -radius; x < radius; x++) {
-            for (int y = -radius; y < radius; y++) {
-                for (int z = -radius; z < radius; z++) {
+    // If `blocksSearch` is null it will match all blocks.
+    public static void forBlocksWithinBoxRadiusOfPos(AltoClef mod, BlockPos pos, int radius, @Nullable List<Block> blocksSearch, Function<BlockPos, Boolean> onBlockMatched) {
+        final boolean noBlocksSearch = blocksSearch == null;
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
                     final BlockPos position = pos.add(x, y, z);
                     final Block block = mod.getWorld().getBlockState(position).getBlock();
-                    if (blocksSearch.contains(block) && onBlockMatched.apply(position)) {
-                        break searchLoop;
+                    if (noBlocksSearch || blocksSearch.contains(block)) {
+                        if (onBlockMatched.apply(position)) {
+                            return; // Return immediately when a match is found
+                        }
                     }
                 }
             }
         }
     }
 
-    public static boolean blocksWithinBoxRadiusOfPos(AltoClef mod, BlockPos pos, int radius, List<Block> blocksSearch) {
+    public static boolean isBlocksWithinBoxRadiusOfPos(AltoClef mod, BlockPos pos, int radius, List<Block> blocksSearch) {
         AtomicBoolean found = new AtomicBoolean(false);
         forBlocksWithinBoxRadiusOfPos(mod, pos, radius, blocksSearch,
             (block -> {

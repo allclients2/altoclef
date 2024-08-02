@@ -1,4 +1,4 @@
-package adris.altoclef.util.publictypes;
+package adris.altoclef.util.publicenums;
 
 public enum WoodType {
     ACACIA,

@@ -5,7 +5,7 @@ import adris.altoclef.Debug;
 import adris.altoclef.tasks.construction.compound.ConstructNetherPortalBucketTask;
 import adris.altoclef.tasks.construction.compound.ConstructNetherPortalObsidianTask;
 import adris.altoclef.tasksystem.Task;
-import adris.altoclef.util.Dimension;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.helpers.WorldHelper;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -134,7 +134,7 @@ public class DefaultGoToDimensionTask extends Task {
 
     private boolean netherPortalIsClose(AltoClef mod) {
         if (mod.getBlockScanner().anyFound(Blocks.NETHER_PORTAL)) {
-            Optional<BlockPos> closest = mod.getBlockScanner().getNearestBlock( Blocks.NETHER_PORTAL);
+            Optional<BlockPos> closest = mod.getBlockScanner().getNearestBlockType( Blocks.NETHER_PORTAL);
             return closest.isPresent() && closest.get().isWithinDistance(mod.getPlayer().getPos(), 2000);
         }
         return false;

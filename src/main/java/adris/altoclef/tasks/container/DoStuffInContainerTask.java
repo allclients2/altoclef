@@ -89,7 +89,7 @@ public abstract class DoStuffInContainerTask extends Task {
             nearest = Optional.of(override);
         } else {
             // Track nearest container
-            nearest = mod.getBlockScanner().getNearestBlock(currentPos, blockPos -> WorldHelper.canReach(mod, blockPos), containerBlocks);
+            nearest = mod.getBlockScanner().getNearestBlockType(currentPos, blockPos -> WorldHelper.canReach(mod, blockPos), containerBlocks);
         }
         if (nearest.isEmpty()) {
             // If all else fails, try using our placed task
@@ -104,7 +104,7 @@ public abstract class DoStuffInContainerTask extends Task {
 
         // Make a new container if going to the container is a pretty bad cost.
         // Also keep on making the container if we're stuck in some
-        if (costToWalk > getCostToMakeNew(mod)) {
+        if (costToWalk > getCostToMakeNewContainer(mod)) {
             placeForceTimer.reset();
         }
         if (nearest.isEmpty() || (!placeForceTimer.elapsed() && justPlacedTimer.elapsed())) {
@@ -194,5 +194,5 @@ public abstract class DoStuffInContainerTask extends Task {
 
     protected abstract Task containerSubTask(AltoClef mod);
 
-    protected abstract double getCostToMakeNew(AltoClef mod);
+    protected abstract double getCostToMakeNewContainer(AltoClef mod);
 }

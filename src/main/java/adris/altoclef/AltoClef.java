@@ -19,20 +19,16 @@ import adris.altoclef.trackers.*;
 import adris.altoclef.trackers.storage.ContainerSubTracker;
 import adris.altoclef.trackers.storage.ItemStorageTracker;
 import adris.altoclef.ui.CommandStatusOverlay;
-import adris.altoclef.ui.MessagePriority;
 import adris.altoclef.ui.MessageSender;
-import adris.altoclef.util.BlockScanner;
-import adris.altoclef.util.WindowUtil;
-import adris.altoclef.util.helpers.EntityHelper;
+import adris.altoclef.scanner.BlockScanner;
+import adris.altoclef.scanner.DangerousBlockScanner;
 import adris.altoclef.ui.AltoClefTickChart;
 import adris.altoclef.util.helpers.InputHelper;
-import net.minecraft.client.util.math.MatrixStack;
 import baritone.Baritone;
 import baritone.altoclef.AltoClefSettings;
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -71,6 +67,7 @@ public class AltoClef implements ModInitializer {
     private ContainerSubTracker containerSubTracker;
     private EntityTracker entityTracker;
     private BlockScanner blockScanner;
+    private DangerousBlockScanner dangerousBlockScanner;
     private SimpleChunkTracker chunkTracker;
     private MiscBlockTracker miscBlockTracker;
     private CraftingRecipeTracker craftingRecipeTracker;
@@ -139,6 +136,7 @@ public class AltoClef implements ModInitializer {
         storageTracker = new ItemStorageTracker(this, trackerManager, container -> containerSubTracker = container);
         entityTracker = new EntityTracker(trackerManager);
         blockScanner = new BlockScanner(this);
+        dangerousBlockScanner = new DangerousBlockScanner(this);
         chunkTracker = new SimpleChunkTracker(this);
         miscBlockTracker = new MiscBlockTracker(this);
         craftingRecipeTracker = new CraftingRecipeTracker(trackerManager);
@@ -230,6 +228,7 @@ public class AltoClef implements ModInitializer {
         miscBlockTracker.tick();
         trackerManager.tick();
         blockScanner.tick();
+        dangerousBlockScanner.tick();
         taskRunner.tick();
 
         messageSender.tick();
@@ -307,8 +306,6 @@ public class AltoClef implements ModInitializer {
 
         getClientBaritoneSettings().failureTimeoutMS.value = 500L;
 
-        // Custom avoidance setting i added
-        // getExtraBaritoneSettings().setShouldAvoidPredicate(Optional.of(entity -> EntityHelper.isProbablyHostileToPlayer(this, entity)));
         getClientBaritoneSettings().mobAvoidanceRadius.reset();
         getClientBaritoneSettings().mobAvoidanceCoefficient.value = 7.5;
         getClientBaritoneSettings().avoidance.value = true;
@@ -319,16 +316,13 @@ public class AltoClef implements ModInitializer {
         getClientBaritoneSettings().smoothLook.value = true;
         getClientBaritoneSettings().smoothLookTicks.value = 4;
         //#else
-        //$$    getClientBaritoneSettings().randomLooking.value = 0.2; //randomly look to convince
-        //$$    getClientBaritoneSettings().randomLooking113.value = 0.03;
+        //$$ getClientBaritoneSettings().randomLooking.value = 0.2; //randomly look to convince
+        //$$ getClientBaritoneSettings().randomLooking113.value = 0.03;
         //#endif
 
         // Give baritone more time to calculate paths. Sometimes they can be really far away.
-        // Was: 2000L
         getClientBaritoneSettings().failureTimeoutMS.reset();
-        // Was: 5000L
         getClientBaritoneSettings().planAheadFailureTimeoutMS.reset();
-        // Was 100
         getClientBaritoneSettings().movementTimeoutTicks.reset();
     }
 

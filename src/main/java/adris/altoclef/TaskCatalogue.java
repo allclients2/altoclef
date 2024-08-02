@@ -10,7 +10,9 @@ import adris.altoclef.tasks.resources.wood.*;
 import adris.altoclef.tasks.squashed.CataloguedResourceTask;
 import adris.altoclef.util.*;
 import adris.altoclef.util.helpers.ItemHelper;
-import adris.altoclef.util.publictypes.WoodType;
+import adris.altoclef.util.publicenums.Dimension;
+import adris.altoclef.util.publicenums.MiningRequirement;
+import adris.altoclef.util.publicenums.WoodType;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
@@ -112,6 +114,8 @@ public class TaskCatalogue {
             return new RecipeTemplate(new Grid3x3<>(material, material, material, material, material, material, material, material, material), 1);
         }
     }
+
+    //TODO: make it load recipes from recipes.json instead
 
     public static void InitRecipes() {
 

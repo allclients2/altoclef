@@ -11,7 +11,7 @@ import adris.altoclef.tasks.movement.PickupDroppedItemTask;
 import adris.altoclef.tasks.inventory.EnsureFreeInventorySlotTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.util.ItemTarget;
-import adris.altoclef.util.MiningRequirement;
+import adris.altoclef.util.publicenums.MiningRequirement;
 import adris.altoclef.util.slots.PlayerSlot;
 import adris.altoclef.util.time.TimerGame;
 import adris.altoclef.util.helpers.StorageHelper;
@@ -215,7 +215,7 @@ public class MineAndCollectTask extends ResourceTask {
         }
 
         public static Pair<Double,Optional<BlockPos> > getClosestBlock(AltoClef mod,Vec3d pos ,Block... blocks) {
-            Optional<BlockPos> closestBlock = mod.getBlockScanner().getNearestBlock(pos, check -> {
+            Optional<BlockPos> closestBlock = mod.getBlockScanner().getNearestBlockType(pos, check -> {
                 if (mod.getBlockScanner().isUnreachable(check)) return false;
                 return WorldHelper.canBreak(mod, check);
             }, blocks);
