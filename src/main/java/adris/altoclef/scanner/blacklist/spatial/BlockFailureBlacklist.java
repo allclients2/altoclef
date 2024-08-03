@@ -1,6 +1,8 @@
 package adris.altoclef.scanner.blacklist.spatial;
 
-import adris.altoclef.scanner.blacklist.spatial.entry.IBlacklistPosEntry;
+import adris.altoclef.AltoClef;
+import adris.altoclef.scanner.blacklist.spatial.entry.ISpatialBlacklistType;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.HashMap;
 
@@ -10,12 +12,12 @@ import java.util.HashMap;
  * This lets us know that a block is possible unreachable, so we increase its avoidance score.
  * Where `T` is the class for the position (BlockPos, Vec3d, Vec3f, etc...)
  */
-public class PositionFailureBlacklist<T> extends PositionBlacklist<T> {
+public class BlockFailureBlacklist extends BlockBlacklist {
 
     // Position -> Failures
-    private final HashMap<T, FailurePositionData> failureMap = new HashMap<>();
+    private final HashMap<BlockPos, FailurePositionData> failureMap = new HashMap<>();
 
-    public void positionFailed(T position, IBlacklistPosEntry<T> entry, int maxFailuresAllowed) {
+    public void positionFailed(AltoClef mod, BlockPos position, ISpatialBlacklistType<BlockPos> entry, int maxFailuresAllowed) {
         final FailurePositionData failureData;
         if (failureMap.containsKey(position)) {
             failureData = failureMap.get(position);
@@ -24,7 +26,7 @@ public class PositionFailureBlacklist<T> extends PositionBlacklist<T> {
         }
         failureData.failureNum++;
         if (failureData.failureNum >= maxFailuresAllowed) {
-            setBlacklist(position, entry);
+            setBlacklist(mod, position, entry);
         }
         failureMap.put(position, failureData);
     }

@@ -6,9 +6,9 @@ import adris.altoclef.eventbus.EventBus;
 import adris.altoclef.eventbus.events.BlockPlaceEvent;
 import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.multiversion.WorldBoundsVer;
-import adris.altoclef.scanner.blacklist.spatial.PositionFailureBlacklist;
-import adris.altoclef.scanner.blacklist.spatial.entry.BlacklistBlockPosEntry;
-import adris.altoclef.scanner.blacklist.spatial.entry.IBlacklistPosEntry;
+import adris.altoclef.scanner.blacklist.spatial.BlockFailureBlacklist;
+import adris.altoclef.scanner.blacklist.spatial.entry.BlacklistBlockType;
+import adris.altoclef.scanner.blacklist.spatial.entry.ISpatialBlacklistType;
 import adris.altoclef.util.helpers.BaritoneHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.publicenums.Dimension;
@@ -34,11 +34,11 @@ public class BlockScanner {
     private static final int DEFAULT_MAX_AVOID_SCORE = 30;
     private static final int OLD_BLACKLIST_REMOVE_SECOND = 1200; // After this amount of seconds since this entries the entry will be reset.
 
-    protected final PositionFailureBlacklist<BlockPos> blacklist = new PositionFailureBlacklist<>();
+
+    protected final BlockFailureBlacklist blacklist = new BlockFailureBlacklist();
 
     private final AltoClef mod;
     private final TimerGame rescanTimer = new TimerGame(1);
-    private final TimerGame oldBlacklistRemoveTimer = new TimerGame(10);
 
     private final HashMap<Block, HashSet<BlockPos>> trackedBlocks = new HashMap<>();
     private final HashMap<Block, HashSet<BlockPos>> scannedBlocks = new HashMap<>();
@@ -61,8 +61,8 @@ public class BlockScanner {
         return mod.getPlayer().getPos().add(0, 0.6f, 0);
     }
 
-    protected void directBlacklist(BlockPos pos, IBlacklistPosEntry<BlockPos> entry) {
-        blacklist.setBlacklist(pos, entry);
+    protected void directBlacklist(BlockPos pos, ISpatialBlacklistType<BlockPos> entry) {
+        blacklist.setBlacklist(mod, pos, entry);
     }
 
     public void addBlock(Block block, BlockPos pos) {
@@ -91,7 +91,7 @@ public class BlockScanner {
     }
 
     public void requestBlockUnreachable(BlockPos pos, int allowedFailures, int maxScore) {
-        blacklist.positionFailed(pos, new BlacklistBlockPosEntry(pos, maxScore), allowedFailures);
+        blacklist.positionFailed(mod, pos, new BlacklistBlockType(pos, maxScore), allowedFailures);
     }
 
     public boolean isUnreachable(BlockPos pos) {
@@ -136,7 +136,6 @@ public class BlockScanner {
     public Optional<BlockPos> getNearestWithinRange(BlockPos pos, double range, int maxScore, Block... blocks) {
         return getNearestWithinRange(pos.toCenterPos(), range, maxScore, blocks);
     }
-
 
 
     public boolean anyFound(int maxScore, Block... blocks) {
@@ -185,7 +184,7 @@ public class BlockScanner {
     }
     public Optional<BlockPos> getNearestBlockType(Vec3d fromPos, Predicate<BlockPos> isValidTest, int maxScore, Block... blocks) {
         BlockPos closestPos = null;
-        double closestDist = Double.POSITIVE_INFINITY;
+        double closestsScore = Double.POSITIVE_INFINITY;
 
         for (Block block : blocks) {
             Optional<BlockSearchResult> nearestResultOptional = searchNearestBlock(block, isValidTest, fromPos);
@@ -193,9 +192,9 @@ public class BlockScanner {
                 BlockSearchResult nearestResult = nearestResultOptional.get();
                 if (closestPos == null) {
                     closestPos = nearestResult.blockPos;
-                } else if (nearestResult.distance < closestDist && nearestResult.posAvoidScore < maxScore) {
+                } else if (nearestResult.distAvoidScore < closestsScore && nearestResult.distAvoidScore < maxScore) {
                     closestPos = nearestResult.blockPos;
-                    closestDist = nearestResult.distance;
+                    closestsScore = nearestResult.distAvoidScore;
                 }
             }
         }
@@ -213,10 +212,24 @@ public class BlockScanner {
         return searchNearestBlock(block, isValidTest, fromPos).map(BlockSearchResult::blockPos);
     }
 
+    // TODO: rename this method and `DistAvoidScore` because it sounds stupid.
+    // Returns the `DistAvoidScore` for `checkPos` which should be used for distance comparisons.
+    protected double calculateDistAvoidScore(Vec3d fromPos, BlockPos checkPos) {
+        final int avoidScore = blacklist.getAvoidScore(checkPos);
+
+        // To get a `DistAvoidScore`:
+        // Add the avoidance score to the real distance to trick the system into thinking it's much further than it is for blocks that are REALLY DANGEROUS (high avoid score).
+        // Example:
+        //  Distance: 30 blocks
+        //  Avoid score: 120
+        //  distAvoidScore = 120 + 30
+        //  distAvoidScore = 150
+        return BaritoneHelper.calculateGenericHeuristic(fromPos, WorldHelper.toVec3d(checkPos)) + avoidScore;
+    }
+
     public Optional<BlockSearchResult> searchNearestBlock(Block block, Predicate<BlockPos> isValidTest, Vec3d fromPos) {
         BlockPos bestPos = null;
-        double bestDist = Double.POSITIVE_INFINITY;
-        int bestsAvoidScore = 0; // Avoid score is not taken into consideration when calculating.
+        double bestScore = Double.POSITIVE_INFINITY;
 
         if (!trackedBlocks.containsKey(block)) {
             return Optional.empty();
@@ -226,26 +239,17 @@ public class BlockScanner {
             // Ensure the block is there (can change upon rescan), and is valid.
             if (!mod.getWorld().getBlockState(pos).getBlock().equals(block) || !isValidTest.test(pos)) continue;
 
-            final int avoidScore = blacklist.getAvoidScore(pos);
+            final double distAvoidScore = calculateDistAvoidScore(fromPos, pos);
 
-            // Add the avoidance score to the real distance to trick the system into thinking it's much further than it is for blocks that are REALLY DANGEROUS (high avoid score).
-            // Example:
-            //  Real Distance: 10 blocks;
-            //  Avoid score: 120
-            //  Final distance (variable below) = 120 + 10;
-            //  Final distance = 130;
-            final double dist = BaritoneHelper.calculateGenericHeuristic(fromPos, WorldHelper.toVec3d(pos)) + blacklist.getAvoidScore(pos);
-
-            if (dist < bestDist) {
-                bestDist = dist;
+            if (distAvoidScore < bestScore) {
+                bestScore = distAvoidScore;
                 bestPos = pos;
-                bestsAvoidScore = avoidScore;
             }
         }
-        return bestPos != null ? Optional.of(new BlockSearchResult(bestPos, bestDist, bestsAvoidScore)) : Optional.empty();
+        return bestPos != null ? Optional.of(new BlockSearchResult(bestPos, bestScore)) : Optional.empty();
     }
 
-    public record BlockSearchResult(BlockPos blockPos, double distance, int posAvoidScore) {};
+    public record BlockSearchResult(BlockPos blockPos, double distAvoidScore) {};
 
     public boolean anyFoundWithinDistance(double distance, Block... blocks) {
         return anyFoundWithinDistance(mod.getPlayer().getPos().add(0, 0.6f, 0), distance, blocks);
@@ -313,11 +317,6 @@ public class BlockScanner {
         // Be maximally aware of the closest blocks around you
         scanCloseBlocks();
 
-        if (oldBlacklistRemoveTimer.elapsed()) {
-            blacklist.clearOldBlacklists(OLD_BLACKLIST_REMOVE_SECOND * 1000);
-            oldBlacklistRemoveTimer.reset();
-        }
-
         // Rescan
         if (rescanTimer.elapsed() && !scanning) {
             if (scanDimension != WorldHelper.getCurrentDimension() || mod.getWorld() != scanWorld) {
@@ -329,7 +328,6 @@ public class BlockScanner {
                 scanDimension = WorldHelper.getCurrentDimension();
                 return;
             }
-
 
             cachedScannedBlocks = new HashMap<>(scannedBlocks.size());
             for (Map.Entry<Block, HashSet<BlockPos>> entry : scannedBlocks.entrySet()) {
@@ -345,6 +343,7 @@ public class BlockScanner {
             new Thread(() -> {
                 try {
                     rescan(Integer.MAX_VALUE, Integer.MAX_VALUE);
+                    updateBlacklist(); // update blacklist after rescan
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -462,10 +461,19 @@ public class BlockScanner {
         return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.z - pos2.z);
     }
 
+    private void updateBlacklist() {
+        final long maxTimeMillis = OLD_BLACKLIST_REMOVE_SECOND * 1000;
+        blacklist.filterBlackListItems(
+            (blockPos, item) ->
+                item.state != mod.getWorld().getBlockState(blockPos) || // filter out new states
+                (item.createTime + maxTimeMillis) < System.currentTimeMillis() // clear out old blacklists
+        );
+}
+
 
     //TODO rename
     private void getFirstFewPositions(HashSet<BlockPos> set, Vec3d playerPos) {
-        Queue<BlockPos> queue = new PriorityQueue<>(Comparator.comparingDouble((pos) -> -BaritoneHelper.calculateGenericHeuristic(playerPos, WorldHelper.toVec3d(pos))));
+        Queue<BlockPos> queue = new PriorityQueue<>(Comparator.comparingDouble((pos) -> -calculateDistAvoidScore(playerPos, pos)));
 
         for (BlockPos pos : set) {
             queue.add(pos);
@@ -498,8 +506,6 @@ public class BlockScanner {
             for (int y = WorldBoundsVer.WORLD_FLOOR_Y; y < WorldBoundsVer.WORLD_CEILING_Y; y++) {
                 for (int z = chunkPos.getStartZ(); z <= chunkPos.getEndZ(); z++) {
                     BlockPos p = new BlockPos(x, y, z);
-
-                    if (this.isUnreachable(p)) continue;
 
                     BlockState state = chunk.getBlockState(p);
                     if (state.isAir()) continue;

@@ -2,17 +2,22 @@ package adris.altoclef.scanner;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
-import adris.altoclef.eventbus.events.BlockBreakingEvent;
-import adris.altoclef.scanner.blacklist.spatial.entry.BlacklistRangeBlockPosEntry;
+import adris.altoclef.scanner.blacklist.spatial.entry.BlacklistRangeBlockType;
+import adris.altoclef.util.math.ArrayUtil;
 import adris.altoclef.util.time.TimerGame;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+
+import java.util.Arrays;
 
 /**
  * Finds dangerous blocks and adds a blacklist to them.
  */
 @SuppressWarnings("rawtypes")
 public class DangerousBlockScanner {
+
+    private static final boolean LOG = false;
 
     // Dangerous blocks
     private static final BlockBlacklist[] BLOCK_BLACKLISTS = new BlockBlacklist[] {
@@ -34,31 +39,47 @@ public class DangerousBlockScanner {
 
     private record BlockBlacklist(int maxScore, int maxRange, Block[] blocks) {};
 
-    private final TimerGame scanTimer = new TimerGame(3.5);
+    private final TimerGame updateTimer = new TimerGame(1.5);
 
     private final AltoClef mod;
     public DangerousBlockScanner(AltoClef mod) {
         this.mod = mod;
     }
 
+    public void scanDangerBlocks() {
+        Debug.logInternal("Blacklisting dangerous blocks...");
+        final BlockScanner blockScanner = mod.getBlockScanner();
+        for (BlockBlacklist blacklist : BLOCK_BLACKLISTS) {
+            blockScanner.getKnownLocations(Integer.MAX_VALUE, blacklist.blocks).forEach(
+                    blockPos -> {
+                        final Block block = mod.getWorld().getBlockState(blockPos).getBlock();
+                        if (ArrayUtil.contains(blacklist.blocks, block)) { //TODO: Optimize this?
+                            blockScanner.directBlacklist(
+                                    blockPos,
+                                    new BlacklistRangeBlockType(
+                                            blockPos.toCenterPos(),
+                                            blacklist.maxScore,
+                                            blacklist.maxRange
+                                    )
+                            );
+                        }
+                    }
+            );
+        }
+    }
+
+
     public void tick() {
-        if (scanTimer.elapsed() && mod.getTaskRunner().isActive() && AltoClef.inGame()) {
-            scanTimer.reset();
+        if (updateTimer.elapsed() && AltoClef.inGame()) {
+            updateTimer.reset();
 
-            Debug.logInternal("Blacklisting dangerous blocks...");
-
-            final BlockScanner blockScanner = mod.getBlockScanner();
-            for (BlockBlacklist blacklist : BLOCK_BLACKLISTS) {
-                blockScanner.getKnownLocations(Integer.MAX_VALUE, blacklist.blocks).forEach(
-                    blockPos -> blockScanner.directBlacklist(
-                        blockPos,
-                        new BlacklistRangeBlockPosEntry(
-                            blockPos.toCenterPos(),
-                            blacklist.maxScore,
-                            blacklist.maxRange
-                        )
-                    )
-                );
+            if (LOG) {
+                Debug.logInternal("start Dbs scan ...");
+                final long startTime = System.currentTimeMillis();
+                scanDangerBlocks();
+                Debug.logInternal("Dbs rescan time: " + (System.currentTimeMillis() - startTime) + " ms");
+            } else {
+                scanDangerBlocks();
             }
         }
     }
