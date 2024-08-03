@@ -529,6 +529,4 @@ public class BlockScanner {
 
     private record Node(ChunkPos pos, int distance) {
     }
-
-
 }

@@ -47,7 +47,8 @@ public class DangerousBlockScanner {
     }
 
     public void scanDangerBlocks() {
-        Debug.logInternal("Blacklisting dangerous blocks...");
+        if (LOG) Debug.logInternal("Blacklisting dangerous blocks...");
+
         final BlockScanner blockScanner = mod.getBlockScanner();
         for (BlockBlacklist blacklist : BLOCK_BLACKLISTS) {
             blockScanner.getKnownLocations(Integer.MAX_VALUE, blacklist.blocks).forEach(
@@ -70,7 +71,7 @@ public class DangerousBlockScanner {
 
 
     public void tick() {
-        if (updateTimer.elapsed() && AltoClef.inGame()) {
+        if (mod.getModSettings().isShouldAvoidDangerousGoals() && updateTimer.elapsed() && AltoClef.inGame()) {
             updateTimer.reset();
 
             if (LOG) {

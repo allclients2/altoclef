@@ -91,6 +91,11 @@ public class Settings implements IFailableConfigFile {
      */
     private boolean openInvDuringCrafting = true;
 
+    /*
+     * When try, will activate DangerousBlockScanner; prevents us from finding goals close to threats.
+     */
+    private boolean shouldAvoidDangerousGoals = true;
+
     /**
      * The delay between moving items for crafting/furnace/any kind of inventory movement.
      */
@@ -633,6 +638,10 @@ public class Settings implements IFailableConfigFile {
 
     public String getDeathCommand() {
         return deathCommand;
+    }
+
+    public boolean isShouldAvoidDangerousGoals() {
+        return shouldAvoidDangerousGoals;
     }
 
     public boolean shouldRunIdleCommandWhenNotActive() {
