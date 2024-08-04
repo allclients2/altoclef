@@ -38,6 +38,8 @@ import java.io.*;
 import java.util.List;
 import java.util.UUID;
 
+import static adris.altoclef.util.helpers.WorldHelper.getNetworkName;
+
 /**
  * For testing.
  * <p>
@@ -141,6 +143,9 @@ public class Playground {
                 //mod.runUserTask(new PlaceStructureBlockTask(new BlockPos(472, 24, -324)));
                 break;
             }
+            case "worldName":
+                Debug.logMessage("Network World Name: " + getNetworkName(mod));
+                break;
             case "stacked":
                 // It should only need:
                 // 24 (armor) + 3*3 (pick) + 2 = 35 diamonds

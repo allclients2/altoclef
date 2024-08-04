@@ -56,6 +56,8 @@ public class CollectBlazeRodsTask extends ResourceTask {
 
     }
 
+
+
     @Override
     protected Task onResourceTick(AltoClef mod) {
         // We must go to the nether.
@@ -112,7 +114,7 @@ public class CollectBlazeRodsTask extends ResourceTask {
             } else {
 
                 // Put out fire that might mess with us.
-                Optional<BlockPos> nearestFire = mod.getBlockScanner().getNearestWithinRange(foundBlazeSpawner, 5, 35, Blocks.FIRE);
+                Optional<BlockPos> nearestFire = mod.getBlockScanner().getNearestWithinScore(MathUtilVer.getCenter(foundBlazeSpawner), 9, Blocks.FIRE);
                 if (nearestFire.isPresent()) {
                     setDebugState("Clearing fire around spawner to prevent loss of blaze rods.");
                     return new PutOutFireTask(nearestFire.get());
@@ -123,7 +125,7 @@ public class CollectBlazeRodsTask extends ResourceTask {
             }
         } else {
             // Search for blaze
-            Optional<BlockPos> pos = mod.getBlockScanner().getNearestBlockType(blockPos->isValidBlazeSpawner(mod, blockPos),Blocks.SPAWNER);
+            Optional<BlockPos> pos = mod.getBlockScanner().getNearestBlockType(blockPos -> isValidBlazeSpawner(mod, blockPos),Blocks.SPAWNER);
 
             pos.ifPresent(blockPos -> foundBlazeSpawner = blockPos);
         }

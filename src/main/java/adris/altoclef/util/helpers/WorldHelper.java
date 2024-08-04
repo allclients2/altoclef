@@ -2,6 +2,7 @@ package adris.altoclef.util.helpers;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.mixins.ClientConnectionAccessor;
+import adris.altoclef.mixins.NetworkHandlerAccessor;
 import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.MethodWrapper;
 import adris.altoclef.multiversion.WorldBoundsVer;
@@ -15,15 +16,19 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 //#if MC >= 11802
@@ -36,6 +41,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.random.RandomGenerator;
 
 /**
  * Super useful helper functions for getting information about the world.
@@ -97,6 +103,30 @@ public abstract class WorldHelper {
                 }
             }
         }
+    }
+
+    @NotNull
+    public static String getNetworkName(AltoClef mod) {
+        var netHandle = MinecraftClient.getInstance().interactionManager;
+        if (netHandle != null) {
+            var networkHandler = ((NetworkHandlerAccessor) netHandle).getNetworkHandler();
+            if (networkHandler != null) {
+                ServerInfo info = networkHandler.getServerInfo();
+                IntegratedServer integratedServer = MinecraftClient.getInstance().getServer();
+                if (integratedServer != null) {
+                    return integratedServer.getSavePath(WorldSavePath.ROOT).getParent().getFileName().toString();
+                } else {
+                    if (info != null) {
+                        if (info.isRealm()) {
+                            return "realms";
+                        } else {
+                            return info.address.replace(":", "_");
+                        }
+                    }
+                }
+            }
+        }
+        return "UNKNOWN_" + new Random().nextInt();
     }
 
     public static boolean isBlocksWithinBoxRadiusOfPos(AltoClef mod, BlockPos pos, int radius, List<Block> blocksSearch) {
@@ -205,6 +235,7 @@ public abstract class WorldHelper {
         return -1;
     }
 
+    //FIXME: readd the commented `plausibleToBreak` line in the method below. it is very slow to calculate apparently (lower fps when used).
     public static boolean canBreak(AltoClef mod, BlockPos pos) {
         // JANK: Temporarily check if we can break WITHOUT paused interactions.
         // Not doing this creates bugs where we loop back and forth through the nether portal and stuff.
@@ -212,7 +243,7 @@ public abstract class WorldHelper {
         mod.getExtraBaritoneSettings().setInteractionPaused(false);
         boolean result = mod.getWorld().getBlockState(pos).getHardness(mod.getWorld(), pos) >= 0
                 && !mod.getExtraBaritoneSettings().shouldAvoidBreaking(pos)
-                && MineProcess.plausibleToBreak(new CalculationContext(mod.getClientBaritone()), pos)
+                // && MineProcess.plausibleToBreak(new CalculationContext(mod.getClientBaritone()), pos)
                 && canReach(mod, pos);
         mod.getExtraBaritoneSettings().setInteractionPaused(prevInteractionPaused);
         return result;

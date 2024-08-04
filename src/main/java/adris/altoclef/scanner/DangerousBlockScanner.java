@@ -2,14 +2,12 @@ package adris.altoclef.scanner;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
-import adris.altoclef.scanner.blacklist.spatial.entry.BlacklistRangeBlockType;
+import adris.altoclef.multiversion.MathUtilVer;
+import adris.altoclef.scanner.blacklist.spatial.entries.BlacklistRangeBlockEntry;
 import adris.altoclef.util.math.ArrayUtil;
 import adris.altoclef.util.time.TimerGame;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-
-import java.util.Arrays;
 
 /**
  * Finds dangerous blocks and adds a blacklist to them.
@@ -23,15 +21,14 @@ public class DangerousBlockScanner {
     private static final BlockBlacklist[] BLOCK_BLACKLISTS = new BlockBlacklist[] {
             //#if MC>=11900
             // Ancient city
-            new BlockBlacklist(120, 35, new Block[] {
-                    Blocks.SCULK, Blocks.SCULK_VEIN, Blocks.SCULK_CATALYST,
-                    Blocks.SCULK_SENSOR, Blocks.SCULK_SHRIEKER, Blocks.DEEPSLATE_TILE_STAIRS
+            new BlockBlacklist(90, 35, new Block[] {
+                    Blocks.SCULK_CATALYST, Blocks.SCULK_SENSOR, Blocks.SCULK_SHRIEKER
             }),
             //#endif
 
             //#if MC>=12100
             // Trail chamber
-            new BlockBlacklist(80, 23, new Block[] {
+            new BlockBlacklist(50, 23, new Block[] {
                 Blocks.TRIAL_SPAWNER,
             }),
             //#endif
@@ -57,8 +54,8 @@ public class DangerousBlockScanner {
                         if (ArrayUtil.contains(blacklist.blocks, block)) { //TODO: Optimize this?
                             blockScanner.directBlacklist(
                                     blockPos,
-                                    new BlacklistRangeBlockType(
-                                            blockPos.toCenterPos(),
+                                    new BlacklistRangeBlockEntry(
+                                            MathUtilVer.getCenter(blockPos),
                                             blacklist.maxScore,
                                             blacklist.maxRange
                                     )

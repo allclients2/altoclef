@@ -117,6 +117,9 @@ dependencies {
     // Nether pathfinder
     implementation 'dev.babbaj:nether-pathfinder:1.5'
 
+    // Java LMDB
+    implementation 'org.lmdbjava:lmdbjava:0.8.1'
+
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
     shadow('com.fasterxml.jackson.core:jackson-core:2.16.0')

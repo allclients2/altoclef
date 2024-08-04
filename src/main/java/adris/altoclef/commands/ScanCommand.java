@@ -13,9 +13,11 @@ import adris.altoclef.util.helpers.ItemHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.BlockPos;
 import adris.altoclef.scanner.BlockScanner;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class ScanCommand extends Command {
@@ -29,12 +31,17 @@ public class ScanCommand extends Command {
         final String blockName = parser.get(String.class);
         Block block = null;
 
-        for (Item item : RegistriesVer.itemsRegistry()) {
-            final String blockKey = ItemHelper.trimItemName(blockName);
-            final Identifier identifier = IdentifierVer.newCreation(blockKey);
-            if (item.getName().equals(identifier)) {
-                block = RegistriesVer.blockRegistry().get(identifier);
+        try {
+            final String blockNameTrimmed = ItemHelper.trimItemName(blockName);
+            for (Block block2 : RegistriesVer.blockRegistry()) {
+                if (ItemHelper.trimItemName(block2.getTranslationKey()).equals(blockNameTrimmed)) {
+                    block = block2;
+                }
             }
+        } catch (Exception e) {
+            Debug.logWarning("Search exception caught! (See logs)");
+            e.printStackTrace();
+            return;
         }
 
         if (block == null) {
@@ -47,9 +54,9 @@ public class ScanCommand extends Command {
         Optional<BlockPos> scannedBlockPos = blockScanner.getNearestBlock(block, mod.getPlayer().getPos(), Integer.MAX_VALUE);
 
         if (scannedBlockPos.isPresent()) {
-            Debug.logInternal("Found! Closest Block Location: " +  scannedBlockPos.get());
+            Debug.logMessage("Found! Closest Block Location: " +  scannedBlockPos.get());
         } else {
-            Debug.logInternal("No Blocks Found.");
+            Debug.logMessage("No Blocks Found.");
         }
     }
 

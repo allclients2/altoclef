@@ -1,8 +1,8 @@
 package adris.altoclef.scanner.blacklist.spatial;
 
-import adris.altoclef.AltoClef;
-import adris.altoclef.scanner.blacklist.spatial.entry.ISpatialBlacklistType;
+import adris.altoclef.scanner.blacklist.spatial.entries.ISpatialBlacklistEntry;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.HashMap;
 
@@ -17,7 +17,11 @@ public class BlockFailureBlacklist extends BlockBlacklist {
     // Position -> Failures
     private final HashMap<BlockPos, FailurePositionData> failureMap = new HashMap<>();
 
-    public void positionFailed(AltoClef mod, BlockPos position, ISpatialBlacklistType<BlockPos> entry, int maxFailuresAllowed) {
+    public BlockFailureBlacklist(World world, int maxBlacklistSize) {
+        super(world, maxBlacklistSize);
+    }
+
+    public void positionFailed(BlockPos position, ISpatialBlacklistEntry<BlockPos> entry, int maxFailuresAllowed) {
         final FailurePositionData failureData;
         if (failureMap.containsKey(position)) {
             failureData = failureMap.get(position);
@@ -26,7 +30,7 @@ public class BlockFailureBlacklist extends BlockBlacklist {
         }
         failureData.failureNum++;
         if (failureData.failureNum >= maxFailuresAllowed) {
-            setBlacklist(mod, position, entry);
+            setBlacklist(position, entry);
         }
         failureMap.put(position, failureData);
     }

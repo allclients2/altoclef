@@ -1,27 +1,30 @@
 package adris.altoclef.mixins;
 
-import adris.altoclef.Debug;
 import adris.altoclef.eventbus.EventBus;
-import adris.altoclef.eventbus.events.TitleScreenEntryEvent;
-import net.minecraft.client.gui.screen.TitleScreen;
+import adris.altoclef.eventbus.events.DimensionChangedEvent;
+import adris.altoclef.util.publicenums.Dimension;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(TitleScreen.class)
-public class EntryMixin {
+@Mixin(MinecraftClient.class)
+public class WorldLoadMixin {
 
-    @Unique
-    private static boolean _initialized = false;
-
-    @Inject(at = @At("HEAD"), method = "init()V")
-    private void init(CallbackInfo info) {
-        if (!_initialized) {
-            _initialized = true;
-            Debug.logMessage("Global Init");
-            EventBus.publish(new TitleScreenEntryEvent());
+    @Inject(
+            method = "setWorld",
+            at = @At("HEAD")
+    )
+    private void setWorld(@Nullable ClientWorld world, CallbackInfo ci) {
+        if (world != null) {
+            final Dimension dimension = Dimension.dimensionFromWorldKey(world.getRegistryKey());
+            if (dimension != null)
+                EventBus.publish(
+                    new DimensionChangedEvent(Dimension.dimensionFromWorldKey(world.getRegistryKey()), world)
+                );
         }
     }
 }

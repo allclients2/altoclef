@@ -40,6 +40,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import org.lwjgl.glfw.GLFW;
 
+//#if MC <= 12001
+//$$ import net.minecraft.client.util.math.MatrixStack;
+//$$ import adris.altoclef.util.WindowUtil;
+//#endif
+
 import java.util.*;
 import java.util.function.Consumer;
 

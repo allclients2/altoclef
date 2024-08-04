@@ -18,4 +18,8 @@ public class MathUtilVer {
     public static Vec3i viAdd(Vec3i a, Vec3i b) {
         return new Vec3i(a.getX() + b.getX(), a.getY() + b.getY(), a.getZ() + b.getZ());
     }
+
+    public static Vec3d getCenter(BlockPos blockPos) {
+        return Vec3d.ofCenter(blockPos);
+    }
 }

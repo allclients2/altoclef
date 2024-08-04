@@ -7,34 +7,36 @@
     "AbstractFurnaceScreenHandlerAccessor",
     "AxeItemAccessor",
     "BlockModifiedByPlayerMixin",
+    "ChatInputMixin",
+    "ChatReadMixin",
     "ClientBlockBreakAccessor",
+    "ClientBlockBreakMixin",
     "ClientConnectionAccessor",
     "ClientInteractWithBlockMixin",
+    "ClientOpenScreenMixin",
+    "ClientTickMixin",
     "ClientUIMixin",
     "DeathScreenAccessor",
     "EntityAccessor",
+    "EntryMixin",
     "GameOverlayMixin",
+    "LoadChunkMixin",
     "MiningToolItemAccessor",
+    "MixinLocalPlayer",
     "MovementHelperMixin",
     "PersistentProjectileEntityAccessor",
+    "PlayerCollidesWithEntityMixin",
     "PortalManagerAccessor",
+    "SimpleOptionMixin",
     "SlotClickMixin",
     "ToolSetMixin",
-    "WorldBlockModifiedMixin"
-  ],
-  "client": [
-    "ChatInputMixin",
-    "ChatReadMixin",
-    "ClientBlockBreakMixin",
-    "ClientOpenScreenMixin",
-    "ClientTickMixin",
-    "EntryMixin",
-    "LoadChunkMixin",
-    "MixinLocalPlayer",
-    "PlayerCollidesWithEntityMixin",
-    "SimpleOptionMixin"
+    "WorldBlockModifiedMixin",
+    "WorldLoadMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "client": [
+    "NetworkHandlerAccessor"
+  ]
 }

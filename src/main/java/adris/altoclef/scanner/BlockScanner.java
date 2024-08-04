@@ -4,11 +4,11 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.eventbus.EventBus;
 import adris.altoclef.eventbus.events.BlockPlaceEvent;
-import adris.altoclef.multiversion.MathUtilVer;
+import adris.altoclef.eventbus.events.DimensionChangedEvent;
 import adris.altoclef.multiversion.WorldBoundsVer;
 import adris.altoclef.scanner.blacklist.spatial.BlockFailureBlacklist;
-import adris.altoclef.scanner.blacklist.spatial.entry.BlacklistBlockType;
-import adris.altoclef.scanner.blacklist.spatial.entry.ISpatialBlacklistType;
+import adris.altoclef.scanner.blacklist.spatial.entries.BlacklistBlockEntry;
+import adris.altoclef.scanner.blacklist.spatial.entries.ISpatialBlacklistEntry;
 import adris.altoclef.util.helpers.BaritoneHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.publicenums.Dimension;
@@ -30,19 +30,28 @@ public class BlockScanner {
 
     private static final boolean LOG = false;
     private static final int RESCAN_TICK_DELAY = 4 * 20;
-    private static final int CACHED_POSITIONS_PER_BLOCK = 40;
+    private static final int CACHED_POSITIONS_PER_BLOCK = 50;
     private static final int DEFAULT_MAX_AVOID_SCORE = 30;
-    private static final int OLD_BLACKLIST_REMOVE_SECOND = 1200; // After this amount of seconds since this entries the entry will be reset.
+    private static final int OLD_BLACKLIST_REMOVE_SECOND = 1200;
+    private static final int MAX_BLACKLISTS_SIZE = 1500;
 
+    /*
+    Glossary:
+        DistAvoidScore - Given the fromPosition and a Block, it is the distance
+            combined with that blocks AvoidScore for ranking when needing to access the
+            most feasible block to access.
+        AvoidScore - From the BlockBlacklist, it is a score that is given to a BlockPos ranking how dangerous it is. Rank will be removed when the BlockState is changed at that pos.
+    */
 
-    protected final BlockFailureBlacklist blacklist = new BlockFailureBlacklist();
+    protected final AssociatedStateHandler<SpecificWorld, DimensionedScannerState> dimensionStates;
 
     private final AltoClef mod;
     private final TimerGame rescanTimer = new TimerGame(1);
 
-    private final HashMap<Block, HashSet<BlockPos>> trackedBlocks = new HashMap<>();
-    private final HashMap<Block, HashSet<BlockPos>> scannedBlocks = new HashMap<>();
-    private final HashMap<ChunkPos, Long> scannedChunks = new HashMap<>();
+    protected BlockFailureBlacklist blacklist;
+    private HashMap<Block, HashSet<BlockPos>> trackedBlocks;
+    private HashMap<Block, HashSet<BlockPos>> scannedBlocks;
+    private HashMap<ChunkPos, Long> scannedChunks;
 
     // used while scanning
     private HashMap<Block, HashSet<BlockPos>> cachedScannedBlocks = new HashMap<>();
@@ -54,15 +63,34 @@ public class BlockScanner {
 
     public BlockScanner(AltoClef mod) {
         this.mod = mod;
+
+        this.dimensionStates = new AssociatedStateHandler<>() {
+            @Override
+            public DimensionedScannerState createState(SpecificWorld key) {
+                Debug.logInternal("Created Scanner State for SpecificWorld: " + key);
+                return new DimensionedScannerState(key.world);
+            }
+
+            @Override
+            public void applyState(DimensionedScannerState state) {
+                blacklist = state.blacklist;
+                trackedBlocks = state.trackedBlocks;
+                scannedBlocks = state.scannedBlocks;
+                scannedChunks = state.scannedChunks;
+            }
+        };
+
+        EventBus.subscribe(DimensionChangedEvent.class, event -> dimensionStates.updateKey(new SpecificWorld(event.world(), WorldHelper.getNetworkName(mod))));
         EventBus.subscribe(BlockPlaceEvent.class, evt -> addBlock(evt.blockState.getBlock(), evt.blockPos));
     }
+
 
     private Vec3d getPlayerPos() {
         return mod.getPlayer().getPos().add(0, 0.6f, 0);
     }
 
-    protected void directBlacklist(BlockPos pos, ISpatialBlacklistType<BlockPos> entry) {
-        blacklist.setBlacklist(mod, pos, entry);
+    protected void directBlacklist(BlockPos pos, ISpatialBlacklistEntry<BlockPos> entry) {
+        blacklist.setBlacklist(pos, entry);
     }
 
     public void addBlock(Block block, BlockPos pos) {
@@ -91,7 +119,7 @@ public class BlockScanner {
     }
 
     public void requestBlockUnreachable(BlockPos pos, int allowedFailures, int maxScore) {
-        blacklist.positionFailed(mod, pos, new BlacklistBlockType(pos, maxScore), allowedFailures);
+        blacklist.positionFailed(pos, new BlacklistBlockEntry(pos, maxScore), allowedFailures);
     }
 
     public boolean isUnreachable(BlockPos pos) {
@@ -119,25 +147,6 @@ public class BlockScanner {
         return getKnownLocations(DEFAULT_MAX_AVOID_SCORE, blocks);
     }
 
-    /**
-     * Scans a radius for the closest block of a given type .
-     *
-     * @param pos    The center of this radius
-     * @param range  Radius to scan for
-     * @param blocks What blocks to check for
-     */
-    public Optional<BlockPos> getNearestWithinRange(Vec3d pos, double range, int maxScore, Block... blocks) {
-        Optional<BlockPos> nearest = getNearestBlockType(pos, maxScore, blocks);
-
-        if (nearest.isEmpty() || nearest.get().isWithinDistance(pos, range)) return nearest;
-
-        return Optional.empty();
-    }
-    public Optional<BlockPos> getNearestWithinRange(BlockPos pos, double range, int maxScore, Block... blocks) {
-        return getNearestWithinRange(pos.toCenterPos(), range, maxScore, blocks);
-    }
-
-
     public boolean anyFound(int maxScore, Block... blocks) {
         return anyFound((block) -> true, maxScore, blocks);
     }
@@ -160,45 +169,30 @@ public class BlockScanner {
         return anyFound(isValidTest, DEFAULT_MAX_AVOID_SCORE, blocks);
     }
 
-    public Optional<BlockPos> getNearestBlockType(Block... blocks) {
-        return getNearestBlockType(DEFAULT_MAX_AVOID_SCORE, blocks);
+    public Optional<BlockPos> getNearestWithinScore(Vec3d fromPos, int maxScore, Block... blocks) {
+        return getNearestWithinScore(fromPos, maxScore, (p) -> true, blocks);
     }
-    public Optional<BlockPos> getNearestBlockType(Vec3d pos, Block... blocks) {
-        return getNearestBlockType(pos, DEFAULT_MAX_AVOID_SCORE, blocks);
-    }
-    public Optional<BlockPos> getNearestBlockType(Predicate<BlockPos> isValidTest, Block... blocks) {
-        return getNearestBlockType(isValidTest, DEFAULT_MAX_AVOID_SCORE, blocks);
-    }
-    public Optional<BlockPos> getNearestBlockType(Vec3d fromPos, Predicate<BlockPos> isValidTest, Block... blocks) {
-        return getNearestBlockType(fromPos, isValidTest, DEFAULT_MAX_AVOID_SCORE, blocks);
-    }
-
-    public Optional<BlockPos> getNearestBlockType(int maxScore, Block... blocks) {
-        return getNearestBlockType(getPlayerPos(), maxScore, blocks);
-    }
-    public Optional<BlockPos> getNearestBlockType(Vec3d pos, int maxScore, Block... blocks) {
-        return getNearestBlockType(pos, p -> true, maxScore, blocks);
-    }
-    public Optional<BlockPos> getNearestBlockType(Predicate<BlockPos> isValidTest, int maxScore, Block... blocks) {
-        return getNearestBlockType(getPlayerPos(), isValidTest, maxScore, blocks);
-    }
-    public Optional<BlockPos> getNearestBlockType(Vec3d fromPos, Predicate<BlockPos> isValidTest, int maxScore, Block... blocks) {
-        BlockPos closestPos = null;
-        double closestsScore = Double.POSITIVE_INFINITY;
-
-        for (Block block : blocks) {
-            Optional<BlockSearchResult> nearestResultOptional = searchNearestBlock(block, isValidTest, fromPos);
-            if (nearestResultOptional.isPresent()) {
-                BlockSearchResult nearestResult = nearestResultOptional.get();
-                if (closestPos == null) {
-                    closestPos = nearestResult.blockPos;
-                } else if (nearestResult.distAvoidScore < closestsScore && nearestResult.distAvoidScore < maxScore) {
-                    closestPos = nearestResult.blockPos;
-                    closestsScore = nearestResult.distAvoidScore;
-                }
+    public Optional<BlockPos> getNearestWithinScore(Vec3d fromPos, int maxScore, Predicate<BlockPos> isValidTest, Block... blocks) {
+        final Optional<BlockSearchResult> searchResultOptional = searchNearestBlock(fromPos, isValidTest, blocks);
+        if (searchResultOptional.isPresent()) {
+            if (maxScore > searchResultOptional.get().distAvoidScore) {
+                return Optional.of(searchResultOptional.get().blockPos);
             }
         }
-        return closestPos != null ? Optional.of(closestPos) : Optional.empty();
+        return Optional.empty();
+    }
+
+    public Optional<BlockPos> getNearestBlockType(Block... blocks) {
+        return getNearestBlockType(getPlayerPos(), blocks);
+    }
+    public Optional<BlockPos> getNearestBlockType(Vec3d pos, Block... blocks) {
+        return getNearestBlockType(pos, p -> true, blocks);
+    }
+    public Optional<BlockPos> getNearestBlockType(Predicate<BlockPos> isValidTest, Block... blocks) {
+        return getNearestBlockType(getPlayerPos(), isValidTest, blocks);
+    }
+    public Optional<BlockPos> getNearestBlockType(Vec3d fromPos, Predicate<BlockPos> isValidTest, Block... blocks) {
+        return searchNearestBlock(fromPos, isValidTest, blocks).map(result -> result.blockPos);
     }
 
 
@@ -209,7 +203,7 @@ public class BlockScanner {
         return getNearestBlock(block, (pos) -> true,  fromPos, maxScore);
     }
     public Optional<BlockPos> getNearestBlock(Block block, Predicate<BlockPos> isValidTest, Vec3d fromPos, int maxScore) {
-        return searchNearestBlock(block, isValidTest, fromPos).map(BlockSearchResult::blockPos);
+        return searchNearestBlock(fromPos, isValidTest, block).map(BlockSearchResult::blockPos);
     }
 
     // TODO: rename this method and `DistAvoidScore` because it sounds stupid.
@@ -227,7 +221,26 @@ public class BlockScanner {
         return BaritoneHelper.calculateGenericHeuristic(fromPos, WorldHelper.toVec3d(checkPos)) + avoidScore;
     }
 
-    public Optional<BlockSearchResult> searchNearestBlock(Block block, Predicate<BlockPos> isValidTest, Vec3d fromPos) {
+    public boolean anyFoundWithinDistance(double distance, Block... blocks) {
+        return anyFoundWithinDistance(mod.getPlayer().getPos().add(0, 0.6f, 0), distance, blocks);
+    }
+    public boolean anyFoundWithinDistance(Vec3d pos, double distance, Block... blocks) {
+        Optional<BlockPos> blockPos = getNearestBlockType(blocks);
+        return blockPos.map(value -> value.isWithinDistance(pos, distance)).orElse(false);
+    }
+
+    // Returns the block of the least DistAvoidScore
+    public double bestBlockScore(Block... blocks) {
+        return bestBlockScore(mod.getPlayer().getPos().add(0, 0.6f, 0), blocks);
+    }
+    public double bestBlockScore(Vec3d pos, Block... blocks) {
+        return searchNearestBlock(pos, (p) -> true, blocks)
+                .map(result -> result.distAvoidScore)
+                .orElse(Double.POSITIVE_INFINITY);
+    }
+
+    // Internal searching methods
+    private Optional<BlockSearchResult> searchNearestBlock(Vec3d fromPos, Predicate<BlockPos> isValidTest, Block block) {
         BlockPos bestPos = null;
         double bestScore = Double.POSITIVE_INFINITY;
 
@@ -248,27 +261,25 @@ public class BlockScanner {
         }
         return bestPos != null ? Optional.of(new BlockSearchResult(bestPos, bestScore)) : Optional.empty();
     }
+    private Optional<BlockSearchResult> searchNearestBlock(Vec3d fromPos, Predicate<BlockPos> isValidTest, Block... blocks) {
+        BlockSearchResult bestResult = null;
+
+        for (Block block : blocks) {
+            Optional<BlockSearchResult> searchResultOptional = searchNearestBlock(fromPos, isValidTest, block);
+
+            if (searchResultOptional.isPresent()) {
+                BlockSearchResult searchResult = searchResultOptional.get();
+                if (bestResult == null || (bestResult.distAvoidScore > searchResult.distAvoidScore)) {
+                    bestResult = searchResult;
+                }
+            }
+        }
+
+        return (bestResult != null) ? Optional.of(bestResult) : Optional.empty();
+    }
 
     public record BlockSearchResult(BlockPos blockPos, double distAvoidScore) {};
 
-    public boolean anyFoundWithinDistance(double distance, Block... blocks) {
-        return anyFoundWithinDistance(mod.getPlayer().getPos().add(0, 0.6f, 0), distance, blocks);
-    }
-    public boolean anyFoundWithinDistance(Vec3d pos, double distance, Block... blocks) {
-        Optional<BlockPos> blockPos = getNearestBlockType(blocks);
-        return blockPos.map(value -> value.isWithinDistance(pos, distance)).orElse(false);
-    }
-
-    public double distanceToClosest(Block... blocks) {
-        return distanceToClosest(DEFAULT_MAX_AVOID_SCORE, blocks);
-    }
-    public double distanceToClosest(int maxScore, Block... blocks) {
-        return distanceToClosest(mod.getPlayer().getPos().add(0, 0.6f, 0), maxScore, blocks);
-    }
-    public double distanceToClosest(Vec3d pos, int maxScore, Block... blocks) {
-        Optional<BlockPos> blockPos = getNearestBlockType(maxScore, blocks);
-        return blockPos.map(value -> Math.sqrt(MathUtilVer.getDistance(value, pos))).orElse(Double.POSITIVE_INFINITY);
-    }
 
     // Checks if 'pos' one of 'blocks' block
     // Returns false if incorrect or undetermined/unsure
@@ -302,13 +313,13 @@ public class BlockScanner {
         }
     }
 
-    public void reset() {
-        trackedBlocks.clear();
-        scannedBlocks.clear();
-        scannedChunks.clear();
+    public void resetScanProgress() {
         rescanTimer.forceElapse();
-        blacklist.clearBlacklists();
         forceStop = true;
+    }
+
+    public void clearStates() {
+        dimensionStates.resetCurrent();
     }
 
     public void tick() {
@@ -319,13 +330,16 @@ public class BlockScanner {
 
         // Rescan
         if (rescanTimer.elapsed() && !scanning) {
-            if (scanDimension != WorldHelper.getCurrentDimension() || mod.getWorld() != scanWorld) {
+
+            final Dimension currentDimension = WorldHelper.getCurrentDimension();
+            if (scanDimension != currentDimension || mod.getWorld() != scanWorld) {
                 if (LOG) {
                     Debug.logMessage("BlockScanner: new dimension or world detected, resetting data!");
                 }
-                reset();
+                resetScanProgress();
                 scanWorld = mod.getWorld();
-                scanDimension = WorldHelper.getCurrentDimension();
+                scanDimension = currentDimension;
+                dimensionStates.updateKey(new SpecificWorld(mod.getWorld(), WorldHelper.getNetworkName(mod)));
                 return;
             }
 
@@ -390,7 +404,7 @@ public class BlockScanner {
         }
 
         for (Map.Entry<Block, HashSet<BlockPos>> entry : map.entrySet()) {
-            getFirstFewPositions(entry.getValue(),mod.getPlayer().getPos());
+            getFirstToClosePositions(entry.getValue(),mod.getPlayer().getPos());
 
             if (!trackedBlocks.containsKey(entry.getKey())) {
                 trackedBlocks.put(entry.getKey(), new HashSet<>());
@@ -430,7 +444,7 @@ public class BlockScanner {
         }
         if (forceStop) {
             // reset again, might have changed some values from the time forceStop was called
-            reset();
+            resetScanProgress();
             forceStop = false;
             return;
         }
@@ -444,12 +458,11 @@ public class BlockScanner {
             }
         }
 
+        // trim sets just incase
         for (HashSet<BlockPos> set : scannedBlocks.values()) {
-            if (set.size() < CACHED_POSITIONS_PER_BLOCK) {
-                continue;
+            if (set.size() >= CACHED_POSITIONS_PER_BLOCK) {
+                getFirstToClosePositions(set, playerPos);
             }
-
-            getFirstFewPositions(set, playerPos);
         }
 
         if (LOG) {
@@ -462,18 +475,29 @@ public class BlockScanner {
     }
 
     private void updateBlacklist() {
-        final long maxTimeMillis = OLD_BLACKLIST_REMOVE_SECOND * 1000;
-        blacklist.filterBlackListItems(
-            (blockPos, item) ->
-                item.state != mod.getWorld().getBlockState(blockPos) || // filter out new states
-                (item.createTime + maxTimeMillis) < System.currentTimeMillis() // clear out old blacklists
-        );
-}
+        blacklist.updateBlacklist(OLD_BLACKLIST_REMOVE_SECOND * 1000);
+    }
 
 
-    //TODO rename
-    private void getFirstFewPositions(HashSet<BlockPos> set, Vec3d playerPos) {
-        Queue<BlockPos> queue = new PriorityQueue<>(Comparator.comparingDouble((pos) -> -calculateDistAvoidScore(playerPos, pos)));
+    // Trims the Set to only the first closest positions to the player?
+    // Note i made this only calculate dist and not DistAvoidScore because of the lag.
+    private void getFirstToClosePositions(HashSet<BlockPos> set, Vec3d playerPos) {
+        Queue<BlockPos> queue = new PriorityQueue<>(Comparator.comparingDouble((pos) -> -BaritoneHelper.calculateGenericHeuristic(playerPos, WorldHelper.toVec3d(pos))));
+
+        //TODO: somehow optimize this to make this applicable
+        /*
+        final Map<BlockPos, Double> scoreCache = new HashMap<>(set.size());
+        Queue<BlockPos> queue = new PriorityQueue<>(Comparator.comparingDouble((pos) -> {
+            final Double cachedScore = scoreCache.get(pos);
+            if (cachedScore != null) {
+                return cachedScore;
+            } else {
+                final double score = -calculateDistAvoidScore(playerPos, pos);
+                scoreCache.put(pos, score);
+                return score;
+            }
+        }));
+        */
 
         for (BlockPos pos : set) {
             queue.add(pos);
@@ -528,5 +552,81 @@ public class BlockScanner {
     }
 
     private record Node(ChunkPos pos, int distance) {
+    }
+
+    // Associates a state with a key.
+    // On updateKey the state associated with the key will be `applied`.
+    // where `T` is state and `V` is the key
+    protected abstract static class AssociatedStateHandler<V, T> {
+        private final HashMap<V, T> genericMap = new HashMap<>();
+        private V latestKey;
+
+        public abstract T createState(V key);
+        public abstract void applyState(T state);
+
+        // returns the state associated with the `newKey`
+        public void updateKey(V newKey) {
+            if (latestKey != newKey) {
+                latestKey = newKey;
+                if (genericMap.containsKey(newKey)) {
+                    applyState(genericMap.get(newKey));
+                } else {
+                    T newState = createState(newKey);
+                    genericMap.put(newKey, newState);
+                    applyState(newState);
+                }
+            }
+        }
+
+        public void resetKey(V key) {
+            if (key.equals(latestKey)) {
+                applyState(createState(key));
+            } else {
+                genericMap.remove(key);
+            }
+        }
+
+        public V getLatestKey() {
+            return latestKey;
+        }
+
+        public void resetCurrent() {
+            resetKey(latestKey);
+        }
+    }
+
+    protected record SpecificWorld(World world, String networkName) {
+        @Override
+        public int hashCode() {
+            return Objects.hash(Dimension.dimensionFromWorldKey(world.getRegistryKey()).name(), networkName);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof SpecificWorld specificWorld) {
+                return (
+                    specificWorld.world.getRegistryKey() == world.getRegistryKey()) &&
+                    Objects.equals(networkName, specificWorld.networkName
+                );
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return "SpecificWorld[" + world.getRegistryKey().getValue().toString() + " from " + networkName + "]";
+        }
+    }
+
+    public static class DimensionedScannerState {
+        public final HashMap<Block, HashSet<BlockPos>> trackedBlocks = new HashMap<>();
+        public final HashMap<Block, HashSet<BlockPos>> scannedBlocks = new HashMap<>();
+        public final HashMap<ChunkPos, Long> scannedChunks = new HashMap<>();
+        public final BlockFailureBlacklist blacklist;
+
+
+        public DimensionedScannerState(World world) {
+            this.blacklist = new BlockFailureBlacklist(world, MAX_BLACKLISTS_SIZE);
+        }
     }
 }

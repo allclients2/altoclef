@@ -1,13 +1,14 @@
-package adris.altoclef.scanner.blacklist.spatial.entry;
+package adris.altoclef.scanner.blacklist.spatial.entries;
 
+import adris.altoclef.multiversion.MathUtilVer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-public record BlacklistRangeBlockType(Vec3d avoidCenter, int maxScore, double maxRange) implements ISpatialBlacklistType<BlockPos> {
+public record BlacklistRangeBlockEntry(Vec3d avoidCenter, int maxScore, double maxRange) implements ISpatialBlacklistEntry<BlockPos> {
     @Override
     public int avoidScore(BlockPos pos) {
-        if (avoidCenter.isInRange(pos.toCenterPos(), maxRange)) {
-            return (int) ((1 - (avoidCenter.distanceTo(pos.toCenterPos()) / maxRange)) * maxScore);
+        if (avoidCenter.isInRange(MathUtilVer.getCenter(pos), maxRange)) {
+            return (int) ((1 - (avoidCenter.distanceTo(MathUtilVer.getCenter(pos)) / maxRange)) * maxScore);
         } else {
             return 0;
         }

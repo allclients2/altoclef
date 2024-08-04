@@ -1016,7 +1016,7 @@ public class BeatMinecraftTask extends Task {
 
             // TODO make more sophisticated
             // dont open spawner chests
-            Optional<BlockPos> nearestSpawner = mod.getBlockScanner().getNearestBlockType(WorldHelper.toVec3d(blockPos), 35, Blocks.SPAWNER);
+            Optional<BlockPos> nearestSpawner = mod.getBlockScanner().getNearestBlockType(WorldHelper.toVec3d(blockPos), Blocks.SPAWNER);
             if (nearestSpawner.isPresent() && nearestSpawner.get().isWithinDistance(blockPos, 6)) {
                 blacklistedChests.add(blockPos);
                 return false;
@@ -1028,7 +1028,7 @@ public class BeatMinecraftTask extends Task {
             }
 
             return isUnopenedChest && isWithinDistance && isLootableChest;
-        }, 35, Blocks.CHEST);
+        },  Blocks.CHEST);
     }
 
     /**
@@ -1660,7 +1660,6 @@ public class BeatMinecraftTask extends Task {
             if (StorageHelper.miningRequirementMetInventory(mod, MiningRequirement.WOOD)) {
                 Optional<BlockPos> silverfish = mod.getBlockScanner().getNearestBlockType(
                     blockPos -> (WorldHelper.getSpawnerEntity(mod, blockPos) instanceof SilverfishEntity),
-                    35,
                     Blocks.SPAWNER
                 );
 
@@ -1711,7 +1710,7 @@ public class BeatMinecraftTask extends Task {
                                 repeated = 0;
                             }
 
-                            final Optional<BlockPos> nearestLavaToEndPortal = mod.getBlockScanner().getNearestBlockType(WorldHelper.toVec3d(endPortalCenterLocation), (blockPos) -> !blockPos.isWithinDistance(endPortalCenterLocation, 8), 30, Blocks.LAVA);
+                            final Optional<BlockPos> nearestLavaToEndPortal = mod.getBlockScanner().getNearestBlockType(WorldHelper.toVec3d(endPortalCenterLocation), (blockPos) -> !blockPos.isWithinDistance(endPortalCenterLocation, 8),  Blocks.LAVA);
                             if (nearestLavaToEndPortal.isPresent()) {
                                 return new PlaceObsidianBucketTask(nearestLavaToEndPortal.get());
                             } else {
@@ -1967,8 +1966,6 @@ public class BeatMinecraftTask extends Task {
             // Calculate the average position of the frames.
             Vec3d average = frames.stream().reduce(Vec3d.ZERO, (accum, bpos) -> accum.add((int) Math.round(bpos.getX() + 0.5), (int) Math.round(bpos.getY() + 0.5), (int) Math.round(bpos.getZ() + 0.5)), Vec3d::add).multiply(1d / frames.size());
 
-            // Log the average position.
-            Debug.logMessage("Average Position: " + average);
 
             return new BlockPos(new Vec3i((int) average.x, (int) average.y, (int) average.z));
         }
@@ -2254,8 +2251,8 @@ public class BeatMinecraftTask extends Task {
                     hasRods = true;
                 }
 
-                double rodDistance = mod.getBlockScanner().distanceToClosest(Blocks.NETHER_BRICKS);
-                double pearlDistance = mod.getBlockScanner().distanceToClosest(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.WARPED_HYPHAE, Blocks.WARPED_NYLIUM);
+                double rodDistance = mod.getBlockScanner().bestBlockScore(Blocks.NETHER_BRICKS);
+                double pearlDistance = mod.getBlockScanner().bestBlockScore(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.WARPED_HYPHAE, Blocks.WARPED_NYLIUM);
 
                 if (pearlDistance == Double.POSITIVE_INFINITY && rodDistance == Double.POSITIVE_INFINITY) {
                     setDebugState("Neither fortress or warped forest found... wandering");

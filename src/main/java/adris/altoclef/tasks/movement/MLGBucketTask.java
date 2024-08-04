@@ -31,6 +31,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
+//#if MC < 11904
+//$$ import net.minecraft.entity.damage.DamageSource;
+//#endif
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
