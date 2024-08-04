@@ -5,12 +5,11 @@ import adris.altoclef.mixins.ClientConnectionAccessor;
 import adris.altoclef.mixins.NetworkHandlerAccessor;
 import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.MethodWrapper;
+import adris.altoclef.multiversion.ServerInfoVer;
 import adris.altoclef.multiversion.WorldBoundsVer;
 import adris.altoclef.util.publicenums.Dimension;
 import baritone.api.BaritoneAPI;
-import baritone.pathing.movement.CalculationContext;
 import baritone.pathing.movement.MovementHelper;
-import baritone.process.MineProcess;
 import baritone.utils.BlockStateInterface;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -41,7 +40,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-import java.util.random.RandomGenerator;
 
 /**
  * Super useful helper functions for getting information about the world.
@@ -106,27 +104,21 @@ public abstract class WorldHelper {
     }
 
     @NotNull
-    public static String getNetworkName(AltoClef mod) {
+    public static String getNetworkName() {
         var netHandle = MinecraftClient.getInstance().interactionManager;
         if (netHandle != null) {
             var networkHandler = ((NetworkHandlerAccessor) netHandle).getNetworkHandler();
             if (networkHandler != null) {
-                ServerInfo info = networkHandler.getServerInfo();
+                var info = new ServerInfoVer(networkHandler);
                 IntegratedServer integratedServer = MinecraftClient.getInstance().getServer();
                 if (integratedServer != null) {
                     return integratedServer.getSavePath(WorldSavePath.ROOT).getParent().getFileName().toString();
                 } else {
-                    if (info != null) {
-                        if (info.isRealm()) {
-                            return "realms";
-                        } else {
-                            return info.address.replace(":", "_");
-                        }
-                    }
+                    return info.getAddress().replace(":", "_");
                 }
             }
         }
-        return "UNKNOWN_" + new Random().nextInt();
+        return "unknown_" + new Random().nextInt();
     }
 
     public static boolean isBlocksWithinBoxRadiusOfPos(AltoClef mod, BlockPos pos, int radius, List<Block> blocksSearch) {

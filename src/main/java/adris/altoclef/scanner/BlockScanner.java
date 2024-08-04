@@ -80,7 +80,7 @@ public class BlockScanner {
             }
         };
 
-        EventBus.subscribe(DimensionChangedEvent.class, event -> dimensionStates.updateKey(new SpecificWorld(event.world(), WorldHelper.getNetworkName(mod))));
+        EventBus.subscribe(DimensionChangedEvent.class, event -> dimensionStates.updateKey(new SpecificWorld(event.world(), WorldHelper.getNetworkName())));
         EventBus.subscribe(BlockPlaceEvent.class, evt -> addBlock(evt.blockState.getBlock(), evt.blockPos));
     }
 
@@ -339,7 +339,7 @@ public class BlockScanner {
                 resetScanProgress();
                 scanWorld = mod.getWorld();
                 scanDimension = currentDimension;
-                dimensionStates.updateKey(new SpecificWorld(mod.getWorld(), WorldHelper.getNetworkName(mod)));
+                dimensionStates.updateKey(new SpecificWorld(mod.getWorld(), WorldHelper.getNetworkName()));
                 return;
             }
 

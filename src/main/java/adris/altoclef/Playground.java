@@ -144,7 +144,7 @@ public class Playground {
                 break;
             }
             case "worldName":
-                Debug.logMessage("Network World Name: " + getNetworkName(mod));
+                Debug.logMessage("Network Name: " + getNetworkName());
                 break;
             case "stacked":
                 // It should only need:
