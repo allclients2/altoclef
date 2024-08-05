@@ -547,8 +547,6 @@ public class TaskCatalogue {
 
             //#if MC>=11700
             craftGrid("candle", Items.CANDLE, 1, new Grid2x2<>("string", o, "honeycomb", o));
-            //#endif
-            //#if MC>=11800
             craftGrid("spyglass", Items.SPYGLASS, 1, new Grid3x3<>(o, "amethyst_shard", o, o, "copper_ingot", o, o, "copper_ingot", o));
             //#endif
             //#if MC>=12000

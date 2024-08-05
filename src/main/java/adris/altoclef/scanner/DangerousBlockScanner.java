@@ -28,8 +28,8 @@ public class DangerousBlockScanner {
 
             //#if MC>=12100
             // Trail chamber
-            new BlockBlacklist(50, 23, new Block[] {
-                Blocks.TRIAL_SPAWNER,
+            new BlockBlacklist(60, 40, new Block[] {
+                Blocks.TRIAL_SPAWNER, Blocks.VAULT
             }),
             //#endif
     };

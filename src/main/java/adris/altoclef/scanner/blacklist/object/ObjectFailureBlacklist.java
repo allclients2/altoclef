@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * Sometimes we will try to access something and fail TOO many times.
  * <p>
- * This lets us know that a block is possible unreachable, so we increase its avoidance score.
+ * This lets us know that an object is possible unreachable, so we blacklist them.
  * Where `T` is the class for the object
  */
 public class ObjectFailureBlacklist<T> {
