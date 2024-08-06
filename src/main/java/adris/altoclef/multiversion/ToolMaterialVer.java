@@ -11,13 +11,12 @@ public class ToolMaterialVer {
     }
 
     public static int getMiningLevel(ToolMaterial material) {
-        return switch (material) {
-            case ToolMaterials.WOOD, ToolMaterials.GOLD -> 0;
-            case ToolMaterials.STONE -> 1;
-            case ToolMaterials.IRON -> 2;
-            case ToolMaterials.DIAMOND -> 3;
-            case ToolMaterials.NETHERITE -> 4;
-            default -> throw new IllegalStateException("Unexpected material: " + material);
+        return switch ((ToolMaterials) material) {
+            case WOOD, GOLD -> 0;
+            case STONE -> 1;
+            case IRON -> 2;
+            case DIAMOND -> 3;
+            case NETHERITE -> 4;
         };
     }
 

@@ -5,8 +5,14 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 
+//#if MC < 12001
+//$$ import adris.altoclef.mixins.DrawableHelperInvoker;
+//$$ import net.minecraft.client.gui.DrawableHelper;
+//#endif
+
+
 // Must be recreated every render event!
-public final class DrawContextVer {
+public class DrawContextVer {
 
     //  Minecraft Colors used here are in a 8-digit hexadecimal format of ARGB (Alpha, Red, Green, Blue)
 
@@ -30,6 +36,7 @@ public final class DrawContextVer {
     //#else
     //$$ private final DrawableHelper drawableHelper;
     //#endif
+
 
     //#if MC>=12001
     public DrawContextVer(DrawContext context, MatrixStack matrices) {
@@ -56,12 +63,7 @@ public final class DrawContextVer {
         //#if MC>=12001
         context.drawVerticalLine(RenderLayer.getGuiOverlay(), x1, y1, y2, color);
         //#else
-        //$$ if (y2 < y1) {
-        //$$     int i = y1;
-        //$$     y1 = y2;
-        //$$     y2 = i;
-        //$$ }
-        //$$ DrawableHelper.fill(matrices, x1, y1 + 1, x1 + 1, y2, color);
+        //$$ ((DrawableHelperInvoker) drawableHelper).invokeDrawVerticalLine(matrices, x1, y1, y2, color);
         //#endif
     }
 
@@ -69,12 +71,7 @@ public final class DrawContextVer {
         //#if MC>=12001
         context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x1, x2, y1, color);
         //#else
-        //$$ if (x2 < x1) {
-        //$$     int i = x1;
-        //$$     x1 = x2;
-        //$$     x2 = i;
-        //$$ }
-        //$$ drawableHelper.fill(matrices, x1, y1, x2 + 1, y1 + 1, color);
+        //$$ ((DrawableHelperInvoker) drawableHelper).invokeDrawHorizontalLine(matrices, x1, x2, y1, color);
         //#endif
     }
 

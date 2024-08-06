@@ -2,13 +2,10 @@ package adris.altoclef.ui;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
-import adris.altoclef.eventbus.events.SendChatEvent;
 import adris.altoclef.multiversion.ClientChatSend;
 import adris.altoclef.util.time.BaseTimer;
 import adris.altoclef.util.time.TimerReal;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.text.Text;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
