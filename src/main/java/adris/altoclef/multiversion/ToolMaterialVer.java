@@ -4,7 +4,6 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.item.ToolMaterials;
 
-// Why did you add this, This doesn't even contain and preprocessing statements?
 public class ToolMaterialVer {
 
     public static int getMiningLevel(ToolItem item) {
@@ -12,18 +11,14 @@ public class ToolMaterialVer {
     }
 
     public static int getMiningLevel(ToolMaterial material) {
-        if (material.equals(ToolMaterials.WOOD) || material.equals(ToolMaterials.GOLD)) {
-            return 0;
-        } else if (material.equals(ToolMaterials.STONE)) {
-            return 1;
-        } else if (material.equals(ToolMaterials.IRON)) {
-            return 2;
-        } else if (material.equals(ToolMaterials.DIAMOND)) {
-            return 3;
-        } else if (material.equals(ToolMaterials.NETHERITE)) {
-            return 4;
-        }
-        throw new IllegalStateException("Unexpected value: " + material);
+        return switch (material) {
+            case ToolMaterials.WOOD, ToolMaterials.GOLD -> 0;
+            case ToolMaterials.STONE -> 1;
+            case ToolMaterials.IRON -> 2;
+            case ToolMaterials.DIAMOND -> 3;
+            case ToolMaterials.NETHERITE -> 4;
+            default -> throw new IllegalStateException("Unexpected material: " + material);
+        };
     }
 
 }
