@@ -11,10 +11,6 @@
     "MiranCZ",
     "allclients2"
   ],
-  "contact": {
-    "homepage": "https://github.com/MiranCZ/altoclef",
-    "sources": "https://github.com/MiranCZ/altoclef"
-  },
   "license": "MIT",
   "icon": "assets/altoclef/icon.png",
   "environment": "*",

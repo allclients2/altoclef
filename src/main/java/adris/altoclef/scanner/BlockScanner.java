@@ -604,10 +604,8 @@ public class BlockScanner {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof SpecificWorld specificWorld) {
-                return (
-                    specificWorld.world.getRegistryKey() == world.getRegistryKey()) &&
-                    Objects.equals(networkName, specificWorld.networkName
-                );
+                return (specificWorld.world.getRegistryKey() == world.getRegistryKey()) &&
+                    Objects.equals(networkName, specificWorld.networkName);
             }
             return false;
         }
