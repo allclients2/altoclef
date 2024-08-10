@@ -57,37 +57,37 @@ import net.minecraft.entity.ItemEntity;
 
 public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
 
-    private final BlockPos _startPos;
-    private BlockPos _checkpointPos = null;
-    private final Direction _startingDirection;
-    private TunnelToMine _prevTunnel = null;
-    private final MovementProgressChecker _progressChecker = new MovementProgressChecker();
-    private final Task _prepareForMiningTask = TaskCatalogue
+    private final BlockPos startPos;
+    private BlockPos checkpointPos = null;
+    private final Direction startingDirection;
+    private TunnelToMine prevTunnel = null;
+    private final MovementProgressChecker progressChecker = new MovementProgressChecker();
+    private final Task prepareForMiningTask = TaskCatalogue
             .getItemTask(new ItemTarget(Items.IRON_PICKAXE, 3));
-    private int _groundHeight = Integer.MIN_VALUE;
-    private GetToYTask _getToYTask = null;
-    private DestroyBlockTask _destroyOreTask = null;
-    private GetToBlockTask _getCloseToBlockTask = null;
-    private final List<Block> _blockTargets;
-    private List<BlockPos> _blocksToMine;
-    private Block _currentTarget;
+    private int groundHeight = Integer.MIN_VALUE;
+    private GetToYTask getToYTask = null;
+    private DestroyBlockTask destroyOreTask = null;
+    private GetToBlockTask getCloseToBlockTask = null;
+    private final List<Block> blockTargets;
+    private List<BlockPos> blocksToMine;
+    private Block currentTarget;
 
     public BranchMiningTask(BlockPos homePos, Direction startingDirection, List<Block> blocksToMine) {
-        if (!Arrays.asList(ItemHelper.ORES).containsAll(blocksToMine))
+        if (!new HashSet<>(Arrays.asList(ItemHelper.ORES)).containsAll(blocksToMine))
             throw new IllegalStateException("Unexpected value: " + blocksToMine.toString() + ", expacted any of: " + ItemHelper.ORES.toString());
-        _startPos = homePos;
-        _startingDirection = startingDirection;
-        _blockTargets = blocksToMine;
+        startPos = homePos;
+        this.startingDirection = startingDirection;
+        blockTargets = blocksToMine;
     }
 
     public BranchMiningTask(BlockPos homePos, Direction startingDirection, Block blockToMine) {
         if (!Arrays.asList(ItemHelper.ORES).contains(blockToMine))
             throw new IllegalStateException("Unexpected value: " + blockToMine + ", expacted any of: " + ItemHelper.ORES.toString());
-        _startPos = homePos;
-        _startingDirection = startingDirection;
+        startPos = homePos;
+        this.startingDirection = startingDirection;
         List<Block> blockList = new ArrayList<>();
         blockList.add(blockToMine);
-        _blockTargets = blockList;
+        blockTargets = blockList;
     }
 
     @Override
@@ -99,13 +99,13 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
     @Override
     protected Task onTick(AltoClef mod) {
         if (mod.getClientBaritone().getPathingBehavior().isPathing()) {
-            _progressChecker.reset();
+            progressChecker.reset();
         }
         if (mod.getClientBaritone().getBuilderProcess().isActive()) {
             return null;
         }
-        if (_currentTarget != null) {
-            Optional<ItemEntity> itemEntity = mod.getEntityTracker().getClosestItemDrop(ItemHelper.oreToDrop(_currentTarget.asItem()));
+        if (currentTarget != null) {
+            Optional<ItemEntity> itemEntity = mod.getEntityTracker().getClosestItemDrop(ItemHelper.oreToDrop(currentTarget.asItem()));
             if (itemEntity.isPresent()) {
                 setDebugState("Picking up the drop!");
                 // Ensure our inventory is free if we're close
@@ -116,142 +116,138 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
                     }
                 } else {
                     setDebugState("Getting closer to the drop!");
-                    _getCloseToBlockTask = new GetToBlockTask(itemEntity.get().getBlockPos());
+                    getCloseToBlockTask = new GetToBlockTask(itemEntity.get().getBlockPos());
                 }
             }
         }
 
-        if (_getCloseToBlockTask != null && _destroyOreTask != null && !_destroyOreTask.isActive() && !_getCloseToBlockTask.isFinished(mod)) {
-            return _getCloseToBlockTask;
-        } else if (_destroyOreTask != null && _destroyOreTask.isActive() && !_destroyOreTask.isFinished(mod)) {
+        if (getCloseToBlockTask != null && destroyOreTask != null && !destroyOreTask.isActive() && !getCloseToBlockTask.isFinished(mod)) {
+            return getCloseToBlockTask;
+        } else if (destroyOreTask != null && destroyOreTask.isActive() && !destroyOreTask.isFinished(mod)) {
             setDebugState("Mining ores found!");
-            return _destroyOreTask;
-        } else if (_blocksToMine != null && !_blocksToMine.isEmpty()) {
+            return destroyOreTask;
+        } else if (blocksToMine != null && !blocksToMine.isEmpty()) {
             do {
-                BlockPos blockPos = _blocksToMine.get(0);
+                BlockPos blockPos = blocksToMine.get(0);
                 if (!WorldHelper.isAir(mod, blockPos)) {
-                    _currentTarget = mod.getWorld().getBlockState(blockPos).getBlock();
+                    currentTarget = mod.getWorld().getBlockState(blockPos).getBlock();
                     if (Math.sqrt(mod.getPlayer().getBlockPos().getSquaredDistance(blockPos)) > 5) {
                         setDebugState("Getting closer to ore found!");
-                        _getCloseToBlockTask = new GetToBlockTask(blockPos);
-                        return _getCloseToBlockTask;
+                        getCloseToBlockTask = new GetToBlockTask(blockPos);
+                        return getCloseToBlockTask;
                     }
-                    _destroyOreTask = new DestroyBlockTask(blockPos);
-                    _blocksToMine.remove(blockPos);
+                    destroyOreTask = new DestroyBlockTask(blockPos);
+                    blocksToMine.remove(blockPos);
                     setDebugState("Mining ores found!");
-                    return _destroyOreTask;
+                    return destroyOreTask;
                 }
-                _blocksToMine.remove(blockPos);
-            } while (!_blocksToMine.isEmpty());
+                blocksToMine.remove(blockPos);
+            } while (!blocksToMine.isEmpty());
         }
-        if (_prepareForMiningTask.isActive() && !_prepareForMiningTask.isFinished(mod) && isNewPickaxeRequired(mod)) {
-            if (!_progressChecker.check(mod)) {
+        if (prepareForMiningTask.isActive() && !prepareForMiningTask.isFinished(mod) && isNewPickaxeRequired(mod)) {
+            if (!progressChecker.check(mod)) {
                 final BlockPos playerPos = mod.getPlayer().getBlockPos();
-                if (playerPos.getY() > _groundHeight) {
-                    _progressChecker.reset();
+                if (playerPos.getY() > groundHeight) {
+                    progressChecker.reset();
                 }
-                if (_groundHeight == Integer.MIN_VALUE) {
-                    _groundHeight = WorldHelper.getGroundHeight(mod, playerPos.getX(), playerPos.getZ());
-                    _getToYTask = new GetToYTask(_groundHeight + 4);
+                if (groundHeight == Integer.MIN_VALUE) {
+                    groundHeight = WorldHelper.getGroundHeight(mod, playerPos.getX(), playerPos.getZ());
+                    getToYTask = new GetToYTask(groundHeight + 4);
                 }
-                if (!(_getToYTask.isActive() || !_getToYTask.isFinished(mod))) {
-                    _groundHeight = Integer.MIN_VALUE;
-                    _getToYTask = null;
+                if (!(getToYTask.isActive() || !getToYTask.isFinished(mod))) {
+                    groundHeight = Integer.MIN_VALUE;
+                    getToYTask = null;
                 }
-                return _getToYTask;
+                return getToYTask;
             }
             if (mod.getClientBaritone().getBuilderProcess().isActive()) {
                 mod.getClientBaritone().getBuilderProcess().onLostControl();
             }
-            return _prepareForMiningTask;
+            return prepareForMiningTask;
         }
         if (!mod.getClientBaritone().getBuilderProcess().isActive()) {
-            TunnelToMine tunnel = null;
-            _getCloseToBlockTask = null;
+            TunnelToMine tunnel;
+            getCloseToBlockTask = null;
 
 
-            if (_prevTunnel != null && wasCleared(mod, _prevTunnel)) {
-                _blocksToMine = getBlocksNextToTunnel(mod, _prevTunnel);
+            if (prevTunnel != null && wasCleared(mod, prevTunnel)) {
+                blocksToMine = getBlocksNextToTunnel(mod, prevTunnel);
             }
 
-            if (_checkpointPos != null) {
-                BlockPos prevCheckpoint = _checkpointPos;
+            if (checkpointPos != null) {
+                BlockPos prevCheckpoint = checkpointPos;
 
-                tunnel = new TunnelToMine(mod, prevCheckpoint, 2, 1, 3, _startingDirection);
-                if (_prevTunnel != null && wasCleared(mod, _prevTunnel) && wasCleared(mod, tunnel)) {
-                    switch (_startingDirection) {
-                        case EAST:
+                tunnel = new TunnelToMine(mod, prevCheckpoint, 2, 1, 3, startingDirection);
+                if (prevTunnel != null && wasCleared(mod, prevTunnel) && wasCleared(mod, tunnel)) {
+                    switch (startingDirection) {
+                        case EAST, NORTH:
                         case WEST:
-                            if (_prevTunnel == null || _prevTunnel.tunnelDirection == Direction.SOUTH)
+                            if (prevTunnel == null || prevTunnel.tunnelDirection == Direction.SOUTH)
                                 tunnel = new TunnelToMine(mod, prevCheckpoint, 2, 1, 32, Direction.NORTH);
                             else {
                                 tunnel = new TunnelToMine(mod, prevCheckpoint, 2, 1, 32, Direction.SOUTH);
                             }
                             break;
-                        case NORTH:
                         case SOUTH:
-                            if (_prevTunnel == null || _prevTunnel.tunnelDirection == Direction.EAST)
+                            if (prevTunnel == null || prevTunnel.tunnelDirection == Direction.EAST)
                                 tunnel = new TunnelToMine(mod, prevCheckpoint, 2, 1, 32, Direction.WEST);
                             else {
                                 tunnel = new TunnelToMine(mod, prevCheckpoint, 2, 1, 32, Direction.EAST);
                             }
                             break;
                         default:
-                            throw new IllegalStateException("Unexpected value: " + _startingDirection);
+                            throw new IllegalStateException("Unexpected value: " + startingDirection);
                     }
-                    if (_prevTunnel != null) setDebugState("Mining " + tunnel.tunnelDirection + " branch!");
+                    if (prevTunnel != null) setDebugState("Mining " + tunnel.tunnelDirection + " branch!");
 
                     if (wasCleared(mod, tunnel)) {
-                        switch (_startingDirection) {
+                        switch (startingDirection) {
                             case EAST:
-                                _checkpointPos = prevCheckpoint.east(4);
+                                checkpointPos = prevCheckpoint.east(4);
                                 break;
                             case WEST:
-                                _checkpointPos = prevCheckpoint.west(4);
+                                checkpointPos = prevCheckpoint.west(4);
                                 break;
                             case NORTH:
-                                _checkpointPos = prevCheckpoint.north(4);
+                                checkpointPos = prevCheckpoint.north(4);
                                 break;
                             case SOUTH:
-                                _checkpointPos = prevCheckpoint.south(4);
+                                checkpointPos = prevCheckpoint.south(4);
                                 break;
                             default:
-                                throw new IllegalStateException("Unexpected value: " + _startingDirection);
+                                throw new IllegalStateException("Unexpected value: " + startingDirection);
                         }
                     }
 
-                    _prevTunnel = tunnel;
                 } else {
                     setDebugState("Mining main tunnel");
-                    tunnel = new TunnelToMine(mod, prevCheckpoint, 2, 1, 3, _startingDirection);
-                    _prevTunnel = tunnel;
+                    tunnel = new TunnelToMine(mod, prevCheckpoint, 2, 1, 3, startingDirection);
                 }
+                prevTunnel = tunnel;
             } else {
-                switch (_startingDirection) {
+                switch (startingDirection) {
                     case EAST:
-                        _checkpointPos = _startPos.east(4);
+                        checkpointPos = startPos.east(4);
                         break;
                     case WEST:
-                        _checkpointPos = _startPos.west(4);
+                        checkpointPos = startPos.west(4);
                         break;
                     case NORTH:
-                        _checkpointPos = _startPos.north(4);
+                        checkpointPos = startPos.north(4);
                         break;
                     case SOUTH:
-                        _checkpointPos = _startPos.south(4);
+                        checkpointPos = startPos.south(4);
                         break;
                     default:
-                        throw new IllegalStateException("Unexpected value: " + _startingDirection);
+                        throw new IllegalStateException("Unexpected value: " + startingDirection);
                 }
                 setDebugState("Mining main tunnel");
-                tunnel = new TunnelToMine(mod, _startPos, 2, 1, 5, _startingDirection);
-                _prevTunnel = tunnel;
+                tunnel = new TunnelToMine(mod, startPos, 2, 1, 5, startingDirection);
+                prevTunnel = tunnel;
             }
-            if (tunnel != null) {
-                mod.getClientBaritone().getBuilderProcess().clearArea(tunnel.corner1, tunnel.corner2);
-            }
-        } else if (!_progressChecker.check(mod)) {
-            _progressChecker.reset();
+            mod.getClientBaritone().getBuilderProcess().clearArea(tunnel.corner1, tunnel.corner2);
+        } else if (!progressChecker.check(mod)) {
+            progressChecker.reset();
             mod.getBehaviour().setBlockBreakAdditionalPenalty(3.0);
             mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.value = 3.0;
             mod.getBehaviour().setBlockPlacePenalty(0.0);
@@ -347,7 +343,7 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
         int x2 = tunnel.corner2.getX();
         int y2 = tunnel.corner2.getY();
         int z2 = tunnel.corner2.getZ();
-        List<BlockPos> vain = new ArrayList<BlockPos>();
+        List<BlockPos> vain = new ArrayList<>();
         // Swap coordinates if necessary to make sure x1 <= x2, y1 <= y2, and z1 <= z2
         if (x1 > x2) {
             int temp = x1;
@@ -374,7 +370,7 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
                         BlockPos blockPosToCheck = currentBlock.offset(dir);
                         Block blockToCheck = mod.getWorld().getBlockState(blockPosToCheck).getBlock();
                         if (
-                                _blockTargets.contains(blockToCheck)
+                                blockTargets.contains(blockToCheck)
                                         && !vain.contains(blockPosToCheck)
                                         && !mod.getBlockScanner().isUnreachable(blockPosToCheck)
                                         && WorldHelper.canBreak(mod, blockPosToCheck)
@@ -392,9 +388,9 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
     }
 
     private List<BlockPos> findAdjacentBlocksOfSameType(AltoClef mod, BlockPos startPos, Block targetBlock, List<BlockPos> currVain) {
-        List<BlockPos> connectedBlocks = new ArrayList<BlockPos>();
-        Set<BlockPos> visited = new HashSet<BlockPos>();
-        Queue<BlockPos> queue = new LinkedList<BlockPos>();
+        List<BlockPos> connectedBlocks = new ArrayList<>();
+        Set<BlockPos> visited = new HashSet<>();
+        Queue<BlockPos> queue = new LinkedList<>();
 
         BlockState targetBlockState = mod.getWorld().getBlockState(startPos);
 
@@ -437,16 +433,15 @@ public class BranchMiningTask extends Task implements ITaskRequiresGrounded {
 
     @Override
     protected boolean isEqual(Task other) {
-        if (other instanceof BranchMiningTask) {
-            BranchMiningTask task = (BranchMiningTask) other;
-            return (task._startPos.equals(_startPos));
+        if (other instanceof BranchMiningTask task) {
+            return (task.startPos.equals(startPos));
         }
         return false;
     }
 
     @Override
     protected String toDebugString() {
-        return "Branch mining! Y=" + _startPos.getY();
+        return "Branch mining! Y=" + startPos.getY();
     }
 
 }

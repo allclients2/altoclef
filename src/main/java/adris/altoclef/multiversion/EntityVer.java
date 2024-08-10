@@ -74,8 +74,8 @@ public class EntityVer {
             , WardenEntity.class
             //#endif
 
-            // #if MC < BETA_17003
-            // $$ HerobrineSubject.class,
+            // #if MC < BETA_10703
+            // $$ , HerobrineSubject.class
             // #endif
     );
 
@@ -116,7 +116,7 @@ public class EntityVer {
 
     // Method entity.getEyePos() was added in minecraft 1.17
     // So simple, Was thinking if it would be more performant returning the "manual" pre 1.17 way even if after 1.17, so we don't add to the stack.
-    public static Vec3d getEyePos(Entity entity) {
+    public static  Vec3d getEyePos(Entity entity) {
         //#if MC >= 11700
         return entity.getEyePos();
         //#else

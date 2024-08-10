@@ -110,11 +110,12 @@ public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
 
     @Override
     protected void onStart(AltoClef mod) {
-
         //Don't spend too much time on finding an optimized path. Doesn't really matter.
         //But also don't be really dumb and try to cross an ocean. (it tried to do so when it was set at 21.0)
-        mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.value = 3.25;
-        mod.getClientBaritoneSettings().blockPlacementPenalty.value = 23.5;
+        mod.getBehaviour().push();
+
+        mod.getBehaviour().setBlockBreakAdditionalPenalty(3.25);
+        mod.getBehaviour().setBlockPlacePenalty(23.5);
 
         timer.reset();
         mod.getClientBaritone().getPathingBehavior().forceCancel();
@@ -207,15 +208,11 @@ public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
         if (failCounter > 5 && failCounter < 10 || _forceExplore) {
             setDebugState("Exploring; worried.");
             mod.getBehaviour().setBlockBreakAdditionalPenalty(0.2);
-            mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.value = 0.2;
-            mod.getClientBaritoneSettings().blockPlacementPenalty.value = 15.0;
-            mod.getClientBaritoneSettings().costHeuristic.value = 6.5;
+            mod.getBehaviour().setBlockPlacePenalty(15.0);
         } else if (failCounter > 10) {
             setDebugState("Exploring; desperately.");
             mod.getBehaviour().setBlockBreakAdditionalPenalty(0.0);
-            mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.value = 0.0;
-            mod.getClientBaritoneSettings().blockPlacementPenalty.value = 0.0;
-            mod.getClientBaritoneSettings().costHeuristic.value = 40.5;
+            mod.getBehaviour().setBlockPlacePenalty(0.0);
         } else {
             setDebugState("Exploring; normal.");
         }
@@ -225,10 +222,7 @@ public class TimeoutWanderTask extends Task implements ITaskRequiresGrounded {
     @Override
     protected void onStop(AltoClef mod, Task interruptTask) {
         //Reset
-        mod.getClientBaritoneSettings().blockBreakAdditionalPenalty.reset();
-        mod.getClientBaritoneSettings().blockPlacementPenalty.reset();
-        mod.getClientBaritoneSettings().costHeuristic.reset();
-
+        mod.getBehaviour().pop();
 
         mod.getClientBaritone().getPathingBehavior().forceCancel();
         if (isFinished(mod)) {
