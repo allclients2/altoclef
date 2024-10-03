@@ -2,9 +2,11 @@ package adris.altoclef;
 
 import adris.altoclef.control.KillAura;
 import adris.altoclef.tasks.movement.DefaultGoToDimensionTask;
-import adris.altoclef.util.BlockRange;
+import adris.altoclef.util.DimensionedZone;
 import adris.altoclef.util.helpers.ConfigHelper;
 import adris.altoclef.util.helpers.ItemHelper;
+import adris.altoclef.util.helpers.WorldHelper;
+import adris.altoclef.util.publicenums.Dimension;
 import adris.altoclef.util.serialization.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,7 +22,6 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -85,6 +86,11 @@ public class Settings implements IFailableConfigFile {
      * If true, will spread items through crafting grid.
      */
     private boolean spreadItemsToCraft = false;
+
+    /**
+     * Shows the about of that which the `onTick()` method takes.
+     */
+    private boolean showDebugTaskMsTime = false;
 
     /*
      * If true open inventory during crafting in 2x2
@@ -510,7 +516,9 @@ public class Settings implements IFailableConfigFile {
      * },
      * ],
      */
-    private List<BlockRange> areasToProtect = Collections.emptyList();
+    @JsonSerialize(using = DimensionedZoneSerializer.class)
+    @JsonDeserialize(using = DimensionedZoneDeserializer.class)
+    private List<DimensionedZone> blacklistedAreas = new ArrayList<>();
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -519,6 +527,14 @@ public class Settings implements IFailableConfigFile {
 
     public static void load(Consumer<Settings> onReload) {
         ConfigHelper.loadConfig(SETTINGS_PATH, Settings::new, Settings.class, onReload);
+    }
+
+    public static void save(Settings settingsInstance) {
+        ConfigHelper.saveConfig(SETTINGS_PATH, settingsInstance);
+    }
+
+    public void insertNewBlacklistedArea(DimensionedZone dimensionedZone) {
+        blacklistedAreas.add(dimensionedZone);
     }
 
     public boolean shouldShowTaskChain() {
@@ -648,6 +664,8 @@ public class Settings implements IFailableConfigFile {
         return idleCommand != null && !idleCommand.isBlank();
     }
 
+    public boolean isShowDebugTaskMsTime() { return showDebugTaskMsTime; };
+
     public boolean shouldAutoMLGBucket() {
         return autoMLGBucket;
     }
@@ -733,10 +751,15 @@ public class Settings implements IFailableConfigFile {
         return supportedFuels.toArray(Item[]::new);
     }
 
-    public boolean isPositionExplicitlyProtected(BlockPos pos) {
-        if (!areasToProtect.isEmpty()) {
-            for (BlockRange protection : areasToProtect) {
-                if (protection.contains(pos)) return true;
+    public boolean isBlockPosBlacklisted(BlockPos pos) {
+        return isBlockPosBlacklisted(WorldHelper.getCurrentDimension(), WorldHelper.getNetworkName(), pos);
+    }
+
+
+    public boolean isBlockPosBlacklisted(Dimension dimension, String networkName, BlockPos pos) {
+        if (!blacklistedAreas.isEmpty()) {
+            for (var protection : blacklistedAreas) {
+                if (protection.isIncludedInZone(dimension, networkName, pos)) return true;
             }
         }
         return false;

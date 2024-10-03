@@ -24,6 +24,7 @@ import adris.altoclef.scanner.BlockScanner;
 import adris.altoclef.scanner.DangerousBlockScanner;
 import adris.altoclef.ui.AltoClefTickChart;
 import adris.altoclef.util.helpers.InputHelper;
+import adris.altoclef.util.helpers.WorldHelper;
 import baritone.Baritone;
 import baritone.altoclef.AltoClefSettings;
 import baritone.api.BaritoneAPI;
@@ -168,9 +169,11 @@ public class AltoClef implements ModInitializer {
                 getUserTaskChain().signalNextTaskToBeIdleTask();
                 getCommandExecutor().executeWithPrefix(getModSettings().getIdleCommand());
             }
+
             // Don't break blocks or place blocks where we are explicitly protected.
-            getExtraBaritoneSettings().avoidBlockBreak(blockPos -> settings.isPositionExplicitlyProtected(blockPos));
-            getExtraBaritoneSettings().avoidBlockPlace(blockPos -> settings.isPositionExplicitlyProtected(blockPos));
+            // Oversight (applies to both method calls below): May be checking a different dimension, but this just assumes the current dimension.
+            getExtraBaritoneSettings().avoidBlockBreak(blockPos -> settings.isBlockPosBlacklisted(WorldHelper.getCurrentDimension(), WorldHelper.getNetworkName(), blockPos));
+            getExtraBaritoneSettings().avoidBlockPlace(blockPos -> settings.isBlockPosBlacklisted(WorldHelper.getCurrentDimension(), WorldHelper.getNetworkName(), blockPos));
         });
 
         // Receive + cancel chat

@@ -8,6 +8,8 @@ import net.minecraft.item.Item;
 //#if MC>=11903
 import net.minecraft.registry.DefaultedRegistry;
 import net.minecraft.registry.Registries;
+import net.minecraft.world.World;
+
 //#else
 //$$ import net.minecraft.util.registry.Registry;
 //$$ import net.minecraft.util.registry.DefaultedRegistry;
@@ -30,5 +32,6 @@ public class RegistriesVer {
         //$$  return Registry.BLOCK;
         //#endif
     }
+
 
 }

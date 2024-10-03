@@ -5,6 +5,8 @@ import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 // Helps get the best weapon available.
 
@@ -27,12 +29,13 @@ public abstract class Weapons {
         public Item WeaponItem;
         public int TypeId;
 
-        public Weapon(Item item, int Id) {
+        public Weapon(@NotNull Item item, int Id) {
             WeaponItem = item;
             TypeId = Id;
         }
     }
 
+    @Nullable
     public static Weapon getBestWeapon(AltoClef mod) {
         int WeaponId = 0;
 
@@ -58,7 +61,7 @@ public abstract class Weapons {
             }
         }
 
-        return new Weapon(bestWeapon, WeaponId);
+        return bestWeapon != null ? new Weapon(bestWeapon, WeaponId) : null;
     }
 
     public static float getBestDamage(Weapon BestWeapon, AltoClef mod) {

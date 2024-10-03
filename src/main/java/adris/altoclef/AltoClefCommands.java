@@ -10,7 +10,7 @@ public class AltoClefCommands {
 
     public static void init() throws CommandException {
         // List commands here
-        AltoClef.getCommandExecutor().registerNewCommand(
+        AltoClef.getCommandExecutor().registerNewCommands(
                 new HelpCommand(),
                 new GetCommand(),
                 new FollowCommand(),
@@ -38,7 +38,8 @@ public class AltoClefCommands {
                 new MiranCommand(),
                 new GamerCommand(),
                 new MarvionCommand(),
-                new MicroCommand()
+                new MicroCommand(),
+                new BlacklistCommand()
         );
     }
 }

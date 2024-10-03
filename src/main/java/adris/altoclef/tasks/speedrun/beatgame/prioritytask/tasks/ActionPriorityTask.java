@@ -54,7 +54,7 @@ public class ActionPriorityTask extends PriorityTask {
 
     @Override
     public String getDebugString() {
-        return "Performing an action: "+lastTask;
+        return "Performing an action: " + lastTask;
     }
 
     @Override

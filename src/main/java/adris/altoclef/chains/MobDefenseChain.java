@@ -232,10 +232,6 @@ public class MobDefenseChain extends SingleTaskChain {
         int avoidanceRadius = (int) (dangerKeepDistanceAdjusted + 1);
         mod.getClientBaritoneSettings().mobAvoidanceRadius.value = avoidanceRadius;
 
-        //Variables to update on step
-        Weapons.Weapon BestWeapon = Weapons.getBestWeapon(mod);
-        float BestDamage = Weapons.getBestDamage(BestWeapon, mod);
-
         // No idea
         doingFunkyStuff = false;
         PlayerSlot offhandSlot = PlayerSlot.OFFHAND_SLOT;
@@ -327,11 +323,11 @@ public class MobDefenseChain extends SingleTaskChain {
             if (!hostiles.isEmpty()) {
                 synchronized (BaritoneHelper.MINECRAFT_LOCK) {
                     for (Entity hostile : hostiles) {
-                        boolean isRangedOrPoisnous = (hostile instanceof SkeletonEntity || hostile instanceof WitchEntity || hostile instanceof PillagerEntity || hostile instanceof PiglinEntity || hostile instanceof StrayEntity || hostile instanceof CaveSpiderEntity);
+                        boolean isRangedOrPoisonous = (hostile instanceof SkeletonEntity || hostile instanceof WitchEntity || hostile instanceof PillagerEntity || hostile instanceof PiglinEntity || hostile instanceof StrayEntity || hostile instanceof CaveSpiderEntity);
                         double annoyingRange = dangerKeepDistanceAdjusted;
-                        if (isRangedOrPoisnous && !mod.getItemStorage().hasItem(Items.SHIELD) && !mod.getItemStorage().hasItemInOffhand(Items.SHIELD))
+                        if (isRangedOrPoisonous && !mod.getItemStorage().hasItem(Items.SHIELD) && !mod.getItemStorage().hasItemInOffhand(Items.SHIELD))
                             annoyingRange = dangerKeepDistanceAdjusted * 1.5;
-                        else if (isRangedOrPoisnous) annoyingRange = dangerKeepDistanceAdjusted * 1.25;
+                        else if (isRangedOrPoisonous) annoyingRange = dangerKeepDistanceAdjusted * 1.25;
 
                         // Give each hostile a timer, if they're close for too long deal with them.
                         if (hostile.isInRange(Player, annoyingRange) && LookHelper.seesPlayer(hostile, Player, annoyingRange)) {
@@ -370,7 +366,7 @@ public class MobDefenseChain extends SingleTaskChain {
             }
 
             // Count a score based upon the hostiles we have.
-            int entityScore = getEntityscore(toDealWith, Player);
+            int entityScore = getEntityDangerScore(toDealWith, Player);
             if (entityScore > 0) //Then we fight!
             {
                 // Depending on our weapons/armor, we may choose to straight up kill hostiles if we're not dodging their arrows.
@@ -414,29 +410,7 @@ public class MobDefenseChain extends SingleTaskChain {
                     }
                 });
 
-                // Calculating canDealWith
-                int canDealWith;
-                {
-                    boolean hasShield = mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD);
-                    double shield = 0;
-                    if (hasShield) {
-                        // We will need a shield more with skeletons with bows
-                        if (RangedPresent.get()) {
-                            shield = 3.25;
-                        } else {
-                            shield = 2.05;
-                        }
-                    }
-
-                    float damage = Player.getMaxHealth() - Player.getHealth();
-                    int armor = Player.getArmor();
-                    float weaponDamage = BestWeapon.WeaponItem == null ? 0 : (1 + BestDamage);
-                    canDealWith = (int) Math.ceil(((double) armor / 4) + (weaponDamage * 2.15) + shield);
-                    canDealWith -= (int) Math.floor(damage * 0.125);
-                    if (mod.getPlayer().isSubmergedInWater()) {
-                        canDealWith -= 1;
-                    }
-                }
+                int canDealWith = getCanDealWith(mod);
 
                 // Debug
                 // System.out.println("candealwith: " + canDealWith);
@@ -493,29 +467,63 @@ public class MobDefenseChain extends SingleTaskChain {
         return 0;
     }
 
-    private static int getEntityscore(List<Entity> toDealWith, ClientPlayerEntity player) {
-        int entityscore = toDealWith.size();
+    private static int getCanDealWith(AltoClef mod) {
+        var player = mod.getPlayer();
+        int canDealWith;
+
+        Weapons.Weapon BestWeapon = Weapons.getBestWeapon(mod);
+        float BestDamage = BestWeapon != null ? Weapons.getBestDamage(BestWeapon, mod) : 1;
+
+        boolean hasShield = mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD);
+        double shield = 0;
+        if (hasShield) {
+            shield = 2.05;
+        }
+
+        float damage = player.getMaxHealth() - player.getHealth();
+        int armor = player.getArmor();
+        float weaponDamage = BestWeapon == null ? 0 : (1 + BestDamage);
+        canDealWith = (int) Math.ceil(((double) armor / 4) + (weaponDamage * 2.15) + shield);
+        canDealWith -= (int) Math.floor(damage * 0.125);
+        if (mod.getPlayer().isSubmergedInWater()) {
+            canDealWith -= 1;
+        }
+
+        return canDealWith;
+    }
+
+
+    private static final Map<Class<? extends Entity>, Float> entityScoreMap = new HashMap<>();
+    static {
+        entityScoreMap.put(SlimeEntity.class, 2f);
+        entityScoreMap.put(MagmaCubeEntity.class, 2f);
+        entityScoreMap.put(SkeletonEntity.class, 5f); // Assumes all Skeletons have a bow for simplicity
+        entityScoreMap.put(EndermanEntity.class, 3f);
+        entityScoreMap.put(WitherSkeletonEntity.class, 7f);
+        entityScoreMap.put(DrownedEntity.class, 5f); // Assumes Drowned with tridents for simplicity
+        entityScoreMap.put(WitherEntity.class, 15f);
+    }
+
+    private static boolean isEntityAttackingPlayer(Entity entity, ClientPlayerEntity player) {
+        return (entity instanceof HostileEntity hostileEntity && hostileEntity.isAttacking() && hostileEntity.getTarget() == player);
+    }
+
+    private static int getEntityDangerScore(List<Entity> toDealWith, ClientPlayerEntity player) {
+        int entityDangerScore = toDealWith.size();
+
         if (!toDealWith.isEmpty()) {
-            for (Entity ToDealWith : toDealWith) {
-                if (ToDealWith.getClass() == SlimeEntity.class || ToDealWith.getClass() == MagmaCubeEntity.class || !(ToDealWith instanceof SkeletonEntity) && !(ToDealWith instanceof EndermanEntity) && !(ToDealWith instanceof DrownedEntity)) {
-                    // Entities that have a sword or can split into more entities after being killed count as two entities as they are more dangerous then one entity of same type
-                    entityscore += 2;
-                } else if (ToDealWith instanceof SkeletonEntity && ((SkeletonEntity) ToDealWith).getHandItems() == Items.BOW) {
-                    // Any skeleton with a bow is REALLY dangerous so we'll count them as 5 entities
-                    entityscore += 5;
-                } else if (ToDealWith instanceof EndermanEntity || ToDealWith instanceof WitherSkeletonEntity) {
-                    // Enderman can be also really dangerous as they hit hard.
-                    entityscore += 3;
-                } else if (ToDealWith instanceof DrownedEntity && ((DrownedEntity) ToDealWith).getHandItems() == Items.TRIDENT) {
-                    // Drowned with tridents are also REALLY dangerous, maybe we should increase this??
-                    entityscore += 5;
-                } else if (ToDealWith instanceof WitherEntity) {
-                    // How did we get here?!
-                    entityscore += 15;
+            for (Entity entity : toDealWith) {
+                float baseScore = entityScoreMap.getOrDefault(entity.getClass(), 3f);
+                if (isEntityAttackingPlayer(entity, player)) {
+                    baseScore *= 2.25f;
                 }
+                float distance = entity.distanceTo(player);
+                baseScore -= (distance / 3f);
+                entityDangerScore += (int) baseScore;
             }
         }
-        return entityscore;
+
+        return entityDangerScore;
     }
 
     private BlockPos isInsideFireAndOnFire(AltoClef mod) {

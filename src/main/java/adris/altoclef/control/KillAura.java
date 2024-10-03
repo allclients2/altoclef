@@ -1,8 +1,10 @@
 package adris.altoclef.control;
 
 import adris.altoclef.AltoClef;
+import adris.altoclef.Debug;
 import adris.altoclef.multiversion.EntityVer;
 import adris.altoclef.multiversion.ItemVer;
+import adris.altoclef.util.Weapons;
 import adris.altoclef.util.helpers.LookHelper;
 import adris.altoclef.util.helpers.StlHelper;
 import adris.altoclef.util.helpers.StorageHelper;
@@ -36,25 +38,11 @@ public class KillAura {
     private Entity forceHit = null;
     public boolean attackedLastTick = false;
 
-
     public static void equipWeapon(AltoClef mod) {
-        List<ItemStack> invStacks = mod.getItemStorage().getItemStacksPlayerInventory(true);
-        if (!invStacks.isEmpty()) {
-            float handDamage = Float.NEGATIVE_INFINITY;
-            for (ItemStack invStack : invStacks) {
-                if (invStack.getItem() instanceof SwordItem item) {
-                    float itemDamage = item.getMaterial().getAttackDamage();
-                    Item handItem = StorageHelper.getItemStackInSlot(PlayerSlot.getEquipSlot()).getItem();
-                    if (handItem instanceof SwordItem handToolItem) {
-                        handDamage = handToolItem.getMaterial().getAttackDamage();
-                    }
-                    if (itemDamage > handDamage) {
-                        mod.getSlotHandler().forceEquipItem(item);
-                    } else {
-                        mod.getSlotHandler().forceEquipItem(handItem);
-                    }
-                }
-            }
+        Weapons.Weapon BestWeapon = Weapons.getBestWeapon(mod);
+        if (BestWeapon != null) {
+            Debug.logMessage("Ok found and equip");
+            mod.getSlotHandler().forceEquipItem(BestWeapon.WeaponItem);
         }
     }
 
@@ -168,10 +156,11 @@ public class KillAura {
             LookHelper.lookAt(mod, new Vec3d(xAim, yAim, zAim));
         }
         if (Double.isInfinite(forceFieldRange) || entity.squaredDistanceTo(mod.getPlayer()) < forceFieldRange * forceFieldRange ||
-                entity.squaredDistanceTo(mod.getPlayer()) < 32) {
+            entity.squaredDistanceTo(mod.getPlayer()) < 32) {
             if (entity instanceof FireballEntity) {
                 mod.getControllerExtras().attack(entity);
             }
+
             boolean canAttack;
             if (equipSword) {
                 equipWeapon(mod);

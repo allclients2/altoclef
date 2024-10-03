@@ -16,7 +16,7 @@ public class CommandExecutor {
         this.mod = mod;
     }
 
-    public void registerNewCommand(Command... commands) {
+    public void registerNewCommands(Command... commands) {
         for (Command command : commands) {
             if (commandSheet.containsKey(command.getName())) {
                 Debug.logInternal("Command with name " + command.getName() + " already exists! Can't register that name twice.");

@@ -19,6 +19,8 @@ public abstract class Task {
 
     private boolean active = false;
 
+    public long runTimeNs = 0;
+
     public void tick(AltoClef mod, TaskChain parentChain) {
         parentChain.addTaskToChain(this);
         if (first) {
@@ -30,7 +32,12 @@ public abstract class Task {
         }
         if (stopped) return;
 
+        long startNs = System.nanoTime();
         Task newSub = onTick(mod);
+        long endNs = System.nanoTime();
+
+        runTimeNs = endNs - startNs;
+
         // We have a sub task
         if (newSub != null) {
             if (!newSub.isEqual(sub)) {

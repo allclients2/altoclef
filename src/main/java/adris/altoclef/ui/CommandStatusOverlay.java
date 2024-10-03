@@ -31,6 +31,7 @@ public class CommandStatusOverlay {
     private static float overlayScale;
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss.SSS").withZone(ZoneId.from(ZoneOffset.of("+00:00"))); // The date formatter
 
+
     public CommandStatusOverlay(AltoClef mod) {
         overlayScale = mod.getModSettings().getScreenOverlayScale();
         EventBus.subscribe(ConfigReloadEvent.class, configReloadEvent -> overlayScale = configReloadEvent.mod().getModSettings().getScreenOverlayScale());
@@ -81,7 +82,7 @@ public class CommandStatusOverlay {
 
         if (tasks.size() <= maxLines) {
             for (Task task : tasks) {
-                renderTask(task, renderer, matrixStack, x, y, matrix, vertexConsumers, seeThrough);
+                renderTask(task, mod, renderer, matrixStack, x, y, matrix, vertexConsumers, seeThrough);
 
                 x += addX;
                 y += addY;
@@ -95,7 +96,7 @@ public class CommandStatusOverlay {
                 x += addX * 2;
                 DrawText.draw(matrixStack, renderer, "... " + (tasks.size() - maxLines) + " other task(s) ...", x, y, whiteColor, true, matrix, vertexConsumers, seeThrough, 0, 255);
             } else if (i <= 1 || i > (tasks.size() - maxLines + 1)) {
-                renderTask(tasks.get(i), renderer, matrixStack, x, y, matrix, vertexConsumers, seeThrough);
+                renderTask(tasks.get(i), mod, renderer, matrixStack, x, y, matrix, vertexConsumers, seeThrough);
             } else {
                 continue;
             }
@@ -107,13 +108,13 @@ public class CommandStatusOverlay {
 
     }
 
-
-    private static void renderTask(Task task, TextRenderer renderer, MatrixStack matrixStack, float x, float y, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough) {
+    private static void renderTask(Task task, AltoClef mod, TextRenderer renderer, MatrixStack matrixStack, float x, float y, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough) {
         String taskName = task.getClass().getSimpleName() + " ";
+        if (mod.getModSettings().isShowDebugTaskMsTime()) {
+            taskName += "(" + (((float) task.runTimeNs) / 1_000_000f) + " ms) ";
+        }
         DrawText.draw(matrixStack, renderer, taskName, x, y, new Color(128, 128, 128).getRGB(), true, matrix, vertexConsumers, seeThrough, 0, 255);
-
         DrawText.draw(matrixStack, renderer, task.toString(), x + renderer.getWidth(taskName), y, new Color(255, 255, 255).getRGB(), true, matrix, vertexConsumers, seeThrough, 0, 255);
-
     }
 
 }

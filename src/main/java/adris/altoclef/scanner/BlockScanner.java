@@ -128,7 +128,7 @@ public class BlockScanner {
 
     // Where `maxScore` is the maximum tolerable avoid score.
     public boolean isUnreachable(BlockPos pos, int maxScore) {
-        return blacklist.getAvoidScore(pos) > maxScore;
+        return (blacklist.getAvoidScore(pos) > maxScore) || mod.getModSettings().isBlockPosBlacklisted(pos);
     }
 
     public List<BlockPos> getKnownLocations(int maxScore, Block... blocks) {
