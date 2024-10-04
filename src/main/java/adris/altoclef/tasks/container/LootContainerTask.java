@@ -2,12 +2,14 @@ package adris.altoclef.tasks.container;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.tasks.block.InteractWithBlockTask;
+import adris.altoclef.tasks.construction.DestroyBlockTask;
 import adris.altoclef.tasks.inventory.EnsureFreeInventorySlotTask;
 import adris.altoclef.tasksystem.Task;
 import adris.altoclef.trackers.storage.ContainerType;
 import adris.altoclef.util.helpers.ItemHelper;
 import adris.altoclef.util.helpers.StorageHelper;
 import adris.altoclef.util.slots.Slot;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
@@ -20,19 +22,19 @@ import java.util.function.Predicate;
 
 
 public class LootContainerTask extends Task {
-    public final BlockPos chest;
+    public final BlockPos chestPos;
     public final List<Item> targets = new ArrayList<>();
     private final Predicate<ItemStack> check;
     private boolean weDoneHere = false;
 
     public LootContainerTask(BlockPos chestPos, List<Item> items) {
-        chest = chestPos;
+        this.chestPos = chestPos;
         targets.addAll(items);
         check = x -> true;
     }
 
     public LootContainerTask(BlockPos chestPos, List<Item> items, Predicate<ItemStack> pred) {
-        chest = chestPos;
+        this.chestPos = chestPos;
         targets.addAll(items);
         check = pred;
     }
@@ -49,9 +51,15 @@ public class LootContainerTask extends Task {
 
     @Override
     protected Task onTick(AltoClef mod) {
+        // break block above if disallows chest to be opened
+        var obstructorPos = chestPos.add(0, 1, 0);
+        BlockState state = mod.getWorld().getBlockState(obstructorPos);
+        if (state.isOpaqueFullCube(mod.getWorld(), obstructorPos)) {
+            return new DestroyBlockTask(obstructorPos);
+        }
         if (!ContainerType.screenHandlerMatches(ContainerType.CHEST)) {
             setDebugState("Interact with container");
-            return new InteractWithBlockTask(chest);
+            return new InteractWithBlockTask(chestPos);
         }
         ItemStack cursor = StorageHelper.getItemStackInCursorSlot();
         if (!cursor.isEmpty()) {
