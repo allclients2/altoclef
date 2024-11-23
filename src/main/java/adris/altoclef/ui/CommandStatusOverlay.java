@@ -94,7 +94,8 @@ public class CommandStatusOverlay {
         for (byte i = 0; i < tasks.size(); ++i) {
             if (i == 2) { // So we can see the second top task..
                 x += addX * 2;
-                DrawText.draw(matrixStack, renderer, "... " + (tasks.size() - maxLines) + " other task(s) ...", x, y, whiteColor, true, matrix, vertexConsumers, seeThrough, 0, 255);
+                int otherTasks = tasks.size() - 2 - (maxLines - 2);
+                DrawText.draw(matrixStack, renderer, "... " + otherTasks + " other task(s) ...", x, y, whiteColor, true, matrix, vertexConsumers, seeThrough, 0, 255);
             } else if (i <= 1 || i > (tasks.size() - maxLines + 1)) {
                 renderTask(tasks.get(i), mod, renderer, matrixStack, x, y, matrix, vertexConsumers, seeThrough);
             } else {
