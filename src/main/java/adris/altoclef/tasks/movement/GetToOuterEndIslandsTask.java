@@ -54,7 +54,7 @@ public class GetToOuterEndIslandsTask extends Task {
                 setDebugState("Getting an ender pearl");
                 return new CataloguedResourceTask(new ItemTarget(Items.ENDER_PEARL, 1));
             }
-            Optional<BlockPos> gatewayFound = mod.getBlockScanner().getNearestBlockType(Blocks.END_GATEWAY);
+            Optional<BlockPos> gatewayFound = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.END_GATEWAY);
             if (gatewayFound.isPresent()) {
                 final BlockPos gateway = gatewayFound.get();
                 final BlockPos playerPos = mod.getPlayer().getBlockPos();

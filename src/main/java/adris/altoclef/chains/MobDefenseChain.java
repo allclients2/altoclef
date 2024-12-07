@@ -472,7 +472,7 @@ public class MobDefenseChain extends SingleTaskChain {
         int canDealWith;
 
         Weapons.Weapon BestWeapon = Weapons.getBestWeapon(mod);
-        float BestDamage = BestWeapon != null ? Weapons.getBestDamage(BestWeapon, mod) : 1;
+        float BestDamage = BestWeapon != null ? Weapons.getBestDamage(BestWeapon) : 1;
 
         boolean hasShield = mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD);
         double shield = 0;

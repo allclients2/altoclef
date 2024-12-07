@@ -64,7 +64,7 @@ public abstract class Weapons {
         return bestWeapon != null ? new Weapon(bestWeapon, WeaponId) : null;
     }
 
-    public static float getBestDamage(Weapon BestWeapon, AltoClef mod) {
+    public static float getBestDamage(Weapon BestWeapon) {
         if (BestWeapon.TypeId == 1) {
             return ((SwordItem) BestWeapon.WeaponItem).getMaterial().getAttackDamage();
         } else if (BestWeapon.TypeId == 2) {

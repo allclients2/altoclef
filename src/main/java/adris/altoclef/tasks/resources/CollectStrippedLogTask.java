@@ -56,13 +56,13 @@ public class CollectStrippedLogTask extends ResourceTask {
             return TaskCatalogue.getItemTask(Items.WOODEN_AXE, 1);
         }
         if (mod.getItemStorage().getItemCount(_strippedLogs) < _targetCount) {
-            Optional<BlockPos> strippedLogBlockPos = mod.getBlockScanner().getNearestBlockType(ItemHelper.itemsToBlocks(_strippedLogs));
+            Optional<BlockPos> strippedLogBlockPos = mod.getBlockScanner().getNearestBlockOfTypes(ItemHelper.itemsToBlocks(_strippedLogs));
             if (strippedLogBlockPos.isPresent()) {
                 setDebugState("Getting stripped log");
                 return new MineAndCollectTask(new ItemTarget(_strippedLogs), ItemHelper.itemsToBlocks(_strippedLogs), MiningRequirement.HAND);
             }
         }
-        Optional<BlockPos> strippableLogBlockPos = mod.getBlockScanner().getNearestBlockType(ItemHelper.itemsToBlocks(_strippableLogs));
+        Optional<BlockPos> strippableLogBlockPos = mod.getBlockScanner().getNearestBlockOfTypes(ItemHelper.itemsToBlocks(_strippableLogs));
         if (strippableLogBlockPos.isPresent()) {
             setDebugState("Stripping log");
             return new InteractWithBlockTask(new ItemTarget(_axes), strippableLogBlockPos.get());

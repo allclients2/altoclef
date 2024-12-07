@@ -75,7 +75,7 @@ public class UnstuckChain extends SingleTaskChain {
             isProbablyStuck = true;
             BlockPos destroyPos = null;
 
-            Optional<BlockPos> nearest = mod.getBlockScanner().getNearestBlockType(Blocks.POWDER_SNOW);
+            Optional<BlockPos> nearest = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.POWDER_SNOW);
             if (nearest.isPresent()) {
                 destroyPos = nearest.get();
             }

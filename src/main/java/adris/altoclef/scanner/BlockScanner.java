@@ -183,16 +183,16 @@ public class BlockScanner {
         return Optional.empty();
     }
 
-    public Optional<BlockPos> getNearestBlockType(Block... blocks) {
-        return getNearestBlockType(getPlayerPos(), blocks);
+    public Optional<BlockPos> getNearestBlockOfTypes(Block... blocks) {
+        return getNearestBlockOfTypes(getPlayerPos(), blocks);
     }
-    public Optional<BlockPos> getNearestBlockType(Vec3d pos, Block... blocks) {
-        return getNearestBlockType(pos, p -> true, blocks);
+    public Optional<BlockPos> getNearestBlockOfTypes(Vec3d pos, Block... blocks) {
+        return getNearestBlockOfTypes(pos, p -> true, blocks);
     }
-    public Optional<BlockPos> getNearestBlockType(Predicate<BlockPos> isValidTest, Block... blocks) {
-        return getNearestBlockType(getPlayerPos(), isValidTest, blocks);
+    public Optional<BlockPos> getNearestBlockOfTypes(Predicate<BlockPos> isValidTest, Block... blocks) {
+        return getNearestBlockOfTypes(getPlayerPos(), isValidTest, blocks);
     }
-    public Optional<BlockPos> getNearestBlockType(Vec3d fromPos, Predicate<BlockPos> isValidTest, Block... blocks) {
+    public Optional<BlockPos> getNearestBlockOfTypes(Vec3d fromPos, Predicate<BlockPos> isValidTest, Block... blocks) {
         return searchNearestBlock(fromPos, isValidTest, blocks).map(result -> result.blockPos);
     }
 
@@ -204,8 +204,11 @@ public class BlockScanner {
         return getNearestBlock(block, (pos) -> true,  fromPos, maxScore);
     }
     public Optional<BlockPos> getNearestBlock(Block block, Predicate<BlockPos> isValidTest, Vec3d fromPos, int maxScore) {
-        return searchNearestBlock(fromPos, isValidTest, block).map(BlockSearchResult::blockPos);
+        return searchNearestBlock(fromPos, isValidTest, block)
+            .filter(result -> result.distAvoidScore < maxScore)
+            .map(BlockSearchResult::blockPos);
     }
+
 
     // TODO: rename this method and `DistAvoidScore` because it sounds stupid.
     // Returns the `DistAvoidScore` for `checkPos` which should be used for distance comparisons.
@@ -226,7 +229,7 @@ public class BlockScanner {
         return anyFoundWithinDistance(mod.getPlayer().getPos().add(0, 0.6f, 0), distance, blocks);
     }
     public boolean anyFoundWithinDistance(Vec3d pos, double distance, Block... blocks) {
-        Optional<BlockPos> blockPos = getNearestBlockType(blocks);
+        Optional<BlockPos> blockPos = getNearestBlockOfTypes(blocks);
         return blockPos.map(value -> value.isWithinDistance(pos, distance)).orElse(false);
     }
 
@@ -262,6 +265,7 @@ public class BlockScanner {
         }
         return bestPos != null ? Optional.of(new BlockSearchResult(bestPos, bestScore)) : Optional.empty();
     }
+
     private Optional<BlockSearchResult> searchNearestBlock(Vec3d fromPos, Predicate<BlockPos> isValidTest, Block... blocks) {
         BlockSearchResult bestResult = null;
 

@@ -41,7 +41,7 @@ public class CollectHoneycombTask extends ResourceTask {
     @Override
     protected Task onResourceTick(AltoClef mod) {
         if (nest == null) {
-            Optional<BlockPos> getNearestNest = mod.getBlockScanner().getNearestBlockType(Blocks.BEE_NEST);
+            Optional<BlockPos> getNearestNest = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.BEE_NEST);
             if (getNearestNest.isPresent()) nest = getNearestNest.get();
         }
         // If we are STILL null

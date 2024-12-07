@@ -215,7 +215,7 @@ public class MineAndCollectTask extends ResourceTask {
         }
 
         public static Pair<Double,Optional<BlockPos> > getClosestBlock(AltoClef mod,Vec3d pos ,Block... blocks) {
-            Optional<BlockPos> closestBlock = mod.getBlockScanner().getNearestBlockType(pos, check -> WorldHelper.canBreak(mod, check), blocks);
+            Optional<BlockPos> closestBlock = mod.getBlockScanner().getNearestBlockOfTypes(pos, check -> WorldHelper.canBreak(mod, check), blocks);
 
             return new Pair<>(
                 closestBlock.map(blockPos -> MathUtilVer.getDistanceSquared(blockPos, pos)).orElse(Double.POSITIVE_INFINITY),

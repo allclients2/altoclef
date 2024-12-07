@@ -88,7 +88,7 @@ public class FastTravelTask extends Task {
 
                     if (mod.getBlockScanner().anyFound(Blocks.END_PORTAL_FRAME)) {
                         setDebugState("Walking to portal");
-                        return new GetToBlockTask(mod.getBlockScanner().getNearestBlockType(Blocks.END_PORTAL_FRAME).get());
+                        return new GetToBlockTask(mod.getBlockScanner().getNearestBlockOfTypes(Blocks.END_PORTAL_FRAME).get());
                     }
                     return new GetToBlockTask(target);
                 }

@@ -80,7 +80,7 @@ public class SmeltInBlastFurnaceTask extends ResourceTask {
 
     @Override
     protected Task onResourceTick(AltoClef mod) {
-        Optional<BlockPos> blastFurnacePos = mod.getBlockScanner().getNearestBlockType(Blocks.BLAST_FURNACE);
+        Optional<BlockPos> blastFurnacePos = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.BLAST_FURNACE);
         blastFurnacePos.ifPresent(blockPos -> mod.getBehaviour().avoidBlockBreaking(blockPos));
         return _doTask;
     }

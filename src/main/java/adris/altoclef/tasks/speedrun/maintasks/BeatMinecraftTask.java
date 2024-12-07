@@ -225,7 +225,7 @@ public class BeatMinecraftTask extends Task {
             if (itemStorage.hasItem(Items.WATER_BUCKET) || hasItem(mod, Items.WATER_BUCKET))
                 return pair;
 
-            Optional<BlockPos> optionalPos = mod.getBlockScanner().getNearestBlockType(Blocks.WATER);
+            Optional<BlockPos> optionalPos = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.WATER);
             if (optionalPos.isEmpty()) return pair;
 
             double distance = MathUtilVer.getDistance(optionalPos.get(), mod.getPlayer().getPos());
@@ -455,7 +455,7 @@ public class BeatMinecraftTask extends Task {
                     }
                     if (skipNight[0]) return Double.NEGATIVE_INFINITY;
 
-                    Optional<BlockPos> pos = mod.getBlockScanner().getNearestBlockType(ItemHelper.itemsToBlocks(ItemHelper.BED));
+                    Optional<BlockPos> pos = mod.getBlockScanner().getNearestBlockOfTypes(ItemHelper.itemsToBlocks(ItemHelper.BED));
                     if (pos.isPresent() && pos.get().isWithinDistance(mod.getPlayer().getPos(), 30)) return 1_000_000;
 
                     return Double.NEGATIVE_INFINITY;
@@ -1004,7 +1004,7 @@ public class BeatMinecraftTask extends Task {
         }
 
         // Find the nearest tracking block position
-        return mod.getBlockScanner().getNearestBlockType(blockPos -> {
+        return mod.getBlockScanner().getNearestBlockOfTypes(blockPos -> {
             if (blacklistedChests.contains(blockPos)) return false;
 
             boolean isUnopenedChest = WorldHelper.isUnopenedChest(mod, blockPos);
@@ -1013,7 +1013,7 @@ public class BeatMinecraftTask extends Task {
 
             // TODO make more sophisticated
             // dont open spawner chests
-            Optional<BlockPos> nearestSpawner = mod.getBlockScanner().getNearestBlockType(WorldHelper.toVec3d(blockPos), Blocks.SPAWNER);
+            Optional<BlockPos> nearestSpawner = mod.getBlockScanner().getNearestBlockOfTypes(WorldHelper.toVec3d(blockPos), Blocks.SPAWNER);
             if (nearestSpawner.isPresent() && nearestSpawner.get().isWithinDistance(blockPos, 6)) {
                 blacklistedChests.add(blockPos);
                 return false;
@@ -1156,7 +1156,7 @@ public class BeatMinecraftTask extends Task {
     }
 
     private void blackListDangerousBlock(AltoClef mod, Block block) {
-        Optional<BlockPos> nearestTracking = mod.getBlockScanner().getNearestBlockType(block);
+        Optional<BlockPos> nearestTracking = mod.getBlockScanner().getNearestBlockOfTypes(block);
 
         if (nearestTracking.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
@@ -1500,7 +1500,7 @@ public class BeatMinecraftTask extends Task {
 
         // Check for end portals. Always.
         if (!endPortalOpened(mod, endPortalCenterLocation) && WorldHelper.getCurrentDimension() == Dimension.OVERWORLD) {
-            Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlockType(Blocks.END_PORTAL);
+            Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.END_PORTAL);
             if (endPortal.isPresent()) {
                 endPortalCenterLocation = endPortal.get();
                 endPortalOpened = true;
@@ -1655,7 +1655,7 @@ public class BeatMinecraftTask extends Task {
             // WE FOUND END PORTAL AND SHOULD HAVE ALL THE NECESSARY STUFF
             // Destroy silverfish spawner
             if (StorageHelper.miningRequirementMetInventory(mod, MiningRequirement.WOOD)) {
-                Optional<BlockPos> silverfish = mod.getBlockScanner().getNearestBlockType(
+                Optional<BlockPos> silverfish = mod.getBlockScanner().getNearestBlockOfTypes(
                     blockPos -> (WorldHelper.getSpawnerEntity(mod, blockPos) instanceof SilverfishEntity),
                     Blocks.SPAWNER
                 );
@@ -1707,7 +1707,7 @@ public class BeatMinecraftTask extends Task {
                                 repeated = 0;
                             }
 
-                            final Optional<BlockPos> nearestLavaToEndPortal = mod.getBlockScanner().getNearestBlockType(WorldHelper.toVec3d(endPortalCenterLocation), (blockPos) -> !blockPos.isWithinDistance(endPortalCenterLocation, 8),  Blocks.LAVA);
+                            final Optional<BlockPos> nearestLavaToEndPortal = mod.getBlockScanner().getNearestBlockOfTypes(WorldHelper.toVec3d(endPortalCenterLocation), (blockPos) -> !blockPos.isWithinDistance(endPortalCenterLocation, 8),  Blocks.LAVA);
                             if (nearestLavaToEndPortal.isPresent()) {
                                 return new PlaceObsidianBucketTask(nearestLavaToEndPortal.get());
                             } else {
@@ -2272,10 +2272,10 @@ public class BeatMinecraftTask extends Task {
                             }
 
                             if (WorldHelper.inRangeXZ(mod.getPlayer().getPos(),
-                                    WorldHelper.toVec3d(mod.getBlockScanner().getNearestBlockType(Blocks.NETHER_BRICKS).get()), 2)) {
+                                    WorldHelper.toVec3d(mod.getBlockScanner().getNearestBlockOfTypes(Blocks.NETHER_BRICKS).get()), 2)) {
 
                                 setDebugState("trying to get to fortress");
-                                return new GetToBlockTask(mod.getBlockScanner().getNearestBlockType(Blocks.NETHER_BRICKS).get());
+                                return new GetToBlockTask(mod.getBlockScanner().getNearestBlockOfTypes(Blocks.NETHER_BRICKS).get());
                             }
 
                             setDebugState("Getting close to fortress");
@@ -2299,7 +2299,7 @@ public class BeatMinecraftTask extends Task {
 
                             prevPos = mod.getPlayer().getBlockPos();
 
-                            BlockPos p = mod.getBlockScanner().getNearestBlockType(Blocks.NETHER_BRICKS).get();
+                            BlockPos p = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.NETHER_BRICKS).get();
                             int distance = (int) (mod.getPlayer().getPos().distanceTo(WorldHelper.toVec3d(p)) / 2);
                             if (cachedFortressTask != null) {
                                 // prevents from getting stuck in place
@@ -2330,7 +2330,7 @@ public class BeatMinecraftTask extends Task {
                     } else {
                         gettingPearls = true;
                         setDebugState("Getting Ender Pearls");
-                        Optional<BlockPos> closestBlock = mod.getBlockScanner().getNearestBlockType(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.WARPED_HYPHAE, Blocks.WARPED_NYLIUM);
+                        Optional<BlockPos> closestBlock = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.WARPED_HYPHAE, Blocks.WARPED_NYLIUM);
 
                         if (closestBlock.isPresent()) {
                             biomePos = closestBlock.get();

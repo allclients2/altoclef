@@ -436,7 +436,7 @@ class DoCraftInTableTask extends DoStuffInContainerTask {
     @Override
     protected double getCostToMakeNewContainer(AltoClef mod) {
         // Get the nearest crafting table.
-        Optional<BlockPos> closestCraftingTable = mod.getBlockScanner().getNearestBlockType(Blocks.CRAFTING_TABLE);
+        Optional<BlockPos> closestCraftingTable = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.CRAFTING_TABLE);
 
         // If a crafting table is within 40 blocks of the player, return positive infinity.
         if (closestCraftingTable.isPresent() && closestCraftingTable.get().isWithinDistance(mod.getPlayer().getPos(), 40)) {

@@ -95,7 +95,7 @@ public class CoverWithBlocksTask extends Task {
                                 !WorldHelper.isBlock(mod, blockPos.south().up(), Blocks.LAVA) ||
                                 !WorldHelper.isBlock(mod, blockPos.east().up(), Blocks.LAVA) ||
                                 !WorldHelper.isBlock(mod, blockPos.west().up(), Blocks.LAVA));
-        Optional<BlockPos> lava = mod.getBlockScanner().getNearestBlockType(validLava, Blocks.LAVA);
+        Optional<BlockPos> lava = mod.getBlockScanner().getNearestBlockOfTypes(validLava, Blocks.LAVA);
         if (lava.isPresent()) {
             if (lavaPos == null) {
                 lavaPos = lava.get();

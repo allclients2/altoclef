@@ -49,7 +49,7 @@ public class KillEndermanTask extends ResourceTask {
                 return getToCorrectDimensionTask(mod);
             }
             //nearest warped forest related block
-            Optional<BlockPos> nearest = mod.getBlockScanner().getNearestBlockType(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.WARPED_HYPHAE, Blocks.WARPED_NYLIUM);
+            Optional<BlockPos> nearest = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.WARPED_HYPHAE, Blocks.WARPED_NYLIUM);
             if (nearest.isPresent()) {
                 if (WorldHelper.inRangeXZ(nearest.get(), mod.getPlayer().getBlockPos(), 40)) {
                     setDebugState("Waiting for endermen to spawn...");

@@ -176,7 +176,7 @@ public abstract class ResourceTask extends Task implements ITaskCanForce {
             satisfiedReqs.removeIf(block -> !StorageHelper.miningRequirementMet(mod, MiningRequirement.getMinimumRequirementForBlock(block)));
             if (!satisfiedReqs.isEmpty()) {
                 if (mod.getBlockScanner().anyFound(satisfiedReqs.toArray(Block[]::new))) {
-                    Optional<BlockPos> closest = mod.getBlockScanner().getNearestBlockType(mineIfPresent);
+                    Optional<BlockPos> closest = mod.getBlockScanner().getNearestBlockOfTypes(mineIfPresent);
                     if (closest.isPresent() && closest.get().isWithinDistance(mod.getPlayer().getPos(), mod.getModSettings().getResourceMineRange())) {
                         mineLastClosest = closest.get();
                     }

@@ -320,7 +320,7 @@ public class BeatMinecraft2Task extends Task {
 
         // Check for end portals. Always.
         if (!endPortalOpened(mod, _endPortalCenterLocation) && WorldHelper.getCurrentDimension() == Dimension.OVERWORLD) {
-            Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlockType(Blocks.END_PORTAL);
+            Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.END_PORTAL);
             if (endPortal.isPresent()) {
                 _endPortalCenterLocation = endPortal.get();
                 _endPortalOpened = true;
@@ -366,7 +366,7 @@ public class BeatMinecraft2Task extends Task {
 
                     // Destroy silverfish spawner
                     if (StorageHelper.miningRequirementMetInventory(mod, MiningRequirement.WOOD)) {
-                        Optional<BlockPos> silverfish = mod.getBlockScanner().getNearestBlockType(blockPos -> {
+                        Optional<BlockPos> silverfish = mod.getBlockScanner().getNearestBlockOfTypes(blockPos -> {
                             return WorldHelper.getSpawnerEntity(mod, blockPos) instanceof SilverfishEntity;
                         }, Blocks.SPAWNER);
                         if (silverfish.isPresent()) {
@@ -579,7 +579,7 @@ public class BeatMinecraft2Task extends Task {
         if (WorldHelper.getCurrentDimension() != Dimension.OVERWORLD) {
             return Optional.empty();
         }
-        return mod.getBlockScanner().getNearestBlockType(blockPos -> !_notRuinedPortalChests.contains(blockPos) && WorldHelper.isUnopenedChest(mod, blockPos) && mod.getPlayer().getBlockPos().isWithinDistance(blockPos, 150) && canBeLootablePortalChest(mod, blockPos), Blocks.CHEST);
+        return mod.getBlockScanner().getNearestBlockOfTypes(blockPos -> !_notRuinedPortalChests.contains(blockPos) && WorldHelper.isUnopenedChest(mod, blockPos) && mod.getPlayer().getBlockPos().isWithinDistance(blockPos, 150) && canBeLootablePortalChest(mod, blockPos), Blocks.CHEST);
     }
 
     private Task getEyesOfEnderTask(AltoClef mod, int targetEyes) {

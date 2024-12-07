@@ -89,7 +89,7 @@ public abstract class DoStuffInContainerTask extends Task {
             nearest = Optional.of(override);
         } else {
             // Track nearest container
-            nearest = mod.getBlockScanner().getNearestBlockType(currentPos, blockPos -> WorldHelper.canReach(mod, blockPos), containerBlocks);
+            nearest = mod.getBlockScanner().getNearestBlockOfTypes(currentPos, blockPos -> WorldHelper.canReach(mod, blockPos), containerBlocks);
         }
         if (nearest.isEmpty()) {
             // If all else fails, try using our placed task

@@ -125,7 +125,7 @@ public class CollectBlazeRodsTask extends ResourceTask {
             }
         } else {
             // Search for blaze
-            Optional<BlockPos> pos = mod.getBlockScanner().getNearestBlockType(blockPos -> isValidBlazeSpawner(mod, blockPos),Blocks.SPAWNER);
+            Optional<BlockPos> pos = mod.getBlockScanner().getNearestBlockOfTypes(blockPos -> isValidBlazeSpawner(mod, blockPos),Blocks.SPAWNER);
 
             pos.ifPresent(blockPos -> foundBlazeSpawner = blockPos);
         }

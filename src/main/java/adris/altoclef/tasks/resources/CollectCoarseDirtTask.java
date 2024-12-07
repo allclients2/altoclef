@@ -35,7 +35,7 @@ public class CollectCoarseDirtTask extends ResourceTask {
     @Override
     protected Task onResourceTick(AltoClef mod) {
         double c = Math.ceil((double) (_count - mod.getItemStorage().getItemCount(Items.COARSE_DIRT)) / 4) * 2; // Minimum number of dirt / gravel needed to complete the recipe, accounting for coarse dirt already collected.
-        Optional<BlockPos> closest = mod.getBlockScanner().getNearestBlockType(Blocks.COARSE_DIRT);
+        Optional<BlockPos> closest = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.COARSE_DIRT);
 
         // If not enough dirt and gravel for the recipe, and coarse dirt within a certain distance, collect coarse dirt
         if (!(mod.getItemStorage().getItemCount(Items.DIRT) >= c &&

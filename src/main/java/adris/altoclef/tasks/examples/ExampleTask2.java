@@ -40,7 +40,7 @@ public class ExampleTask2 extends Task {
         }
 
         if (mod.getBlockScanner().anyFound(Blocks.OAK_LOG)) {
-            Optional<BlockPos> nearest = mod.getBlockScanner().getNearestBlockType(Blocks.OAK_LOG);
+            Optional<BlockPos> nearest = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.OAK_LOG);
             if (nearest.isPresent()) {
                 // Figure out leaves
                 BlockPos check = new BlockPos(nearest.get());

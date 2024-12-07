@@ -75,7 +75,7 @@ public class SmeltInSmokerTask extends ResourceTask {
 
     @Override
     protected Task onResourceTick(AltoClef mod) {
-        Optional<BlockPos> smokerPos = mod.getBlockScanner().getNearestBlockType(Blocks.SMOKER);
+        Optional<BlockPos> smokerPos = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.SMOKER);
         smokerPos.ifPresent(blockPos -> mod.getBehaviour().avoidBlockBreaking(blockPos));
         return doTask;
     }

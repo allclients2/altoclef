@@ -607,7 +607,7 @@ public class MarvionBeatMinecraftTask extends Task {
 
         // Find the nearest tracking block position
         try {
-            return mod.getBlockScanner().getNearestBlockType(blockPos -> {
+            return mod.getBlockScanner().getNearestBlockOfTypes(blockPos -> {
                 boolean isNotRuinedPortalChest = !_notRuinedPortalChests.contains(blockPos);
                 boolean isUnopenedChest = WorldHelper.isUnopenedChest(mod, blockPos);
                 boolean isWithinDistance = mod.getPlayer().getBlockPos().isWithinDistance(blockPos, 150);
@@ -915,7 +915,7 @@ public class MarvionBeatMinecraftTask extends Task {
                 }
             }
         }
-        Optional<BlockPos> coalOrePos = mod.getBlockScanner().getNearestBlockType(Blocks.COAL_ORE);
+        Optional<BlockPos> coalOrePos = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.COAL_ORE);
         if (coalOrePos.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
             for (Entity entity : entities) {
@@ -933,7 +933,7 @@ public class MarvionBeatMinecraftTask extends Task {
         }
 
         //#if MC>=11800
-        Optional<BlockPos> deepslateCoalOre = mod.getBlockScanner().getNearestBlockType(Blocks.DEEPSLATE_COAL_ORE);
+        Optional<BlockPos> deepslateCoalOre = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.DEEPSLATE_COAL_ORE);
         if (deepslateCoalOre.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
             for (Entity entity : entities) {
@@ -949,7 +949,7 @@ public class MarvionBeatMinecraftTask extends Task {
                 }
             }
         }
-        Optional<BlockPos> deepslateIronOrePos = mod.getBlockScanner().getNearestBlockType(Blocks.DEEPSLATE_IRON_ORE);
+        Optional<BlockPos> deepslateIronOrePos = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.DEEPSLATE_IRON_ORE);
         if (deepslateIronOrePos.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
             for (Entity entity : entities) {
@@ -967,7 +967,7 @@ public class MarvionBeatMinecraftTask extends Task {
         }
         //#endif
 
-        Optional<BlockPos> ironOrePos = mod.getBlockScanner().getNearestBlockType(Blocks.IRON_ORE);
+        Optional<BlockPos> ironOrePos = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.IRON_ORE);
         if (ironOrePos.isPresent()) {
             Iterable<Entity> entities = mod.getWorld().getEntities();
             for (Entity entity : entities) {
@@ -1280,7 +1280,7 @@ public class MarvionBeatMinecraftTask extends Task {
 
         // Check for end portals. Always.
         if (!endPortalOpened(mod, _endPortalCenterLocation) && WorldHelper.getCurrentDimension() == Dimension.OVERWORLD) {
-            Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlockType(Blocks.END_PORTAL);
+            Optional<BlockPos> endPortal = mod.getBlockScanner().getNearestBlockOfTypes(Blocks.END_PORTAL);
             if (endPortal.isPresent()) {
                 _endPortalCenterLocation = endPortal.get();
                 _endPortalOpened = true;
@@ -1459,7 +1459,7 @@ public class MarvionBeatMinecraftTask extends Task {
                 if (endPortalFound(mod, _endPortalCenterLocation)) {
                     // Destroy silverfish spawner
                     if (StorageHelper.miningRequirementMetInventory(mod, MiningRequirement.WOOD)) {
-                        Optional<BlockPos> silverfish = mod.getBlockScanner().getNearestBlockType(blockPos -> {
+                        Optional<BlockPos> silverfish = mod.getBlockScanner().getNearestBlockOfTypes(blockPos -> {
                             return WorldHelper.getSpawnerEntity(mod, blockPos) instanceof SilverfishEntity;
                         }, Blocks.SPAWNER);
                         if (silverfish.isPresent()) {
