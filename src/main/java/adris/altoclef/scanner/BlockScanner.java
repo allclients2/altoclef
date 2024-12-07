@@ -9,6 +9,7 @@ import adris.altoclef.multiversion.WorldBoundsVer;
 import adris.altoclef.scanner.blacklist.spatial.BlockFailureBlacklist;
 import adris.altoclef.scanner.blacklist.spatial.entries.BlacklistBlockEntry;
 import adris.altoclef.scanner.blacklist.spatial.entries.ISpatialBlacklistEntry;
+import adris.altoclef.util.BoundedPriorityQueue;
 import adris.altoclef.util.helpers.BaritoneHelper;
 import adris.altoclef.util.helpers.WorldHelper;
 import adris.altoclef.util.publicenums.Dimension;
@@ -480,38 +481,17 @@ public class BlockScanner {
 
 
     // Trims the Set to only the first closest positions to the player?
-    // Note i made this only calculate dist and not DistAvoidScore because of the lag.
+    // Note I made this only use calculateGenericHeuristic instead of DistAvoidScore because of the lag.
     private void getFirstToClosePositions(HashSet<BlockPos> set, Vec3d playerPos) {
-        Queue<BlockPos> queue = new PriorityQueue<>(Comparator.comparingDouble((pos) -> -BaritoneHelper.calculateGenericHeuristic(playerPos, WorldHelper.toVec3d(pos))));
-
-        //TODO: somehow optimize this to make this applicable
-        /*
-        final Map<BlockPos, Double> scoreCache = new HashMap<>(set.size());
-        Queue<BlockPos> queue = new PriorityQueue<>(Comparator.comparingDouble((pos) -> {
-            final Double cachedScore = scoreCache.get(pos);
-            if (cachedScore != null) {
-                return cachedScore;
-            } else {
-                final double score = -calculateDistAvoidScore(playerPos, pos);
-                scoreCache.put(pos, score);
-                return score;
-            }
-        }));
-        */
-
-        for (BlockPos pos : set) {
-            queue.add(pos);
-
-            if (queue.size() > CACHED_POSITIONS_PER_BLOCK) {
-                queue.poll();
-            }
-        }
-
+        Map<BlockPos, Double> scoreCache = new HashMap<>();
+        Queue<BlockPos> queue = new BoundedPriorityQueue<>(CACHED_POSITIONS_PER_BLOCK,
+            Comparator.comparingDouble(pos ->
+                scoreCache.computeIfAbsent(pos, p -> -BaritoneHelper.calculateGenericHeuristic(playerPos, WorldHelper.toVec3d(p)))
+            )
+        );
+        queue.addAll(set);
         set.clear();
-
-        for (int i = 0; i < CACHED_POSITIONS_PER_BLOCK && !queue.isEmpty(); i++) {
-            set.add(queue.poll());
-        }
+        set.addAll(queue);
     }
 
     /**

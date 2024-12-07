@@ -130,13 +130,13 @@ public class AltoClef implements ModInitializer {
         // Task chains
         userTaskChain = new UserTaskChain(taskRunner);
         mobDefenseChain = new MobDefenseChain(taskRunner);
+        mlgBucketChain = new MLGBucketFallChain(taskRunner);
+        foodChain = new FoodChain(taskRunner);
         new DeathMenuChain(taskRunner);
         new PlayerInteractionFixChain(taskRunner);
-        mlgBucketChain = new MLGBucketFallChain(taskRunner);
         new UnstuckChain(taskRunner);
         new PreEquipItemChain(taskRunner);
         new WorldSurvivalChain(taskRunner);
-        foodChain = new FoodChain(taskRunner);
 
         // Trackers
         storageTracker = new ItemStorageTracker(this, trackerManager, container -> containerSubTracker = container);
@@ -272,20 +272,21 @@ public class AltoClef implements ModInitializer {
     private void initializeBaritoneSettings() {
         getExtraBaritoneSettings().canWalkOnEndPortal(false);
 
-        getClientBaritoneSettings().freeLook.value = false;
-        getClientBaritoneSettings().overshootTraverse.value = false;
-        getClientBaritoneSettings().allowOvershootDiagonalDescend.value = false;
+        var baritoneClientSettings = getClientBaritoneSettings();
+        baritoneClientSettings.freeLook.value = false;
+        baritoneClientSettings.overshootTraverse.value = false;
+        baritoneClientSettings.allowOvershootDiagonalDescend.value = false;
 
-        getClientBaritoneSettings().allowInventory.value = true;
-        getClientBaritoneSettings().allowParkour.value = false;
+        baritoneClientSettings.allowInventory.value = true;
+        baritoneClientSettings.allowParkour.value = false;
 
-        getClientBaritoneSettings().allowParkourAscend.value = true;
-        getClientBaritoneSettings().allowParkourPlace.value = false;
-        getClientBaritoneSettings().allowDiagonalDescend.value = false;
-        getClientBaritoneSettings().allowDiagonalAscend.value = false;
-        getClientBaritoneSettings().walkOnWaterOnePenalty.value = 32.0;
+        baritoneClientSettings.allowParkourAscend.value = true;
+        baritoneClientSettings.allowParkourPlace.value = false;
+        baritoneClientSettings.allowDiagonalDescend.value = false;
+        baritoneClientSettings.allowDiagonalAscend.value = false;
+        baritoneClientSettings.walkOnWaterOnePenalty.value = 32.0;
 
-        getClientBaritoneSettings().blocksToAvoid.value = new LinkedList<>(List.of(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.SWEET_BERRY_BUSH,
+        baritoneClientSettings.blocksToAvoid.value = new LinkedList<>(List.of(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.SWEET_BERRY_BUSH,
                 Blocks.WARPED_ROOTS, Blocks.VINE, Blocks.TALL_GRASS, Blocks.LARGE_FERN,
                 Blocks.ROSE_BUSH, Blocks.PEONY
 
@@ -304,34 +305,34 @@ public class AltoClef implements ModInitializer {
         // Let baritone move items to hotbar to use them
 
         // Don't let baritone scan dropped items, we handle that ourselves.
-        getClientBaritoneSettings().mineScanDroppedItems.value = false;
+        baritoneClientSettings.mineScanDroppedItems.value = false;
 
         // Don't let baritone wait for drops, we handle that ourselves.
-        getClientBaritoneSettings().mineDropLoiterDurationMSThanksLouca.value = 0L;
+        baritoneClientSettings.mineDropLoiterDurationMSThanksLouca.value = 0L;
 
         // Water bucket placement will be handled by us exclusively
         getExtraBaritoneSettings().configurePlaceBucketButDontFall(true);
 
-        getClientBaritoneSettings().failureTimeoutMS.value = 500L;
+        baritoneClientSettings.failureTimeoutMS.value = 500L;
 
-        getClientBaritoneSettings().mobAvoidanceRadius.reset();
-        getClientBaritoneSettings().mobAvoidanceCoefficient.value = 7.5;
-        getClientBaritoneSettings().avoidance.value = true;
+        baritoneClientSettings.mobAvoidanceRadius.reset();
+        baritoneClientSettings.mobAvoidanceCoefficient.value = 7.5;
+        baritoneClientSettings.avoidance.value = true;
 
 
         // For smooth camera turning, baritone 1.20.1 does not have smooth look so we use random look instead.
         //#if MC>12001
-        getClientBaritoneSettings().smoothLook.value = true;
-        getClientBaritoneSettings().smoothLookTicks.value = 4;
+        baritoneClientSettings.smoothLook.value = true;
+        baritoneClientSettings.smoothLookTicks.value = 4;
         //#else
-        //$$ getClientBaritoneSettings().randomLooking.value = 0.2; //randomly look to convince
-        //$$ getClientBaritoneSettings().randomLooking113.value = 0.03;
+        //$$ baritoneClientSettings.randomLooking.value = 0.2; //randomly look to convince
+        //$$ baritoneClientSettings.randomLooking113.value = 0.03;
         //#endif
 
         // Give baritone more time to calculate paths. Sometimes they can be really far away.
-        getClientBaritoneSettings().failureTimeoutMS.reset();
-        getClientBaritoneSettings().planAheadFailureTimeoutMS.reset();
-        getClientBaritoneSettings().movementTimeoutTicks.reset();
+        baritoneClientSettings.failureTimeoutMS.reset();
+        baritoneClientSettings.planAheadFailureTimeoutMS.reset();
+        baritoneClientSettings.movementTimeoutTicks.reset();
     }
 
     // List all command sources here.

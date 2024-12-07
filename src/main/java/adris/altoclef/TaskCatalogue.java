@@ -771,6 +771,9 @@ public class TaskCatalogue {
     public static CataloguedResourceTask getSquashedItemTask(ItemTarget... targets) {
         return new CataloguedResourceTask(true, targets);
     }
+    public static CataloguedResourceTask getSquashedItemTask(Item... targets) {
+        return new CataloguedResourceTask(true, ItemHelper.toItemTargets(targets));
+    }
 
     public static ResourceTask getItemTask(String name, int count) {
 

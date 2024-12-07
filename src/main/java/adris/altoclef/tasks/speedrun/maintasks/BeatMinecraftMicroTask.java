@@ -49,10 +49,15 @@ public class BeatMinecraftMicroTask extends Task {
     private static final int targetBedCount = 12;
     private static final boolean getMaxSetBeforeNether = true;
 
-    private static final ItemTarget[] woodToolTargets = ItemHelper.toItemTargets(ItemHelper.WOODEN_TOOLS);
-    private static final ItemTarget[] stoneToolTargets = ItemHelper.toItemTargets(ItemHelper.STONE_TOOLS);
-    private static final ItemTarget[] ironToolTargets = ItemHelper.toItemTargets(ItemHelper.IRON_TOOLS);
     private static final ItemTarget[] diamondToolSet = ItemHelper.toItemTargets(ItemHelper.DIAMOND_TOOLS);
+
+    private static final Item[] requiredStoneToolset = new Item[] { Items.STONE_SWORD };
+    private static final Item[] requiredIronToolset = new Item[] {
+        Items.IRON_AXE, Items.IRON_SWORD, Items.IRON_PICKAXE, Items.IRON_SHOVEL
+    };
+    private static final Item[] requiredDiamondToolset = new Item[] {
+        Items.DIAMOND_AXE, Items.DIAMOND_SWORD, Items.DIAMOND_PICKAXE, Items.DIAMOND_SHOVEL
+    };
 
     private static final Block[] warpedForestCommonBlocks = new Block[] {
             Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, Blocks.WARPED_HYPHAE, Blocks.WARPED_NYLIUM
@@ -71,7 +76,7 @@ public class BeatMinecraftMicroTask extends Task {
     private static final Task getFood = new CollectFoodTask(50);
     private static final Task sleepThroughNight = new SleepThroughNightTask();
     private static final Task equipShield = new EquipArmorTask(Items.SHIELD);
-    private static final Task getWaterBucket = new EquipArmorTask(Items.SHIELD);
+    private static final Task getWaterBucket = TaskCatalogue.getItemTask("water_bucket", 1);
     private static final Task getToStronghold = new GoToStrongholdPortalTask(targetEnderEyeCount);
     private static final Task killDragonWithBedsTask = new KillEnderDragonWithBedsTask();
     private static final Task killDragonNormalTask = new KillEnderDragonTask();
@@ -198,16 +203,15 @@ public class BeatMinecraftMicroTask extends Task {
 
     @Override
     protected Task onTick(AltoClef mod) {
-        final boolean hasWoodToolSet = mod.getItemStorage().hasItem(woodToolTargets);
-        final boolean hasStoneToolSet = mod.getItemStorage().hasItem(stoneToolTargets);
-        final boolean hasIronToolSet = mod.getItemStorage().hasItem(ironToolTargets);
-        final boolean hasDiamondToolSet = mod.getItemStorage().hasItem(diamondToolSet);
+        final boolean hasStoneToolSet = mod.getItemStorage().hasItemAll(requiredStoneToolset);
+        final boolean hasIronToolSet = mod.getItemStorage().hasItemAll(requiredIronToolset);
+        final boolean hasDiamondToolSet = mod.getItemStorage().hasItemAll(requiredDiamondToolset);
         final boolean hasIronArmorSet = StorageHelper.isArmorEquippedAll(mod, ItemHelper.IRON_ARMORS);
         final boolean hasMaxArmorSet = StorageHelper.isArmorEquippedAll(mod, armorSetMax);
 
         final boolean hasBed = mod.getItemStorage().hasItem(ItemHelper.BED);
         final boolean hasWaterBucket = mod.getItemStorage().hasItem(Items.WATER_BUCKET);
-        final boolean hasShield = mod.getItemStorage().hasItem(Items.SHIELD);
+        final boolean hasShield = mod.getItemStorage().hasItemInOffhand(Items.SHIELD);
 
         // We could find an End portal along the way maybe....
         findPossibleEndPortals(mod);
@@ -224,15 +228,11 @@ public class BeatMinecraftMicroTask extends Task {
         if (!hasDiamondToolSet) {
             if (!hasIronToolSet) {
                 if (!hasStoneToolSet) {
-                    if (!hasWoodToolSet) {
-                        getToolSet = TaskCatalogue.getSquashedItemTask(woodToolTargets);
-                    } else {
-                        getToolSet = TaskCatalogue.getSquashedItemTask(stoneToolTargets);
-                    }
+                    getToolSet = TaskCatalogue.getSquashedItemTask(requiredStoneToolset);
                 } else if (!hasShield) { // AFTER stone tool set Get shield and bed before iron toolset, i think it's very important.
                     return equipShield;
                 } else {
-                    getToolSet = TaskCatalogue.getSquashedItemTask(ironToolTargets);
+                    getToolSet = TaskCatalogue.getSquashedItemTask(requiredIronToolset);
                 }
             } else if (taskUnfinished(mod, getWaterBucket) || !hasWaterBucket) { // AFTER iron tool Get water bucket for falls.
                 return getWaterBucket;
@@ -264,7 +264,7 @@ public class BeatMinecraftMicroTask extends Task {
         }
 
         // Priority
-        if (mod.IsNight() && WorldHelper.getCurrentDimension() == Dimension.OVERWORLD) {
+        if ((mod.IsNight() && WorldHelper.getCurrentDimension() == Dimension.OVERWORLD) || !mod.getPlayer().isSleeping()) {
             setDebugState("Sleeping through night");
             return sleepThroughNight;
         } else if (taskUnfinished(mod, getFood)) {

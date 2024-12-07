@@ -33,10 +33,10 @@ public abstract class AbstractKillEntityTask extends AbstractDoToEntityTask {
     }
 
     public static boolean equipWeapon(AltoClef mod) {
-        Item bestWeapon = Weapons.getBestWeapon(mod).WeaponItem;
-        Item equipedWeapon = StorageHelper.getItemStackInSlot(PlayerSlot.getEquipSlot()).getItem();
-        if (bestWeapon != null && bestWeapon != equipedWeapon) {
-            mod.getSlotHandler().forceEquipItem(bestWeapon);
+        Weapons.Weapon bestWeaponWrapper = Weapons.getBestWeapon(mod);
+        Item equippedWeapon = StorageHelper.getItemStackInSlot(PlayerSlot.getEquipSlot()).getItem();
+        if (bestWeaponWrapper != null && bestWeaponWrapper.WeaponItem != equippedWeapon) {
+            mod.getSlotHandler().forceEquipItem(bestWeaponWrapper.WeaponItem);
             return true;
         }
         return false;

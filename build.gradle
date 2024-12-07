@@ -25,11 +25,11 @@ preprocess {
 sourceCompatibility = mcVersion >= 12006 ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
 targetCompatibility = sourceCompatibility
 
+
+archivesBaseName = project.archives_base_name
 tasks.withType(JavaCompile).configureEach {
     options.release = mcVersion >= 12006 ?  21 : 17
 }
-
-archivesBaseName = project.archives_base_name
 version = "${project.name}-${project.mod_version}"
 group = project.maven_group
 
