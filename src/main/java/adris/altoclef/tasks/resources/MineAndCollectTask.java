@@ -4,7 +4,7 @@ import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.multiversion.ItemVer;
 import adris.altoclef.multiversion.MathUtilVer;
-import adris.altoclef.multiversion.ToolMaterialVer;
+import adris.altoclef.multiversion.ToolInfoVer;
 import adris.altoclef.tasks.block.AbstractDoToClosestObjectTask;
 import adris.altoclef.tasks.construction.DestroyBlockTask;
 import adris.altoclef.tasks.movement.PickupDroppedItemTask;
@@ -141,7 +141,7 @@ public class MineAndCollectTask extends ResourceTask {
                     if (item instanceof MiningToolItem) {
                         if (currentlyEquipped instanceof MiningToolItem currentPick) {
                             MiningToolItem swapPick = (MiningToolItem) item;
-                            if (ToolMaterialVer.getMiningLevel(swapPick) > ToolMaterialVer.getMiningLevel(currentPick)) {
+                            if (ToolInfoVer.getMiningSpeed(swapPick) > ToolInfoVer.getMiningSpeed(currentPick)) {
                                 // We can equip a better pickaxe.
                                 mod.getSlotHandler().forceEquipSlot(CursorSlot.SLOT);
                             }

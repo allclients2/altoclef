@@ -123,9 +123,10 @@ public class AltoClefTickChart {
     }
 
     public static int lerpColor(float delta, int start, int end) {
-        //
-        //#if MC>=12001
-        return ColorHelper.Argb.lerp(delta, start, end);
+        //#if MC>=12103
+        return ColorHelper.lerp(delta, start, end);
+        //#elseif MC>=12001
+        //$$ return ColorHelper.Argb.lerp(delta, start, end);
         //#else
         //$$ int i = (int) MathHelper.lerp(delta, ColorHelper.Argb.getAlpha(start), ColorHelper.Argb.getAlpha(end));
         //$$ int j = (int) MathHelper.lerp(delta, ColorHelper.Argb.getRed(start), ColorHelper.Argb.getRed(end));

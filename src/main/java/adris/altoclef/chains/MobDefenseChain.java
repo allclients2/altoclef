@@ -47,7 +47,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
@@ -57,6 +56,12 @@ import adris.altoclef.util.Weapons;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
+
+//#if MC>=12103
+import net.minecraft.item.consume.UseAction;
+//#else
+//$$ import net.minecraft.util.UseAction;
+//#endif
 
 
 // TODO: Optimise shielding against spiders and skeletons
@@ -234,13 +239,13 @@ public class MobDefenseChain extends SingleTaskChain {
 
         // No idea
         doingFunkyStuff = false;
-        PlayerSlot offhandSlot = PlayerSlot.OFFHAND_SLOT;
-        Item offhandItem = StorageHelper.getItemStackInSlot(offhandSlot).getItem();
+        var offhandSlot = PlayerSlot.OFFHAND_SLOT;
+        var offhandItemStack = StorageHelper.getItemStackInSlot(offhandSlot);
 
         // Run away from creepers
         CreeperEntity blowingUp = getClosestFusingCreeper(mod);
         if (blowingUp != null) {
-            if ((!mod.getFoodChain().needsToEat() || Player.getHealth() < 9) && (mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD)) && !mod.getEntityTracker().entityFound(PotionEntity.class) && !Player.getItemCooldownManager().isCoolingDown(offhandItem) && mod.getClientBaritone().getPathingBehavior().isSafeToCancel() && blowingUp.getClientFuseTime(blowingUp.getFuseSpeed()) > 0.5) {
+            if ((!mod.getFoodChain().needsToEat() || Player.getHealth() < 9) && (mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD)) && !mod.getEntityTracker().entityFound(PotionEntity.class) && !ItemVer.isCoolingDown(offhandItemStack, Player.getItemCooldownManager()) && mod.getClientBaritone().getPathingBehavior().isSafeToCancel() && blowingUp.getClientFuseTime(blowingUp.getFuseSpeed()) > 0.5) {
                 LookHelper.lookAt(mod, EntityVer.getEyePos(blowingUp));
                 ItemStack shieldSlot = StorageHelper.getItemStackInSlot(PlayerSlot.OFFHAND_SLOT);
                 if (shieldSlot.getItem() != Items.SHIELD) {
@@ -258,7 +263,7 @@ public class MobDefenseChain extends SingleTaskChain {
 
         synchronized (BaritoneHelper.MINECRAFT_LOCK) {
             // Block projectiles with shield
-            if (mod.getModSettings().isDodgeProjectiles() && (mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD)) && !Player.getItemCooldownManager().isCoolingDown(offhandItem) && mod.getClientBaritone().getPathingBehavior().isSafeToCancel() && !mod.getEntityTracker().entityFound(PotionEntity.class) && isProjectileClose(mod)) {
+            if (mod.getModSettings().isDodgeProjectiles() && (mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD)) && !ItemVer.isCoolingDown(offhandItemStack, Player.getItemCooldownManager()) && mod.getClientBaritone().getPathingBehavior().isSafeToCancel() && !mod.getEntityTracker().entityFound(PotionEntity.class) && isProjectileClose(mod)) {
                 ItemStack shieldSlot = StorageHelper.getItemStackInSlot(PlayerSlot.OFFHAND_SLOT);
                 if (shieldSlot.getItem() != Items.SHIELD) {
                     mod.getSlotHandler().forceEquipItemToOffhand(Items.SHIELD);

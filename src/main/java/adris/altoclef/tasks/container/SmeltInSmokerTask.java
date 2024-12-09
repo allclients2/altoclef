@@ -297,7 +297,7 @@ public class SmeltInSmokerTask extends ResourceTask {
                     - totalFuelInFurnace;
              */
             // Fill in fuel if needed
-            if (fuel.isEmpty() || !ItemHelper.isFuel(fuel.getItem())) {
+            if (fuel.isEmpty() || !ItemHelper.isFuel(fuel, mod)) {
                 double currentlyCached = StorageHelper.getSmokerFuel() + StorageHelper.getSmokerCookPercent();
                 double needs = material.getCount() - currentlyCached;
                 if (needs > 0) {

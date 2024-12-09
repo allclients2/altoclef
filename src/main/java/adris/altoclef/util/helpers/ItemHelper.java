@@ -12,10 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.util.DyeColor;
 import org.jetbrains.annotations.Nullable;
 
@@ -485,17 +482,29 @@ public class ItemHelper {
         return getFuelAmount(stack.getItem()) * stack.getCount();
     }
 
-    public static boolean isFuel(Item item) {
-        return getFuelTimeMap().containsKey(item) || Arrays.stream(PLANKS).toList().contains(item) || Arrays.stream(LOGS_ALL).toList().contains(item);
+    //#if MC >= 12103
+    public static boolean isFuel(ItemStack stack, AltoClef mod) {
+        return !stack.isEmpty() && getFuelTime(stack, mod) > 0;
     }
 
-    private static Map<Item, Integer> getFuelTimeMap() {
-        if (fuelTimeMap == null) {
-            fuelTimeMap = AbstractFurnaceBlockEntity.createFuelTimeMap();
-        }
-        return fuelTimeMap;
+    public static int getFuelTime(ItemStack stack, AltoClef mod) {
+        return stack.isEmpty() ? 0 : mod.getWorld().getFuelRegistry().getFuelTicks(stack);
     }
-
+    //#else
+    //$$ public static boolean isFuel(ItemStack stack, AltoClef mod) {
+    //$$     return getFuelTime(stack, fuelRegistry) > 0;
+    //$$ }
+    //$$
+    //$$ private static final Map<Item, Integer> fuelMap = AbstractFurnaceBlockEntity.createFuelTimeMap();
+    //$$ public static int getFuelTime(ItemStack fuel, AltoClef mod) {
+    //$$     if (fuel.isEmpty()) {
+    //$$         return 0;
+    //$$     } else {
+    //$$         Item item = fuel.getItem();
+    //$$         return (Integer) fuelMap.getOrDefault(item, 0);
+    //$$     }
+    //$$ }
+    //#endif
 
     public static String trimItemName(String name) {
         if (name.startsWith("block.minecraft.")) {

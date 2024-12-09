@@ -3,6 +3,7 @@ package adris.altoclef.tasks.construction.compound;
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
 import adris.altoclef.TaskCatalogue;
+import adris.altoclef.multiversion.MathUtilVer;
 import adris.altoclef.tasks.block.InteractWithBlockTask;
 import adris.altoclef.tasks.construction.ClearLiquidTask;
 import adris.altoclef.tasks.construction.DestroyBlockTask;
@@ -73,19 +74,19 @@ public class ConstructNetherPortalSpeedrunTask extends adris.altoclef.tasksystem
     // !! Also represents the ORDER at which the lava will be placed.
     private static final LavaTarget[] PORTAL_FRAME_LAVA = new LavaTarget[]{
             // Left side
-            new LavaTarget(0, 0, -1, Direction.fromVector(-1, 0, 0)),
-            new LavaTarget(0, 1, -1, Direction.fromVector(-1, 0, 0)),
-            new LavaTarget(0, 2, -1, Direction.fromVector(0, 1, 0)),
+            new LavaTarget(0, 0, -1, MathUtilVer.dirFromVec(-1, 0, 0)),
+            new LavaTarget(0, 1, -1, MathUtilVer.dirFromVec(-1, 0, 0)),
+            new LavaTarget(0, 2, -1, MathUtilVer.dirFromVec(0, 1, 0)),
             // Right side
-            new LavaTarget(0, 0, 2, Direction.fromVector(-1, 0, 0)),
-            new LavaTarget(0, 1, 2, Direction.fromVector(0, 1, 0)),
-            new LavaTarget(0, 2, 2, Direction.fromVector(0, 1, 0)),
+            new LavaTarget(0, 0, 2, MathUtilVer.dirFromVec(-1, 0, 0)),
+            new LavaTarget(0, 1, 2, MathUtilVer.dirFromVec(0, 1, 0)),
+            new LavaTarget(0, 2, 2, MathUtilVer.dirFromVec(0, 1, 0)),
             // Bottom
-            new LavaTarget(0, -1, 0, Direction.fromVector(0, 1, 0)),
-            new LavaTarget(0, -1, 1, Direction.fromVector(0, 1, 0)),
+            new LavaTarget(0, -1, 0, MathUtilVer.dirFromVec(0, 1, 0)),
+            new LavaTarget(0, -1, 1, MathUtilVer.dirFromVec(0, 1, 0)),
             // Top
-            new LavaTarget(0, 3, 0, Direction.fromVector(0, 0, 1)),
-            new LavaTarget(0, 3, 1, Direction.fromVector(0, 0, 1))
+            new LavaTarget(0, 3, 0, MathUtilVer.dirFromVec(0, 0, 1)),
+            new LavaTarget(0, 3, 1, MathUtilVer.dirFromVec(0, 0, 1))
     };
     private static final Vec3i[] PORTAL_INTERIOR = new Vec3i[]{
             new Vec3i(0, 0, 0),

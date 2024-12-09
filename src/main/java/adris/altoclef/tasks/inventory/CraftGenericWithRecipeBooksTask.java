@@ -15,6 +15,7 @@ import adris.altoclef.util.slots.Slot;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.slot.SlotActionType;
 
 import java.util.Optional;
@@ -35,6 +36,20 @@ public class CraftGenericWithRecipeBooksTask extends Task implements ITaskUsesCr
     @Override
     protected void onStart(AltoClef mod) {
 
+    }
+
+    public static boolean isCraftableViaBook(WrappedRecipeEntry recipe, ClientPlayerEntity player) {
+        //#if MC >= 12103
+        for (var recipeResultCollection : player.getRecipeBook().getOrderedResults()) {
+            if (recipeResultCollection.isCraftable(recipe.networkId())) {
+                Debug.logInternal("is craftable!");
+                return true;
+            };
+        }
+        return false;
+        //#else
+        //$$ return player.getRecipeBook().contains(recipe.asRecipe().get().id());
+        //#endif
     }
 
     /**
@@ -139,7 +154,15 @@ public class CraftGenericWithRecipeBooksTask extends Task implements ITaskUsesCr
                 ClientPlayerEntity player = MinecraftClient.getInstance().player;
                 assert player != null;
                 // Click the recipe to send it
-                mod.getController().clickRecipe(player.currentScreenHandler.syncId, recipeToSend.get().asRecipe(), true);
+                mod.getController().clickRecipe(
+                        player.currentScreenHandler.syncId,
+                        //#if MC >= 12103
+                        recipeToSend.get().networkId(),
+                        //#else
+                        //$$ recipeToSend.get().asRecipe(),
+                        //#endif
+                        true
+                );
                 mod.getSlotHandler().registerSlotAction();
             }
         }

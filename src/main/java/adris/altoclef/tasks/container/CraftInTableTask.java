@@ -403,7 +403,7 @@ class DoCraftInTableTask extends DoStuffInContainerTask {
             // If crafting book is enabled, the recipe to send exists, and the player has the recipe in their recipe book, return a CraftGenericWithRecipeBooksTask
             if (mod.getModSettings().shouldUseCraftingBookToCraft() && recipeToSend.isPresent()) {
                 assert player != null;
-                if (player.getRecipeBook().contains(recipeToSend.get().id())) {
+                if (CraftGenericWithRecipeBooksTask.isCraftableViaBook(recipeToSend.get(), player)) {
                     return new CraftGenericWithRecipeBooksTask(target);
                 }
             }

@@ -16,6 +16,7 @@ subprojects {
 }
 
 preprocess {
+    val mc12103 = createNode("1.21.3", 12103, "yarn")
     val mc12101 = createNode("1.21.1", 12101, "yarn")
     val mc12100 = createNode("1.21", 12100, "yarn")
     val mc12006 = createNode("1.20.6", 12006, "yarn")
@@ -29,6 +30,7 @@ preprocess {
     val mc11701 = createNode("1.17.1", 11701, "yarn")
     val mc11605 = createNode("1.16.5", 11605, "yarn")
 
+    mc12103.link(mc12101)
     mc12101.link(mc12100)
     mc12100.link(mc12006)
     mc12006.link(mc12005)

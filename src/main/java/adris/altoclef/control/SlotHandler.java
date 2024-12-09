@@ -2,7 +2,9 @@ package adris.altoclef.control;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.Debug;
+import adris.altoclef.multiversion.ItemVer;
 import adris.altoclef.multiversion.PlayerVer;
+import adris.altoclef.multiversion.ToolInfoVer;
 import adris.altoclef.util.ItemTarget;
 import adris.altoclef.util.helpers.InputHelper;
 import adris.altoclef.util.helpers.ItemHelper;
@@ -127,33 +129,33 @@ public class SlotHandler {
     }
 
     public boolean forceDeequipHitTool() {
-        return forceDeequip(stack -> stack.getItem() instanceof ToolItem);
+        return forceDeequip(stack -> ItemVer.isTool(stack.getItem()));
     }
 
     public void forceDeequipRightClickableItem() {
         forceDeequip(stack -> {
                     Item item = stack.getItem();
                     return item instanceof BucketItem // water,lava,milk,fishes
-                            || item instanceof EnderEyeItem
-                            || item == Items.BOW
-                            || item == Items.CROSSBOW
-                            || item == Items.FLINT_AND_STEEL || item == Items.FIRE_CHARGE
-                            || item == Items.ENDER_PEARL
-                            || item instanceof FireworkRocketItem
-                            || item instanceof SpawnEggItem
-                            || item == Items.END_CRYSTAL
-                            || item == Items.EXPERIENCE_BOTTLE
-                            || item instanceof PotionItem // also includes splash/lingering
-                            || item == Items.TRIDENT
-                            || item == Items.WRITABLE_BOOK
-                            || item == Items.WRITTEN_BOOK
-                            || item instanceof FishingRodItem
-                            || item instanceof OnAStickItem
-                            || item == Items.COMPASS
-                            || item instanceof EmptyMapItem
-                            || item instanceof Equipment
-                            || item == Items.LEAD
-                            || item == Items.SHIELD;
+                        || item instanceof EnderEyeItem
+                        || item == Items.BOW
+                        || item == Items.CROSSBOW
+                        || item == Items.FLINT_AND_STEEL || item == Items.FIRE_CHARGE
+                        || item == Items.ENDER_PEARL
+                        || item instanceof FireworkRocketItem
+                        || item instanceof SpawnEggItem
+                        || item == Items.END_CRYSTAL
+                        || item == Items.EXPERIENCE_BOTTLE
+                        || item instanceof PotionItem // also includes splash/lingering
+                        || item == Items.TRIDENT
+                        || item == Items.WRITABLE_BOOK
+                        || item == Items.WRITTEN_BOOK
+                        || item instanceof FishingRodItem
+                        || item instanceof OnAStickItem
+                        || item == Items.COMPASS
+                        || item instanceof EmptyMapItem
+                        || item == Items.LEAD
+                        || item == Items.SHIELD
+                        || ItemVer.isEquippable(item);
                 }
         );
     }

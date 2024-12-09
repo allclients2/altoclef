@@ -300,8 +300,9 @@ public class SmeltInBlastFurnaceTask extends ResourceTask {
                     - (outputTarget.matches(_furnaceCache.outputSlot.getItem()) ? _furnaceCache.outputSlot.getCount() : 0)
                     - totalFuelInFurnace;
              */
+
             // Fill in fuel if needed
-            if (fuel.isEmpty() || !ItemHelper.isFuel(fuel.getItem())) {
+            if (fuel.isEmpty() || !ItemHelper.isFuel(fuel, mod)) {
                 double currentlyCached = StorageHelper.getBlastFurnaceFuel() + StorageHelper.getBlastFurnaceCookPercent();
                 double needs = material.getCount() - currentlyCached;
                 if (needs > 0) {

@@ -71,10 +71,10 @@ public class KillAura {
                 !mod.getMLGBucketChain().isFalling(mod) && mod.getMLGBucketChain().doneMLG() &&
                 !mod.getMLGBucketChain().isChorusFruiting()) {
             PlayerSlot offhandSlot = PlayerSlot.OFFHAND_SLOT;
-            Item offhandItem = StorageHelper.getItemStackInSlot(offhandSlot).getItem();
+            var offhandItemStack = StorageHelper.getItemStackInSlot(offhandSlot);
             if (!(entities.get() instanceof HostileEntity)
                     && (mod.getItemStorage().hasItem(Items.SHIELD) || mod.getItemStorage().hasItemInOffhand(Items.SHIELD))
-                    && !mod.getPlayer().getItemCooldownManager().isCoolingDown(offhandItem)) {
+                    && !ItemVer.isCoolingDown(offhandItemStack, mod.getPlayer().getItemCooldownManager())) {
                 LookHelper.lookAt(mod, EntityVer.getEyePos(entities.get()));
                 ItemStack shieldSlot = StorageHelper.getItemStackInSlot(PlayerSlot.OFFHAND_SLOT);
                 if (shieldSlot.getItem() != Items.SHIELD) {

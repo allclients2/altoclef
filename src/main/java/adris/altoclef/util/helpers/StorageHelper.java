@@ -7,7 +7,7 @@ import adris.altoclef.mixins.AbstractFurnaceScreenHandlerAccessor;
 import adris.altoclef.multiversion.BlockVer;
 import adris.altoclef.multiversion.ItemVer;
 import adris.altoclef.multiversion.PlayerVer;
-import adris.altoclef.multiversion.ToolMaterialVer;
+import adris.altoclef.multiversion.ToolInfoVer;
 import adris.altoclef.tasks.inventory.CraftInInventoryTask;
 import adris.altoclef.util.CraftingRecipe;
 import adris.altoclef.util.ItemTarget;
@@ -246,7 +246,7 @@ public class StorageHelper {
 
             Class clazz = tool.getClass();
 
-            int level = ToolMaterialVer.getMiningLevel(tool);
+            int level = ToolInfoVer.getMiningSpeed(tool);
             int prevBest = bestMaterials.getOrDefault(clazz, 0);
 
             if (level > prevBest) {
@@ -307,8 +307,8 @@ public class StorageHelper {
                         // Prioritize material type, then durability.
                         ToolItem leftTool = (ToolItem) left.getItem();
                         ToolItem rightTool = (ToolItem) right.getItem();
-                        if (ToolMaterialVer.getMiningLevel(leftTool) != ToolMaterialVer.getMiningLevel(rightTool))
-                            return ToolMaterialVer.getMiningLevel(leftTool) - ToolMaterialVer.getMiningLevel(rightTool);
+                        if (ToolInfoVer.getMiningSpeed(leftTool) != ToolInfoVer.getMiningSpeed(rightTool))
+                            return ToolInfoVer.getMiningSpeed(leftTool) - ToolInfoVer.getMiningSpeed(rightTool);
                         // We want less damage.
                         return left.getDamage() - right.getDamage();
                     }

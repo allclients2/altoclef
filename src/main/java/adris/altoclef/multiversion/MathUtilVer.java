@@ -1,6 +1,7 @@
 package adris.altoclef.multiversion;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
@@ -21,5 +22,13 @@ public class MathUtilVer {
 
     public static Vec3d getCenter(BlockPos blockPos) {
         return Vec3d.ofCenter(blockPos);
+    }
+
+    public static Direction dirFromVec(int x, int y, int z) {
+        //#if MC >= 12103
+        return Direction.fromVector(x, y, z, null);
+        //#else
+        //$$ return Direction.fromVector(x, y, z);
+        //#endif
     }
 }

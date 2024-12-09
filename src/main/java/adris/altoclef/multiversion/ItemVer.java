@@ -1,6 +1,8 @@
 package adris.altoclef.multiversion;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 
@@ -17,6 +19,15 @@ import net.minecraft.item.*;
 //$$ import adris.altoclef.mixins.MiningToolItemAccessor;
 //#endif
 
+//#if MC <= 12103
+import net.minecraft.component.DataComponentTypes;
+
+import java.util.Map;
+//#else
+//$$ import net.minecraft.item.ToolItem;
+//$$ import net.minecraft.item.Equipment;
+//#endif
+
 public class ItemVer {
 
     public static FoodComponentWrapper getFoodComponent(Item item) {
@@ -24,6 +35,29 @@ public class ItemVer {
         return FoodComponentWrapper.of(item.getComponents().get(net.minecraft.component.DataComponentTypes.FOOD));
         //#else
         //$$ return FoodComponentWrapper.of(item.getFoodComponent());
+        //#endif
+    }
+
+    public static boolean isCoolingDown(ItemStack itemStack, ItemCooldownManager itemCooldownManager) {
+        //#if MC >= 12103
+        return itemCooldownManager.isCoolingDown(itemStack);
+        //#else
+        //$$ return itemCooldownManager.isCoolingDown(itemStack.getItem());
+        //#endif
+    }
+
+    public static boolean isTool(Item item) {
+        //#if MC >= 12103
+        return item.getComponents().contains(DataComponentTypes.TOOL);
+        //#else
+        //$$ return (item instanceof ToolItem);
+        //#endif
+    }
+    public static boolean isEquippable(Item item) {
+        //#if MC >= 12103
+        return item.getComponents().contains(DataComponentTypes.EQUIPPABLE);
+        //#else
+        //$$ return (item instanceof Equipment);
         //#endif
     }
 
@@ -78,6 +112,4 @@ public class ItemVer {
         //$$ return item.isFood();
         //#endif
     }
-
-
 }

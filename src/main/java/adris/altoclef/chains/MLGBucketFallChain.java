@@ -2,19 +2,23 @@ package adris.altoclef.chains;
 
 import adris.altoclef.AltoClef;
 import adris.altoclef.TaskCatalogue;
+import adris.altoclef.multiversion.ItemVer;
 import adris.altoclef.tasks.movement.MLGBucketTask;
 import adris.altoclef.tasksystem.ITaskOverridesGrounded;
 import adris.altoclef.tasksystem.TaskRunner;
 import adris.altoclef.util.helpers.LookHelper;
+import adris.altoclef.util.slots.Slot;
 import adris.altoclef.util.time.TimerGame;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.input.Input;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.RaycastContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -91,13 +95,13 @@ public class MLGBucketFallChain extends SingleTaskChain implements ITaskOverride
             wasPickingUp = false;
             lastMLG = null;
         }
-        if (mod.getPlayer().hasStatusEffect(StatusEffects.LEVITATION) &&
-                !mod.getPlayer().getItemCooldownManager().isCoolingDown(Items.CHORUS_FRUIT) &&
+        Slot availableChorusFruitSlot = getAvailableChorusFruitSlot(mod);
+        if (mod.getPlayer().hasStatusEffect(StatusEffects.LEVITATION) && availableChorusFruitSlot != null &&
                 mod.getPlayer().getActiveStatusEffects().get(StatusEffects.LEVITATION).getDuration() <= 70 &&
                 mod.getItemStorage().hasItemInventoryOnly(Items.CHORUS_FRUIT) &&
                 !mod.getItemStorage().hasItemInventoryOnly(Items.WATER_BUCKET)) {
             doingChorusFruit = true;
-            mod.getSlotHandler().forceEquipItem(Items.CHORUS_FRUIT);
+            mod.getSlotHandler().forceEquipSlot(availableChorusFruitSlot);
             mod.getInputControls().hold(Input.CLICK_RIGHT);
             mod.getExtraBaritoneSettings().setInteractionPaused(true);
         } else if (doingChorusFruit) {
@@ -107,6 +111,22 @@ public class MLGBucketFallChain extends SingleTaskChain implements ITaskOverride
         }
         lastMLG = null;
         return Float.NEGATIVE_INFINITY;
+    }
+
+    private static @Nullable Slot getAvailableChorusFruitSlot(AltoClef mod) {
+        var coolDownManager = mod.getPlayer().getItemCooldownManager();
+        var inventory = mod.getPlayer().getInventory();
+        var playerSlots = mod.getItemStorage().getSlotsWithItemPlayerInventory(true, Items.CHORUS_FRUIT);
+
+        Slot avaliableChorusFruitSlot = null;
+        for (var slot : playerSlots) {
+            var stack = inventory.getStack(slot.getInventorySlot());
+            if (!ItemVer.isCoolingDown(stack, coolDownManager)) {
+                avaliableChorusFruitSlot = slot;
+                break;
+            }
+        }
+        return avaliableChorusFruitSlot;
     }
 
     @Override
