@@ -118,18 +118,6 @@ gradle-app.setting
 **/build/
 
 # Common working directory
-run12001/
-run12002/
-run12004/
-run12006/
-run11802/
-run11801/
-run11800/
-run11701/
-run11700/
-run11603/
-run11604/
-run11605/
 run/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
