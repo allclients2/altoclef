@@ -194,7 +194,7 @@ public class ItemHelper {
             //$$ makeWoodType(WoodType.WARPED, "warped", Items.WARPED_PLANKS, Items.WARPED_STEM, Items.STRIPPED_WARPED_STEM, Items.STRIPPED_WARPED_HYPHAE, Items.WARPED_HYPHAE, Items.WARPED_SIGN, Items.WARPED_DOOR, Items.WARPED_BUTTON, Items.WARPED_STAIRS, Items.WARPED_SLAB, Items.WARPED_FENCE, Items.WARPED_FENCE_GATE, null, Items.WARPED_FUNGUS, null, Items.WARPED_PRESSURE_PLATE, Items.WARPED_TRAPDOOR, Blocks.WARPED_SIGN, Blocks.WARPED_WALL_SIGN);
             //#endif
         }
-    
+
         // Just removes the hangingSign argument.
         //#if MC >= 12000
         void makeWoodClass(WoodType type, String prefix, Item planks, Item log, Item strippedLog, Item strippedWood, Item wood, Item sign, Item door, Item button, Item stairs, Item slab, Item fence, Item fenceGate, Item boat, Item sapling, Item leaves, Item pressurePlate, Item trapdoor, Item hangingSign, Block signBlock, Block signWallBlock) {
@@ -549,9 +549,9 @@ public class ItemHelper {
                         || b == Blocks.NETHER_SPROUTS
                         //#if MC >= 12003
                         || b == Blocks.GRASS_BLOCK;
-                        //#else
-                        //$$ || b == Blocks.GRASS;
-                        //#endif
+        //#else
+        //$$ || b == Blocks.GRASS;
+        //#endif
     }
 
     public static boolean isStackProtected(AltoClef mod, ItemStack stack) {
@@ -731,7 +731,6 @@ public class ItemHelper {
             this.dimension = dimension;
         }
 
-        // Overload me with cuuuuuuuu-
         public OreDistribution(int maxHeight, int optimalHeight, int minHeight) {
             this(maxHeight, optimalHeight, minHeight, Dimension.OVERWORLD);
         }
