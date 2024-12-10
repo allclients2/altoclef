@@ -731,7 +731,6 @@ public class ItemHelper {
             this.dimension = dimension;
         }
 
-        // Overload me with cuuuuuuuu-
         public OreDistribution(int maxHeight, int optimalHeight, int minHeight) {
             this(maxHeight, optimalHeight, minHeight, Dimension.OVERWORLD);
         }
