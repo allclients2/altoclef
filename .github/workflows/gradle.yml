@@ -37,8 +37,12 @@ jobs:
             echo $LATEST_VERSION > ./versions/mainProject
           fi
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build specified versions
+        run: |
+          for version in $VERSIONS_TO_BUILD; do
+            echo "Building version: $version"
+            ./gradlew $version:build
+          done
 
       - name: Create artifact directory structure
         run: |
@@ -60,7 +64,7 @@ jobs:
           done
 
       - name: Archive Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Artifacts
           path: artifacts
