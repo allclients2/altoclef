@@ -113,7 +113,7 @@ dependencies {
     // Jackson JSON
     implementation 'com.fasterxml.jackson.core:jackson-core:2.16.0'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.16.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
 
     // Nether pathfinder
     implementation 'dev.babbaj:nether-pathfinder:1.5'
@@ -122,7 +122,7 @@ dependencies {
     // You may need to force-disable transitiveness on them.
     shadow('com.fasterxml.jackson.core:jackson-core:2.16.0')
     shadow('com.fasterxml.jackson.core:jackson-annotations:2.16.0')
-    shadow('com.fasterxml.jackson.core:jackson-databind:2.16.0')
+    shadow('com.fasterxml.jackson.core:jackson-databind:2.18.2')
 
     modImplementation "cabaletta:baritone-unoptimized-fabric:${baritoneVersions[project.name]}"
     include "cabaletta:baritone-unoptimized-fabric:${baritoneVersions[project.name]}"
